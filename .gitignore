@@ -1,0 +1,4 @@
+# node modules
+node_modules/
+# macos ds store
+**/.DS_Store

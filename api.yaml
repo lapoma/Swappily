@@ -70,6 +70,8 @@ paths:
               schema:
                 type: string
               description: Link to the newly created user.
+        '400':
+          description: 'Bad request. The input is not correct'
     #Come utente Swappily, voglio poter cercare articoli o persone in modo da trovare annunci di mio interesse e mettermi in contatto con altri utenti.
     get:
       description: >- 
@@ -80,10 +82,12 @@ paths:
           name: userId
           schema:
             type: string
+          required: false
         - in: query
           name: username
           schema:
             type: string
+          required: false
       responses:
         '200':
           description: 'Collection of users'
@@ -93,6 +97,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
+        '404':
+          description: 'User not found'
         '500':
           description: 'Server error'
   
@@ -120,6 +126,8 @@ paths:
           description: 'User deleted'
         '404': 
           description: 'User not found'
+        '500': 
+          description: 'Server error'
     #User Story 4: Pagina personale.
     #Come utente autenticato, voglio poter visualizzare e modificare le informazioni del mio profilo personale, così da poter aggiornare i miei dati e gestire facilmente i contenuti che creo o seguo all’interno della piattaforma.
     put:
@@ -388,7 +396,7 @@ paths:
           description: 'This user does not have the authorizatuon'
         '404':  
           description: 'Review not found' 
-  /review/{userId}:
+  /review/{revieweeId}:
     get:
       description: 'Get all the review of one user'
       summary: 'Reviews of an user'
@@ -398,7 +406,7 @@ paths:
           schema:
             type: string
         - in: path
-          name: userId
+          name: revieweeId
           schema:
             type: string
       responses:
@@ -551,17 +559,22 @@ components:
       type: object
       required:
       - reviewId
-      - userId
+      - revieweeId
+      - reviewerId
       - text
       properties:
         reviewId:
           type: integer
           format: objectId
           description: 'Id of the review'
-        userId:
+        reviewerId:
           type: string
           format: objectId
           description: 'Id of the user writing the review'
+        revieweeId:
+          type: string
+          format: objectId
+          description: 'Id of the user being reviewed'
         text:
           type: string
           format: objectId
@@ -570,14 +583,18 @@ components:
       type: object
       required:
         - reportId
-        - userId
+        - reporterId
+        - reporteeId
         - listingId
         - text
       properties:
         reportId:
           type: integer
-          description: 'Id of the reportId'
-        userId:
+          description: 'Id of the report'
+        reporterId:
+          type: integer
+          description: 'Id of the user author of the report'
+        reporteeId:
           type: string
           description: 'Id of the user reported'
         listingId:
