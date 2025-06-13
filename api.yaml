@@ -75,14 +75,9 @@ paths:
     #Come utente Swappily, voglio poter cercare articoli o persone in modo da trovare annunci di mio interesse e mettermi in contatto con altri utenti.
     get:
       description: >- 
-        Get all the users. It is possible to show users by their username or userId
-      summary: View all or one user.
+        Get all the users. It is possible to show users by their username.
+      summary: View all users or filtered by username.
       parameters:
-        - in: query
-          name: userId
-          schema:
-            type: string
-          required: false
         - in: query
           name: username
           schema:
@@ -103,6 +98,27 @@ paths:
           description: 'Server error'
   
   /users/{userID}:
+    get:
+      description: >-
+        Gets a user by ID.
+      summary: View a user
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: 'User found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: 'User not found'
+        '500':
+          description: 'Server error'
   #User Story 5
   #Come utente voglio poter eliminare il mio account in modo permanente, così da rimuovere tutti i miei dati dal sistema se non desidero più utilizzare la piattaforma.
     delete:
@@ -187,14 +203,10 @@ paths:
               description: Link to the newly created listing.
     get:
       description: >-
-        Gets the list of listings. It is possible to show the listing by their Id or title
-        or filtered by categories or status.
-      summary: View all listings
+        Gets the list of listings. It is possible to show the listing by their title
+        or filtered by favorites, followed or status.
+      summary: View all listings or filtered listings.
       parameters:
-        - in: query
-          name: listingId
-          schema:
-            type: string
         - in: query
           name: title
           schema:
@@ -205,6 +217,15 @@ paths:
             type: array
             items:
               type: string
+            enum: [As new, Good, Ok, Not Good]
+        - in: query
+          name: favorite
+          schema:
+            type: boolean
+        - in: query
+          name: followed
+          schema:
+            type: boolean
       responses:
         '200':
           description: 'Collection of listings'
@@ -219,6 +240,25 @@ paths:
         '500':
           description: 'Server error'
   /listings/{listingId}:
+    get:
+      description: >-
+        Gets a listing by ID.
+      summary: View a listing
+      parameters:
+        - in: path
+          name: listingId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: 'Listing found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Listing'
+        '404':
+          description: 'Listing not found'
     delete:
       description: >-
         Deletes a listing by ID.
@@ -242,7 +282,9 @@ paths:
         '403':
           description: 'The user does not have the authorization'
         '404':
-          description: 'Listing not found'     
+          description: 'Listing not found' 
+        '500':
+          description: 'Internal server error'    
     put:
       description: >-
         Updates an existing listing.

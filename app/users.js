@@ -52,21 +52,47 @@ router.post('', async (req, res)=>{
     });
 });
 
-router.get('', async (req, res)=>{
-    //https://mongoosejs.com/docs/api/model.html#Model.find()
-    let users =await User.find({});
-    users = users.map(user => {
-        return {
-            self: '/api/v1/users/' + user.userId,
-            id: user.userId,
-            username: user.username,
-            email: user.email,
-            name: user.name,
-            surname: user.surname
-        };
-    });
-    res.status(200).json(users);
-});
+
+//https://expressjs.com/en/guide/routing.html#route-parameters
+router.get('',async (req,res) =>{
+    try{
+        let users;
+
+        if(req.query.username){
+            users = await Users.find({username: req.query.username}).exec();
+            if(!users || users.length === 0){
+                return res.status(404).json({error: 'No users found with that username'});
+            }else{
+                users = users.map( (user) =>{
+                    return{
+                    self: '/api/v1/students/'+ user.id,
+                    username: user.username,
+                    email: user.email, 
+                    name: user.name,
+                    surname: user.surname
+                    };
+                })
+                res.status(200).json(users);
+            }
+        }else{
+            //https://mongoosejs.com/docs/api/model.html#Model.find()
+            users =await User.find({});
+            users = users.map(user => {
+            return {
+                self: '/api/v1/users/' + user.userId,
+                id: user.userId,
+                username: user.username,
+                email: user.email,
+                name: user.name,
+                surname: user.surname
+            };
+            });
+        } 
+    }catch(error){
+        console.error('Error fetching users:', error);
+        return res.status(500).json({error: 'Internal server error'});
+    }
+})
 
 router.get('/:id', async (req, res)=>{
     try{
@@ -91,34 +117,6 @@ router.get('/:id', async (req, res)=>{
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-//https://expressjs.com/en/guide/routing.html#route-parameters
-router.get('',async (req,res) =>{
-    try{
-        let users;
-
-        if(req.query.username){
-            users = await Users.find({username: req.query.username}).exec();
-            if(!users || users.length === 0){
-                return res.status(404).json({error: 'No users found with that username'});
-            }
-        }else{
-            users = await Users.find().exec();
-        }
-
-        users = users.map( (user) =>{
-            return{
-                self: '/api/v1/students/'+ user.id,
-                username: user.username,
-                email: user.email, 
-                name: user.name,
-                surname: user.surname
-            }
-        })
-    }catch(error){
-        console.error('Error fetching users:', error);
-        return res.status(500).json({error: 'Internal server error'});
-    }
-})
 
 router.put('/:id',async (req, res) =>{
     try{
@@ -197,3 +195,5 @@ function CheckPassword(inputtxt) {
         return false;
     }
 }
+
+module.exports = router;
