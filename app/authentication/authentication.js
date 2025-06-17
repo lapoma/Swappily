@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const User = require('./models/user');       // Modello mongoose corretto
+const User = require('../models/user');       // Modello mongoose corretto
 const jwt = require('jsonwebtoken');         // Per creare i token
 const bcrypt = require('bcrypt');            // Per confrontare password criptate
 
