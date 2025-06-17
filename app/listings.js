@@ -190,3 +190,5 @@ function checkDescription(description){
     }
     return true;
 }
+
+module.exports = router;
