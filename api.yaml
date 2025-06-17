@@ -312,6 +312,31 @@ paths:
           description: 'Listing modified'
         '404':
           description: 'Listing not found'
+  /exchange:
+    get:
+      description: >-
+        Gets the list of exchanges. It is possible to show the exchanges by their status.
+      summary: View all exchanges or filtered exchanges.
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: array
+            items:
+              type: string
+            enum: [pending, accepted, rejected]
+      responses:
+        '200':
+          description: 'Collection of exchanges'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Exchange'
+        '404':
+          description: 'Exchanges not found'
+
   /exchange/{listingId}:
     #User Story 10
     #Come utente autenticato, voglio poter inviare una proposta di scambio a un altro utente, scegliendo uno dei miei prodotti o creandone uno nuovo, così da avviare una trattativa diretta.
@@ -346,6 +371,25 @@ paths:
             schema:
               $ref: '#/components/schemas/Exchange'
   /exchange/{exchangeId}:
+    get:
+      description: >-
+        Gets an exchange by ID.
+      summary: View an exchange
+      parameters:
+        - in: path
+          name: exchangeId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: 'Exchange found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exchange'
+        '404':
+          description: 'Exchange not found'
     put:
       description: 'Modify an exchange'
       summary: 'Modify an exchange'
@@ -566,8 +610,8 @@ components:
     Exchange:
       type: object
       required:
-      - sender
-      - receiver
+      - senderId
+      - receiverId
       - offeredListing
       - requestedListing
       - status
