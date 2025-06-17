@@ -1,26 +1,26 @@
 const express = require('express');
 const router = express.Router();
-const User = require('./models/user'); // modello mongoose corretto
-const jwt = require('jsonwebtoken');   // per creare i token
-const bcrypt = require('bcrypt');      // per confrontare password criptate
+const User = require('./models/user');       // Modello mongoose corretto
+const jwt = require('jsonwebtoken');         // Per creare i token
+const bcrypt = require('bcrypt');            // Per confrontare password criptate
 
 // ---------------------------------------------------------
 // Rotta per autenticare e generare un nuovo token
 // ---------------------------------------------------------
 router.post('', async function (req, res) {
     // 1. Controllo input
-    if (!req.body.email || !req.body.password) {
+    if (!req.body.username || !req.body.password) {
         return res.status(400).json({
             success: false,
-            message: 'Autenticazione fallita: email e password obbligatorie.'
+            message: 'Autenticazione fallita: username e password obbligatori.'
         });
     }
 
     let user;
 
-    // 2. Trova l'utente nel database
+    // 2. Trova l'utente nel database tramite username
     try {
-        user = await User.findOne({ email: req.body.email }).exec();
+        user = await User.findOne({ username: req.body.username }).exec();
     } catch (err) {
         console.error(err);
         return res.status(500).json({
@@ -48,8 +48,8 @@ router.post('', async function (req, res) {
 
     // 5. Tutto ok → crea token
     const payload = {
-        email: user.email,
-        id: user._id
+        id: user._id,
+        username: user.username
     };
 
     const options = {
@@ -63,8 +63,8 @@ router.post('', async function (req, res) {
         success: true,
         message: 'Ecco il tuo token!',
         token: token,
-        email: user.email,
         id: user._id,
+        username: user.username,
         self: "api/v1/" + user._id
     });
 });
