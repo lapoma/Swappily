@@ -4,9 +4,9 @@ const User = require('./models/user');
 
 // Email check
 //https://stackoverflow.com/questions/63118717/how-do-i-validate-a-password-using-regular-expressions
-function checkPassword(inputtxt) {
+function checkPassword(str) {
     var decimal = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,50}$/;
-    return decimal.test(inputtxt);
+    return decimal.test(str);
 }
 
 // Username check
