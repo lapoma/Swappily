@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Exchange = require('./models/exchanges');
+const Exchange = require('./models/exchange');
 const User = require('./models/user');
 const Listing = require('./models/listing');
 

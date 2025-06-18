@@ -1,11 +1,10 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-//set up a mongoose model
-module.exports = mongoose.model('Student', new Schema({
-    username: String,
-    name: String,
-    surname: String,
-    email: String,
-    password: String
-}))
+module.exports = mongoose.model('User', new Schema({
+  username: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  surname: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true }
+}));
