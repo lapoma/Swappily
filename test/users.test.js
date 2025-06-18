@@ -41,7 +41,6 @@ describe('POST /api/v1/users', () => {
       email: 'john@example.com'
     });
 
-    // Mock del costruttore User
     User.mockImplementation(function () {
       return { save: saveMock };
     });
