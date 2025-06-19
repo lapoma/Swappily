@@ -1,36 +1,36 @@
 openapi: 3.0.0
+x-stoplight:
+  id: zk30b9144hq8c
 info:
   version: 1.0.0
-  title: "Swappily OpenAPI 3.0"
+  title: Swappily OpenAPI 3.0
   description: API for managing exchange of goods between users.
   license:
     name: MIT
 servers:
-  - url: http://localhost:8080/api/v1
+  - url: 'http://localhost:8080/api/v1'
     description: Localhost
 paths:
-  #User Story 2: Login. 
-  #Come utente o operatore di Swappily, voglio effettuare il login al mio account in modo da accedere al mio profilo personale.
   /authentications:
     post:
       description: Authenticate a user
       summary: Authenticate a user and return a token.
       responses:
         '200':
-          description: 'Token created'
+          description: Token created
           content:
             application/json:
               schema:
                 type: object
-                properties: 
+                properties:
                   success:
                     type: boolean
-                    description: 'True if the authentication is a success'
+                    description: True if the authentication is a success
                   token:
                     type: string
-                    description: 'JWT token'
+                    description: JWT token
         '401':
-          description: 'Unauthorized. Invalid credential'
+          description: Unauthorized. Invalid credential
       requestBody:
         description: The username and password must be passed in the 'Body
         required: true
@@ -42,18 +42,17 @@ paths:
                 - username
                 - password
               properties:
-                username: 
+                username:
                   type: string
-                  description: 'Username of the user'
+                  description: Username of the user
                 password:
                   type: string
-                  description: 'Password of the user'
-  # USER STORY 1
-  #Come nuovo utente, voglio potermi registrare creando un account personale con i miei dati, in modo da poter accedere all’app e a tutte le sue funzioni.
+                  description: Password of the user
+      x-stoplight:
+        id: y6lnq6qeeuh6y
   /users:
     post:
-      description: >-
-        Creates a new user in the system.
+      description: Creates a new user in the system.
       summary: Register a new user.
       requestBody:
         content:
@@ -64,18 +63,18 @@ paths:
                 $ref: '#/components/schemas/User'
       responses:
         '201':
-          description: 'User created. Link in the Location header'
+          description: User created. Link in the Location header
           headers:
-            'Location':
+            Location:
               schema:
                 type: string
               description: Link to the newly created user.
         '400':
-          description: 'Bad request. The input is not correct'
-    #Come utente Swappily, voglio poter cercare articoli o persone in modo da trovare annunci di mio interesse e mettermi in contatto con altri utenti.
+          description: Bad request. The input is not correct
+      x-stoplight:
+        id: fjxu6ek9e7nty
     get:
-      description: >- 
-        Get all the users. It is possible to show users by their username.
+      description: Get all the users. It is possible to show users by their username.
       summary: View all users or filtered by username.
       parameters:
         - in: query
@@ -85,7 +84,7 @@ paths:
           required: false
       responses:
         '200':
-          description: 'Collection of users'
+          description: Collection of users
           content:
             application/json:
               schema:
@@ -93,14 +92,14 @@ paths:
                 items:
                   $ref: '#/components/schemas/User'
         '404':
-          description: 'User not found'
+          description: User not found
         '500':
-          description: 'Server error'
-  
-  /users/{userID}:
+          description: Server error
+      x-stoplight:
+        id: sfcm9n8d5ek6u
+  '/users/{userId}':
     get:
-      description: >-
-        Gets a user by ID.
+      description: Gets a user by ID.
       summary: View a user
       parameters:
         - in: path
@@ -110,45 +109,40 @@ paths:
           required: true
       responses:
         '200':
-          description: 'User found'
+          description: User found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
         '404':
-          description: 'User not found'
+          description: User not found
         '500':
-          description: 'Server error'
-  #User Story 5
-  #Come utente voglio poter eliminare il mio account in modo permanente, così da rimuovere tutti i miei dati dal sistema se non desidero più utilizzare la piattaforma.
+          description: Server error
+      x-stoplight:
+        id: 9rbzpnod84p84
     delete:
-      description: 'Delete an user'
+      description: Delete an user
       summary: Delete an user.
       security:
         - TokenQueryAuth: []
         - accessTokenHeader: []
       parameters:
-      #  - in : header
-      #    name: authenticate
-      #    schema:
-      #      type: string
-        - in : path
+        - in: path
           name: userId
           schema:
             type: integer
           required: true
       responses:
         '204':
-          description: 'User deleted'
-        '404': 
-          description: 'User not found'
-        '500': 
-          description: 'Server error'
-    #User Story 4: Pagina personale.
-    #Come utente autenticato, voglio poter visualizzare e modificare le informazioni del mio profilo personale, così da poter aggiornare i miei dati e gestire facilmente i contenuti che creo o seguo all’interno della piattaforma.
+          description: User deleted
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+      x-stoplight:
+        id: 9uo75co78uiyd
     put:
-      description: >-
-        Updates an existing user.
+      description: Updates an existing user.
       summary: Update an existing user
       security:
         - TokenQueryAuth: []
@@ -159,10 +153,6 @@ paths:
           schema:
             type: integer
           required: true
-      #  - in: header
-      #    name: authenticate
-      #    schema:
-      #      type: string
       requestBody:
         content:
           application/json:
@@ -170,24 +160,18 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '200':
-          description: 'User updated'
+          description: User updated
         '404':
-          description: 'User not found'     
-  #User Story 10: Post per lo scambio. Creazione di un post e conseguente compilazione dei campi descrittivi.
-  #Come utente, voglio poter pubblicare uno o più articoli in modo da permettere ad altri utenti di effettuare scambi e proposte con altri articoli, in base ad esigenze specifiche designate nei campi dei filtri. 
+          description: User not found
+      x-stoplight:
+        id: 68pk8lzqlqvcy
   /listings:
     post:
-      description: >-
-        Creates a new listing.
+      description: Creates a new listing.
       summary: Create a new listing
       security:
         - TokenQueryAuth: []
         - accessTokenHeader: []
-      #parameters:
-        # - in: header
-        #   name: authenticate
-        #   schema:
-        #     type: string
       requestBody:
         content:
           application/json:
@@ -195,16 +179,16 @@ paths:
               $ref: '#/components/schemas/Listing'
       responses:
         '201':
-          description: 'Listing created. Link in the Location header'
+          description: Listing created. Link in the Location header
           headers:
-            'Location':
+            Location:
               schema:
                 type: string
               description: Link to the newly created listing.
+      x-stoplight:
+        id: v25x1q7izo1kb
     get:
-      description: >-
-        Gets the list of listings. It is possible to show the listing by their title
-        or filtered by favorites, followed or status.
+      description: 'Gets the list of listings. It is possible to show the listing by their title or filtered by favorites, followed or status.'
       summary: View all listings or filtered listings.
       parameters:
         - in: query
@@ -217,7 +201,11 @@ paths:
             type: array
             items:
               type: string
-            enum: [As new, Good, Ok, Not Good]
+            enum:
+              - As new
+              - Good
+              - Ok
+              - Not Good
         - in: query
           name: favorite
           schema:
@@ -228,21 +216,22 @@ paths:
             type: boolean
       responses:
         '200':
-          description: 'Collection of listings'
+          description: Collection of listings
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Listing'
-        '404': 
-          description: 'Not found'
+        '404':
+          description: Not found
         '500':
-          description: 'Server error'
-  /listings/{listingId}:
+          description: Server error
+      x-stoplight:
+        id: ptsqe6xnbvb33
+  '/listings/{listingId}':
     get:
-      description: >-
-        Gets a listing by ID.
+      description: Gets a listing by ID.
       summary: View a listing
       parameters:
         - in: path
@@ -252,42 +241,40 @@ paths:
           required: true
       responses:
         '200':
-          description: 'Listing found'
+          description: Listing found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Listing'
         '404':
-          description: 'Listing not found'
+          description: Listing not found
+      x-stoplight:
+        id: l18m3t6a2a81d
     delete:
-      description: >-
-        Deletes a listing by ID.
+      description: Deletes a listing by ID.
       summary: Delete a listing
       security:
         - TokenQueryAuth: []
         - accessTokenHeader: []
       parameters:
-      - in: path
-        name: listingId
-        schema:
-          type: string
-        required: true
-     # - in : header
-      #  name: authenticate
-       # schema:
-        #  type: string
+        - in: path
+          name: listingId
+          schema:
+            type: string
+          required: true
       responses:
         '204':
-          description: 'Listing deleted'
+          description: Listing deleted
         '403':
-          description: 'The user does not have the authorization'
+          description: The user does not have the authorization
         '404':
-          description: 'Listing not found' 
+          description: Listing not found
         '500':
-          description: 'Internal server error'    
+          description: Internal server error
+      x-stoplight:
+        id: hhbfxz19wavn5
     put:
-      description: >-
-        Updates an existing listing.
+      description: Updates an existing listing.
       summary: Update an existing listing
       security:
         - TokenQueryAuth: []
@@ -298,24 +285,21 @@ paths:
           schema:
             type: string
           required: true
-        # - in: header
-        #   name: authenticate
-        #   schema:
-        #     type: string
-      requestBody:  
+      requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Listing'
       responses:
         '200':
-          description: 'Listing modified'
+          description: Listing modified
         '404':
-          description: 'Listing not found'
+          description: Listing not found
+      x-stoplight:
+        id: 9tkvaq3k652dv
   /exchange:
     get:
-      description: >-
-        Gets the list of exchanges. It is possible to show the exchanges by their status.
+      description: Gets the list of exchanges. It is possible to show the exchanges by their status.
       summary: View all exchanges or filtered exchanges.
       parameters:
         - in: query
@@ -324,10 +308,13 @@ paths:
             type: array
             items:
               type: string
-            enum: [pending, accepted, rejected]
+            enum:
+              - pending
+              - accepted
+              - rejected
       responses:
         '200':
-          description: 'Collection of exchanges'
+          description: Collection of exchanges
           content:
             application/json:
               schema:
@@ -335,23 +322,17 @@ paths:
                 items:
                   $ref: '#/components/schemas/Exchange'
         '404':
-          description: 'Exchanges not found'
-
-  /exchange/{listingId}:
-    #User Story 10
-    #Come utente autenticato, voglio poter inviare una proposta di scambio a un altro utente, scegliendo uno dei miei prodotti o creandone uno nuovo, così da avviare una trattativa diretta.
+          description: Exchanges not found
+      x-stoplight:
+        id: pz72gepzxjqm7
+  '/exchange/listing/{listingId}':
     post:
-      description: >-
-        Creates a new exchange.
+      description: Creates a new exchange.
       summary: Exchange an object
       security:
         - TokenQueryAuth: []
         - accessTokenHeader: []
       parameters:
-        # - in: header
-        #   name: authenticate
-        #   schema:
-        #     type: string
         - in: path
           name: listingId
           schema:
@@ -359,9 +340,9 @@ paths:
           required: true
       responses:
         '201':
-          description: 'Exchange created. Link in the Location header'
+          description: Exchange created. Link in the Location header
           headers:
-            'Location':
+            Location:
               schema:
                 type: string
               description: Link to the newly created exchange.
@@ -370,10 +351,11 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Exchange'
-  /exchange/{exchangeId}:
+      x-stoplight:
+        id: rz90tzdtusqj1
+  '/exchange/{exchangeId}':
     get:
-      description: >-
-        Gets an exchange by ID.
+      description: Gets an exchange by ID.
       summary: View an exchange
       parameters:
         - in: path
@@ -383,24 +365,22 @@ paths:
           required: true
       responses:
         '200':
-          description: 'Exchange found'
+          description: Exchange found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Exchange'
         '404':
-          description: 'Exchange not found'
+          description: Exchange not found
+      x-stoplight:
+        id: x0a2y30d3av84
     put:
-      description: 'Modify an exchange'
-      summary: 'Modify an exchange'
+      description: Modify an exchange
+      summary: Modify an exchange
       security:
         - TokenQueryAuth: []
-        - accessTokenHeader: [] 
-      parameters: 
-        # - in: header
-        #   name: authenticate
-        #   schema:
-        #     type: string
+        - accessTokenHeader: []
+      parameters:
         - in: path
           name: exchangeId
           schema:
@@ -408,84 +388,78 @@ paths:
           required: true
       responses:
         '200':
-          description: 'Exchange modified'
+          description: Exchange modified
         '404':
-          description: 'Exchange not found'
+          description: Exchange not found
+      x-stoplight:
+        id: v9li0ergdbuon
     delete:
-      description: >-
-        'Deleting an existing exchange'
-      summary: 'Deleting an exchange'
+      description: '''Deleting an existing exchange'''
+      summary: Deleting an exchange
+      parameters:
+        - in: path
+          name: exchangeId
+          schema:
+            type: string
+          required: true
       security:
         - TokenQueryAuth: []
         - accessTokenHeader: []
-      # parameters:
-      #   - in: header
-      #     name: authenticate
-      #     schema:
-      #       type: string
       responses:
         '204':
-          description: 'Exchange deleted'
-        '404': 
-          description: 'Exchange not found'
+          description: Exchange deleted
+        '404':
+          description: Exchange not found
+      x-stoplight:
+        id: u8k57cg9ri9a0
   /review:
-  # User Story 15: Recensioni
-  #Come utente autenticato, voglio poter lasciare una recensione su un altro utente dopo uno scambio completato, così da condividere la mia esperienza e aiutare altri a valutare la sua affidabilità.
-    post: 
-      description: >-
-        'Create a new review'
-      summary: 'Write a review'
+    post:
+      description: '''Create a new review'''
+      summary: Write a review
       security:
         - TokenQueryAuth: []
-        - accessTokenHeader: [] 
-      # parameters:
-      #   - in: header
-      #     name: authenticate
-      #     schema:
-      #       type: string
+        - accessTokenHeader: []
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Review'
       responses:
-        '201':  
-          description: >-
-           'Review created. The header contains a link to the newliy created review'
+        '201':
+          description: '''Review created. The header contains a link to the newliy created review'''
           headers:
-            'Location':
+            Location:
               schema:
                 type: string
               description: Link to the newly created review.
-  /review/{reviewId}:
+      x-stoplight:
+        id: hs9crfslb2mxw
+  '/review/{reviewId}':
     delete:
-      description: >-
-        'The user deletes one of his revews'
-      summary: 'Deleting a revew'
+      description: '''The user deletes one of his revews'''
+      summary: Deleting a revew
       security:
         - TokenQueryAuth: []
         - accessTokenHeader: []
       parameters:
-        # - in: header
-        #   name: authenticate
-        #   schema:
-        #     type: string
         - in: path
           name: reviewId
           schema:
             type: string
           required: true
       responses:
-        '204': 
-          description: 'Review deleted'
-        '403': 
-          description: 'This user does not have the authorizatuon'
-        '404':  
-          description: 'Review not found' 
-  /review/{revieweeId}:
+        '204':
+          description: Review deleted
+        '403':
+          description: This user does not have the authorizatuon
+        '404':
+          description: Review not found
+      x-stoplight:
+        id: rkw39va24nc9t
+  '/review/reviewee/{revieweeId}':
     get:
-      description: 'Get all the review of one user'
-      summary: 'Reviews of an user'
+      description: Get all the review of one user
+      summary: Reviews of an user
       parameters:
         - in: header
           name: authenticate
@@ -495,58 +469,57 @@ paths:
           name: revieweeId
           schema:
             type: string
+          required: true
       responses:
         '200':
-          description: 'Reviews find'
+          description: Reviews find
           content:
             application/json:
               schema:
                 type: array
-                
-        '404':  
-          description: 'Not found'
-        '500':  
-          description: 'Server error'
-
-  /report/{Id}:
+                items: 
+                  $ref: '#/components/schemas/Review'
+        '404':
+          description: Not found
+        '500':
+          description: Server error
+      x-stoplight:
+        id: 2y39wyme3ew7d
+  '/report/{Id}':
     post:
-      description: 'Creating a new report'
-      summary: 'Create a report'
+      description: Creating a new report
+      summary: Create a report
       parameters:
         - in: header
           name: authenticate
           schema:
             type: string
         - in: path
-          name: Id.
-          schema: 
+          name: Id
+          schema:
             type: string
+          required: true
       responses:
         '201':
-          description: 'Report created'
+          description: Report created
         '404':
-          description: 'Not found'
+          description: Not found
         '500':
-          description: 'Server error'
-
+          description: Server error
+      x-stoplight:
+        id: uoper50c9xunx
 components:
-
   securitySchemes:
     accessTokenHeader:
-      description: >-
-        The API authentication.
-        The API key must be a valid JWT token.
+      description: The API authentication. The API key must be a valid JWT token.
       type: apiKey
       in: header
       name: x-access-token
     TokenQueryAuth:
-      description: >-
-        The APi authentication.
-        The API must be a valid JWT token'
+      description: The APi authentication. The API must be a valid JWT token'
       type: apiKey
       in: query
       name: token
-
   schemas:
     User:
       type: object
@@ -560,24 +533,26 @@ components:
       properties:
         name:
           type: string
-          description: 'Name of the user'
+          description: Name of the user
         userId:
           type: integer
-        surname:  
+        surname:
           type: string
-          description: 'Name of the user'
+          description: Name of the user
         username:
           type: string
           minLength: 3
           maxLength: 20
-          description: 'Username of the user'
+          description: Username of the user
         email:
           type: string
-          description: 'Email address of the user'
+          description: Email address of the user
         password:
           type: string
           minLength: 8
-          description: 'Password of the user'
+          description: Password of the user
+      x-stoplight:
+        id: jlrd3bu8k2a0d
     Listing:
       type: object
       required:
@@ -590,81 +565,94 @@ components:
       properties:
         title:
           type: string
-          description: 'Title of the listing'
+          description: Title of the listing
         userId:
           type: string
-          description: 'Identification code of the user'
+          description: Identification code of the user
         username:
           type: string
-          description: 'Username of the creator of the listing'
+          description: Username of the creator of the listing
         description:
           type: string
-          description: 'Description of the listing'
+          description: Description of the listing
         status:
           type: string
-          enum: [As new, Good, Ok, Not Good]
-          description: 'Physical condition of the object'
+          enum:
+            - As new
+            - Good
+            - Ok
+            - Not Good
+          description: Physical condition of the object
         available:
           type: boolean
-          description: 'Availability of the object'
+          description: Availability of the object
+      x-stoplight:
+        id: 221d3mf53a0ez
     Exchange:
       type: object
       required:
-      - senderId
-      - receiverId
-      - offeredListing
-      - requestedListing
-      - status
-      - date
+        - senderId
+        - receiverId
+        - offeredListing
+        - requestedListing
+        - status
+        - date
       properties:
         sender:
           type: string
           format: objectId
-          description: 'Link to the user who initiated the exchange'
+          description: Link to the user who initiated the exchange
         receiver:
           type: string
           format: objectId
-          description: 'Link to the user who initiated the exchange'
+          description: Link to the user who initiated the exchange
         offeredListing:
           type: string
           format: objectId
-          description: 'Link to the listing'
+          description: Link to the listing
         requestedListing:
           type: string
           format: objectId
-          description: 'Reference to the listing requested in the exchange'
+          description: Reference to the listing requested in the exchange
         status:
           type: string
-          enum: ['pending', 'accepted', 'rejected']
-          description: 'Status of the exchange'
+          enum:
+            - pending
+            - accepted
+            - rejected
+          description: Status of the exchange
         date:
           type: string
           format: date-time
-          description: 'Date when the exchange was created'
+          description: Date when the exchange was created
+      x-stoplight:
+        id: wv6hktdojgdt4
     Review:
       type: object
       required:
-      - reviewId
-      - revieweeId
-      - reviewerId
-      - text
+        - reviewId
+        - revieweeId
+        - reviewerId
+        - text
       properties:
         reviewId:
           type: integer
           format: objectId
-          description: 'Id of the review'
+          description: Id of the review
         reviewerId:
           type: string
           format: objectId
-          description: 'Id of the user writing the review'
+          description: Id of the user writing the review
         revieweeId:
           type: string
           format: objectId
-          description: 'Id of the user being reviewed'
+          description: Id of the user being reviewed
         text:
           type: string
           format: objectId
-          description: 'Body of the review'
+          description: Body of the review
+      x-stoplight:
+        id: f7t8et4y946gv
     Report:
       type: object
       required:
@@ -676,16 +664,18 @@ components:
       properties:
         reportId:
           type: integer
-          description: 'Id of the report'
+          description: Id of the report
         reporterId:
           type: integer
-          description: 'Id of the user author of the report'
+          description: Id of the user author of the report
         reporteeId:
           type: string
-          description: 'Id of the user reported'
+          description: Id of the user reported
         listingId:
           type: string
-          description: 'Id of the listing reported'
+          description: Id of the listing reported
         text:
           type: string
-          description: 'Textual description of the report'
+          description: Textual description of the report
+      x-stoplight:
+        id: ao0e8ptncc0y7
