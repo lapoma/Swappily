@@ -530,6 +530,7 @@ components:
         - username
         - email
         - password
+        - usertype
       properties:
         name:
           type: string
@@ -551,6 +552,10 @@ components:
           type: string
           minLength: 8
           description: Password of the user
+        usertype:
+          type: string
+          enum: [user, operator]
+          description: Indicates whether the user is a normal user or an operator
       x-stoplight:
         id: jlrd3bu8k2a0d
     Listing:
