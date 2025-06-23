@@ -8,6 +8,7 @@ const bcrypt = require('bcrypt');
 jest.mock('bcrypt');
 jest.mock('../app/models/user');
 
+
 describe('POST /api/v1/users', () => {
   let findSpy;
   let saveSpy;
@@ -301,12 +302,20 @@ describe('GET /api/v1/users/me', () => {
       findByIdSpy = jest.spyOn(User, 'findById').mockImplementation((criterias) => {
           return Promise.resolve({
             _id: '67a362ecb0ca5655003bf523',
-            email: 'johndoe@example.com',
-            password: '$2b$10$4sg/MiB9v2diO0nQ3X2g7OLXkuMsqZUWRIdmAYsKwCFUWXSbMXlUG',
-            username: 'johndoe',
-            name: 'John',
-            surname: 'Doe',
-            usertype: 'user'
+            userId: 2,
+            username: 'jane',
+            email: 'jane@example.com',
+            name: 'Jane',
+            surname: 'Smith',
+            usertype: 'user',
+            phone: '456',
+            favorite: [],
+            followed: [],
+            n_followed: 0,
+            followers: [],
+            n_followers: 0,
+            blocklist: [],
+            n_exchanges: 0,
           });
       });
     });
@@ -330,7 +339,7 @@ describe('GET /api/v1/users/me', () => {
 
     var payload = {
         id: "67a362ecb0ca5655003bf523",
-        username: "johndoe"
+        username: "jane"
       }
 
     var token = jwt.sign(payload, process.env.SUPER_SECRET, { expiresIn: 86400 });
@@ -346,6 +355,6 @@ describe('GET /api/v1/users/me', () => {
         const response = await request(app).get(`/api/v1/users/me?token=${token}`);
         const user = response.body;
         expect(user).toBeDefined();
-        expect(user.username).toBe("johndoe");
+        expect(user.username).toBe("jane");
     });
   });

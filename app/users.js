@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('./models/user');
 const bcrypt = require('bcrypt');
+const tokenChecker = require('./authentication/tokenChecker.js');
 
 // Email check
 //https://stackoverflow.com/questions/63118717/how-do-i-validate-a-password-using-regular-expressions
@@ -23,33 +24,16 @@ function checkIfEmailInString(email) {
   }
 
 // GET /me - Utente autenticato
-router.get('/me', async (req, res) => {
+router.get('/me', tokenChecker, async (req, res) => {
+    console.log('[GET /me] req.loggedUser:', req.loggedUser);
     try {
-      if (!req.loggedUser) return ;
+      const user = await User.findById(req.loggedUser.id);
+      if (!user) return res.status(404).json({ error: 'User not found' });
   
-      let user = await User.findById(req.loggedUser.id);
-      if (!user) return res.status(404).send();
-  
-      res.status(200).json({
-        self: `/api/v1/users/` + user._id,
-        userId: user.userId,
-        username: user.username,
-        email: user.email,            
-        name: user.name,
-        surname: user.surname,
-        usertype: user.usertype,
-        phone: user.phone,
-        favorite: user.favorite,
-        followed: user.followed,
-        n_followed: user.n_followed,
-        followers: user.followers,
-        n_followers: user.n_followers,
-        blocklist: user.blocklist,
-        n_exchanges: user.n_exchanges
-      });
-    } catch (error) {
-        console.error('Error fetching user:', error);
-        res.status(500).send('Internal Server Error');
+      return res.status(200).json({ username: user.username });
+    } catch (err) {
+      console.error('[GET /me] error:', err);
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
