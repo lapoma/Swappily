@@ -2,8 +2,9 @@
 const express = require('express');
 const app = express();
 const cors = require('cors') //https://www.npmjs.com/package/cors
+const path = require('path');
 
-const authentication = require('./authentication/authentication.js'); //da aggiungere
+const authentication = require('./authentication/authentication.js'); 
 const tokenChecker = require('./authentication/tokenChecker.js');
 
 const users = require('./users.js');
@@ -29,7 +30,16 @@ app.use('/api/v1/authentications', authentication);
 
 // the access is allowed only to authenticated users with a valid token 
 app.use('/api/v1/exchanges', tokenChecker);
-app.use('/api/v1/users/me', tokenChecker);
+
+app.use('/api/v1/users', (req, res, next) => {
+    if (['PUT', 'DELETE', ].includes(req.method)) {
+        tokenChecker(req, res, next);
+    } else if (req.path === '/me') {
+        tokenChecker(req, res, next);
+    } else {
+        next(); // Allow GET without authentication
+    }
+});
 
 // Resource routing
 app.use('/api/v1/listings', listings);

@@ -46,13 +46,18 @@ router.post('', async function (req, res) {
         });
     }
 
+    if (!(await bcrypt.compare(req.body.password, user.password))) {
+        return res.status(401).json({ success: false, message: 'Authentication failed: Invalid credentials' });
+    }
+
+
     // 5. Tutto ok → crea token
-    const payload = {
+    var payload = {
         id: user._id,
         username: user.username
     };
 
-    const options = {
+    var options = {
         expiresIn: 86400 // 24 ore
     };
 

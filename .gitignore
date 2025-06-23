@@ -1,4 +1,5 @@
 # node modules
 node_modules/
+.env
 # macos ds store
 **/.DS_Store

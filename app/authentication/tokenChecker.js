@@ -1,29 +1,25 @@
 const jwt = require('jsonwebtoken');
 
-const tokenChecker = function(req, res, next) {
-    // Cerca il token nei parametri di query, nel body o nell'header
-    const token = req.query.token || req.body.token || req.headers['x-access-token'];
+function tokenChecker(req, res, next) {
+    // Cerca il token in query, body o header (header 'x-access-token' o 'authorization')
+    const token = req.headers['token'] || req.headers['token'] || req.body.token || req.query.token;
 
-    // Se il token non è presente
     if (!token) {
-        return res.status(401).send({ 
+        return res.status(401).json({ 
             success: false,
             message: 'No token provided.'
         });
     }
 
-    // Verifica il token con la chiave segreta e controlla la scadenza
-    jwt.verify(token, process.env.SUPER_SECRET, function(err, decoded) {
+    jwt.verify(token, process.env.SUPER_SECRET, (err, decoded) => {
         if (err) {
-            return res.status(403).send({
+            return res.status(403).json({
                 success: false,
                 message: 'Failed to authenticate token.'
             });
-        } else {
-            // Se è tutto ok, aggiunge l'utente decodificato alla richiesta
-            req.loggedUser = decoded;
-            next();
         }
+        req.loggedUser = decoded;
+        next();
     });
 };
 
