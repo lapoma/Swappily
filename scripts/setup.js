@@ -1,13 +1,14 @@
-require('dotenv').config(); // Carica le variabili d'ambiente (.env)
+require('dotenv').config(); 
 const mongoose = require('mongoose'); // Libreria per MongoDB
-const bcrypt = require('bcrypt'); // Libreria per criptare password
-const User = require('../app/models/user'); // Modello Mongoose utente
+const app = require('./app/app.js');
+const bcrypt = require('bcrypt');
+const app = require('../app/app');
+const User = require('../app/models/user');
 
-// Connessione al database
-mongoose.connect(process.env.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.DB_URL)
   .then(() => {
     console.log("Connessione al database riuscita.");
-    return User.deleteMany({}); // Elimina tutti gli utenti esistenti
+    return User.delete({}); // Elimina tutti gli utenti esistenti
   })
   .then(async () => {
     // Cripta le password
@@ -38,4 +39,3 @@ mongoose.connect(process.env.DB_URL, { useNewUrlParser: true, useUnifiedTopology
     console.error('Errore durante il setup:', err);
     process.exit(1); // Termina con errore
   });
-
