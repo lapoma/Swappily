@@ -185,6 +185,8 @@ paths:
               schema:
                 type: string
               description: Link to the newly created listing.
+        '400':
+          description: Bad request.
       x-stoplight:
         id: v25x1q7izo1kb
     get:
@@ -730,3 +732,4 @@ components:
           description: Textual description of the report
       x-stoplight:
         id: ao0e8ptncc0y7
+        
