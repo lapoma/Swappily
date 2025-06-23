@@ -11,6 +11,172 @@ const bcrypt = require('bcrypt');
 jest.mock('bcrypt');
 jest.mock('../app/models/user');
 
+// Tests for GET all users
+describe('GET /api/v1/users', () => {
+  let findSpy;
+
+  beforeAll(() => {
+    // Mock User.find to return a predefined set of users
+    findSpy = jest.spyOn(User, 'find').mockImplementation((criteria) => {
+      if (criteria?.username === 'john') {
+        return Promise.resolve([
+          {
+            _id: '1',
+            userId: 1,
+            username: 'john',
+            email: 'john@example.com',
+            name: 'John',
+            surname: 'Doe',
+            usertype: 'user',
+            phone: '123',
+            favorite: [],
+            followed: [],
+            n_followed: 0,
+            followers: [],
+            n_followers: 0,
+            blocklist: [],
+            n_exchanges: 0,
+          },
+        ]);
+      } else if (!criteria || Object.keys(criteria).length === 0) {
+        return Promise.resolve([
+          {
+            _id: '1',
+            userId: 1,
+            username: 'john',
+            email: 'john@example.com',
+            name: 'John',
+            surname: 'Doe',
+            usertype: 'user',
+            phone: '123',
+            favorite: [],
+            followed: [],
+            n_followed: 0,
+            followers: [],
+            n_followers: 0,
+            blocklist: [],
+            n_exchanges: 0,
+          },
+          {
+            _id: '2',
+            userId: 2,
+            username: 'jane',
+            email: 'jane@example.com',
+            name: 'Jane',
+            surname: 'Smith',
+            usertype: 'operator',
+            phone: '456',
+            favorite: [],
+            followed: [],
+            n_followed: 0,
+            followers: [],
+            n_followers: 0,
+            blocklist: [],
+            n_exchanges: 0,
+          },
+        ]);
+      }
+      return Promise.resolve([]);
+    });
+  });
+
+  afterAll(() => {
+    // Restore mock
+    findSpy.mockRestore();
+  });
+
+  afterEach(() => {
+    // Clear mocks
+    jest.clearAllMocks();
+  });
+
+  // Test: return all users
+  test('should return list of all users', async () => {
+    const res = await request(app).get('/api/v1/users');
+    expect(res.statusCode).toBe(200);
+    expect(res.body.length).toBeGreaterThanOrEqual(2);
+  });
+
+  // Test: filtered by username
+  test('should return list filtered by username', async () => {
+    const res = await request(app).get('/api/v1/users').query({ username: 'john' });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.length).toBe(1);
+    expect(res.body[0].username).toBe('john');
+  });
+});
+
+// Tests for GET current user info
+describe('GET /api/v1/users/me', () => {
+  let findByIdSpy;
+
+  beforeAll(() => {
+    // Mock User.findById to simulate returning current user
+    findByIdSpy = jest.spyOn(User, 'findById').mockImplementation((criterias) => {
+      return Promise.resolve({
+        _id: '67a362ecb0ca5655003bf523',
+        userId: 2,
+        username: 'jane',
+        email: 'jane@example.com',
+        name: 'Jane',
+        surname: 'Smith',
+        usertype: 'user',
+        phone: '456',
+        favorite: [],
+        followed: [],
+        n_followed: 0,
+        followers: [],
+        n_followers: 0,
+        blocklist: [],
+        n_exchanges: 0,
+      });
+    });
+  });
+
+  afterAll(async () => {
+    // Restore mock
+    findByIdSpy.mockRestore();
+  });
+
+  // Test: no token provided
+  test('GET /api/v1/users/me with no token should return 401', async () => {
+    const res = await request(app).get('/api/v1/users/me');
+    expect(res.statusCode).toBe(401);
+  });
+
+  // Test: invalid token
+  test('GET /api/v1/users/me with invalid token should return 403', async () => {
+    const res = await request(app)
+      .get('/api/v1/users/me')
+      .set('token', 'invalidtoken');
+
+    expect(res.statusCode).toBe(403);
+  });
+
+  // Generate valid JWT token
+  const payload = {
+    id: '67a362ecb0ca5655003bf523',
+    username: 'jane',
+  };
+  const token = jwt.sign(payload, process.env.SUPER_SECRET, { expiresIn: 86400 });
+
+  // Test: valid token returns 200
+  test('GET /api/v1/users/me?token=<valid> should return 200', async () => {
+    expect.assertions(1);
+    const response = await request(app).get(`/api/v1/users/me?token=${token}`);
+    expect(response.statusCode).toBe(200);
+  });
+
+  // Test: valid token returns correct user
+  test('GET /api/v1/users/me?token=<valid> with valid token should return user data', async () => {
+    expect.assertions(2);
+    const response = await request(app).get(`/api/v1/users/me?token=${token}`);
+    const user = response.body;
+    expect(user).toBeDefined();
+    expect(user.username).toBe('jane');
+  });
+});
+
 // Tests for creating a user
 describe('POST /api/v1/users', () => {
   let findSpy;
@@ -219,172 +385,6 @@ describe('POST /api/v1/users', () => {
     expect(res.statusCode).toBe(500);
 
     console.error = originalConsoleError; // restore console error
-  });
-});
-
-// Tests for GET all users
-describe('GET /api/v1/users', () => {
-  let findSpy;
-
-  beforeAll(() => {
-    // Mock User.find to return a predefined set of users
-    findSpy = jest.spyOn(User, 'find').mockImplementation((criteria) => {
-      if (criteria?.username === 'john') {
-        return Promise.resolve([
-          {
-            _id: '1',
-            userId: 1,
-            username: 'john',
-            email: 'john@example.com',
-            name: 'John',
-            surname: 'Doe',
-            usertype: 'user',
-            phone: '123',
-            favorite: [],
-            followed: [],
-            n_followed: 0,
-            followers: [],
-            n_followers: 0,
-            blocklist: [],
-            n_exchanges: 0,
-          },
-        ]);
-      } else if (!criteria || Object.keys(criteria).length === 0) {
-        return Promise.resolve([
-          {
-            _id: '1',
-            userId: 1,
-            username: 'john',
-            email: 'john@example.com',
-            name: 'John',
-            surname: 'Doe',
-            usertype: 'user',
-            phone: '123',
-            favorite: [],
-            followed: [],
-            n_followed: 0,
-            followers: [],
-            n_followers: 0,
-            blocklist: [],
-            n_exchanges: 0,
-          },
-          {
-            _id: '2',
-            userId: 2,
-            username: 'jane',
-            email: 'jane@example.com',
-            name: 'Jane',
-            surname: 'Smith',
-            usertype: 'operator',
-            phone: '456',
-            favorite: [],
-            followed: [],
-            n_followed: 0,
-            followers: [],
-            n_followers: 0,
-            blocklist: [],
-            n_exchanges: 0,
-          },
-        ]);
-      }
-      return Promise.resolve([]);
-    });
-  });
-
-  afterAll(() => {
-    // Restore mock
-    findSpy.mockRestore();
-  });
-
-  afterEach(() => {
-    // Clear mocks
-    jest.clearAllMocks();
-  });
-
-  // Test: return all users
-  test('should return list of all users', async () => {
-    const res = await request(app).get('/api/v1/users');
-    expect(res.statusCode).toBe(200);
-    expect(res.body.length).toBeGreaterThanOrEqual(2);
-  });
-
-  // Test: filtered by username
-  test('should return list filtered by username', async () => {
-    const res = await request(app).get('/api/v1/users').query({ username: 'john' });
-    expect(res.statusCode).toBe(200);
-    expect(res.body.length).toBe(1);
-    expect(res.body[0].username).toBe('john');
-  });
-});
-
-// Tests for GET current user info
-describe('GET /api/v1/users/me', () => {
-  let findByIdSpy;
-
-  beforeAll(() => {
-    // Mock User.findById to simulate returning current user
-    findByIdSpy = jest.spyOn(User, 'findById').mockImplementation((criterias) => {
-      return Promise.resolve({
-        _id: '67a362ecb0ca5655003bf523',
-        userId: 2,
-        username: 'jane',
-        email: 'jane@example.com',
-        name: 'Jane',
-        surname: 'Smith',
-        usertype: 'user',
-        phone: '456',
-        favorite: [],
-        followed: [],
-        n_followed: 0,
-        followers: [],
-        n_followers: 0,
-        blocklist: [],
-        n_exchanges: 0,
-      });
-    });
-  });
-
-  afterAll(async () => {
-    // Restore mock
-    findByIdSpy.mockRestore();
-  });
-
-  // Test: no token provided
-  test('GET /api/v1/users/me with no token should return 401', async () => {
-    const res = await request(app).get('/api/v1/users/me');
-    expect(res.statusCode).toBe(401);
-  });
-
-  // Test: invalid token
-  test('GET /api/v1/users/me with invalid token should return 403', async () => {
-    const res = await request(app)
-      .get('/api/v1/users/me')
-      .set('token', 'invalidtoken');
-
-    expect(res.statusCode).toBe(403);
-  });
-
-  // Generate valid JWT token
-  const payload = {
-    id: '67a362ecb0ca5655003bf523',
-    username: 'jane',
-  };
-  const token = jwt.sign(payload, process.env.SUPER_SECRET, { expiresIn: 86400 });
-
-  // Test: valid token returns 200
-  test('GET /api/v1/users/me?token=<valid> should return 200', async () => {
-    expect.assertions(1);
-    const response = await request(app).get(`/api/v1/users/me?token=${token}`);
-    expect(response.statusCode).toBe(200);
-  });
-
-  // Test: valid token returns correct user
-  test('GET /api/v1/users/me?token=<valid> with valid token should return user data', async () => {
-    expect.assertions(2);
-    const response = await request(app).get(`/api/v1/users/me?token=${token}`);
-    const user = response.body;
-    expect(user).toBeDefined();
-    expect(user.username).toBe('jane');
   });
 });
 
