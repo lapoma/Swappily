@@ -185,6 +185,8 @@ paths:
               schema:
                 type: string
               description: Link to the newly created listing.
+        '400':
+          description: Bad request.
       x-stoplight:
         id: v25x1q7izo1kb
     get:
@@ -531,6 +533,13 @@ components:
         - email
         - password
         - usertype
+        - favorite
+        - followed
+        - n_followed
+        - followers
+        - n_followers
+        - blocklist
+        - n_exchanges
       properties:
         name:
           type: string
@@ -556,6 +565,45 @@ components:
           type: string
           enum: [user, operator]
           description: Indicates whether the user is a normal user or an operator
+        phone:
+          type: string
+          description: Phone number of the user
+        favorite:
+          type: array
+          description: List of favorite listings of the user
+          items:
+            type: string
+            description: Ids of the favorite listings 
+          default: []
+        followed:
+          type: array
+          items:
+            type: string
+          description: List of followed users
+          default: []
+        n_followed:
+          type: integer
+          description: Number of users followed by the user
+        followers:
+          type: array
+          description: List of followers of the user 
+          items:
+            type: string
+            description: Ids of the followers
+          default: []
+        n_followers:
+          type: integer
+          description: Number of followers of the user
+        blocklist:
+          type: array
+          description: List of users blocked by the user
+          items:
+            type: string
+            description: Ids of the blocked users
+          default: []
+        n_exchanges:
+          type: integer
+          description: Number of exchanges made by the user
       x-stoplight:
         id: jlrd3bu8k2a0d
     Listing:
@@ -596,8 +644,8 @@ components:
     Exchange:
       type: object
       required:
-        - senderId
-        - receiverId
+        - sender
+        - receiver
         - offeredListing
         - requestedListing
         - status
@@ -684,3 +732,4 @@ components:
           description: Textual description of the report
       x-stoplight:
         id: ao0e8ptncc0y7
+        
