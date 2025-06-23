@@ -434,6 +434,10 @@ paths:
               schema:
                 type: string
               description: Link to the newly created review.
+        '400':
+          description: Bad request. The input is not correct
+        '500':
+          description: Server error
       x-stoplight:
         id: hs9crfslb2mxw
   '/review/{reviewId}':
