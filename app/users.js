@@ -24,6 +24,7 @@ function checkIfEmailInString(email) {
   }
 
 // GET /me - Utente autenticato
+
 router.get('/me', tokenChecker, async (req, res) => {
     console.log('[GET /me] req.loggedUser:', req.loggedUser);
     try {

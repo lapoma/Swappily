@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-app.use('/api/v1/reviews', reviews);  
+
 // Logger
 app.use((req, res, next) => {
   console.log(req.method, req.url);
