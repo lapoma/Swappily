@@ -1,4 +1,3 @@
-// Load environment variables
 require('dotenv').config();
 
 const request = require('supertest');
@@ -176,6 +175,89 @@ describe('GET /api/v1/users/me', () => {
     expect(user.username).toBe('jane');
   });
 });
+
+// Tests to GET user by id
+describe('GET /api/v1/users/:id', () => {
+  let findByIdSpy;
+
+  const existingUser = {
+    _id: 'abcd1234',
+    userId: 42,
+    username: 'alice',
+    email: 'alice@example.com',
+    name: 'Alice',
+    surname: 'Wonder',
+    usertype: 'user',
+    phone: '999',
+    favorite: [],
+    followed: [],
+    n_followed: 0,
+    followers: [],
+    n_followers: 0,
+    blocklist: [],
+    n_exchanges: 0,
+  };
+
+  beforeAll(() => {
+    findByIdSpy = jest.spyOn(User, 'findById');
+  });
+
+  afterAll(() => {
+    findByIdSpy.mockRestore();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  // Test: user exists
+  test('should return 200 and user data when ID exists', async () => {
+    // Successful database call returning the existing user
+    findByIdSpy.mockResolvedValue(existingUser);
+
+    const res = await request(app).get(`/api/v1/users/${existingUser._id}`);
+    expect(res.statusCode).toBe(200);
+
+    expect(res.body).toEqual({
+      self: `/api/v1/users/${existingUser._id}`,
+      userId: existingUser.userId,
+      username: existingUser.username,
+      email: existingUser.email,
+      name: existingUser.name,
+      surname: existingUser.surname,
+      usertype: existingUser.usertype,
+      phone: existingUser.phone,
+      favorite: existingUser.favorite,
+      followed: existingUser.followed,
+      n_followed: existingUser.n_followed,
+      followers: existingUser.followers,
+      n_followers: existingUser.n_followers,
+      blocklist: existingUser.blocklist,
+      n_exchanges: existingUser.n_exchanges,
+    });
+
+    // Verify the spy was called with the correct user ID
+    expect(findByIdSpy).toHaveBeenCalledWith(existingUser._id);
+  });
+
+  // Test: user is not found
+  test('should return 404 when ID does not exist', async () => {
+    // Simulate no user found in the database
+    findByIdSpy.mockResolvedValue(null);
+    const res = await request(app).get('/api/v1/users/nonexistentid');
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toEqual({ error: 'User not found' });
+  });
+
+  // Test: database throws an error
+  test('should return 500 on database error', async () => {
+    findByIdSpy.mockRejectedValue(new Error('DB failure'));
+    const res = await request(app).get(`/api/v1/users/${existingUser._id}`);
+    expect(res.statusCode).toBe(500);
+    expect(res.body).toEqual({ error: 'Internal server error' });
+  });
+});
+
 
 // Tests for creating a user
 describe('POST /api/v1/users', () => {
