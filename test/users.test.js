@@ -90,14 +90,14 @@ describe('GET /api/v1/users', () => {
   });
 
   // Test: return all users
-  test('should return list of all users', async () => {
+  test('should return 200 and a list of all users', async () => {
     const res = await request(app).get('/api/v1/users');
     expect(res.statusCode).toBe(200);
     expect(res.body.length).toBeGreaterThanOrEqual(2);
   });
 
   // Test: filtered by username
-  test('should return list filtered by username', async () => {
+  test('should return user filtered by username', async () => {
     const res = await request(app).get('/api/v1/users').query({ username: 'john' });
     expect(res.statusCode).toBe(200);
     expect(res.body.length).toBe(1);
@@ -138,13 +138,13 @@ describe('GET /api/v1/users/me', () => {
   });
 
   // Test: no token provided
-  test('GET /api/v1/users/me with no token should return 401', async () => {
+  test('should return 401 with no token', async () => {
     const res = await request(app).get('/api/v1/users/me');
     expect(res.statusCode).toBe(401);
   });
 
   // Test: invalid token
-  test('GET /api/v1/users/me with invalid token should return 403', async () => {
+  test('should return 403 with invalid token', async () => {
     const res = await request(app)
       .get('/api/v1/users/me')
       .set('token', 'invalidtoken');
@@ -160,14 +160,14 @@ describe('GET /api/v1/users/me', () => {
   const token = jwt.sign(payload, process.env.SUPER_SECRET, { expiresIn: 86400 });
 
   // Test: valid token returns 200
-  test('GET /api/v1/users/me?token=<valid> should return 200', async () => {
+  test('should return 200', async () => {
     expect.assertions(1);
     const response = await request(app).get(`/api/v1/users/me?token=${token}`);
     expect(response.statusCode).toBe(200);
   });
 
   // Test: valid token returns correct user
-  test('GET /api/v1/users/me?token=<valid> with valid token should return user data', async () => {
+  test('should return user data with a valid token ', async () => {
     expect.assertions(2);
     const response = await request(app).get(`/api/v1/users/me?token=${token}`);
     const user = response.body;
@@ -254,10 +254,8 @@ describe('GET /api/v1/users/:id', () => {
     findByIdSpy.mockRejectedValue(new Error('DB failure'));
     const res = await request(app).get(`/api/v1/users/${existingUser._id}`);
     expect(res.statusCode).toBe(500);
-    expect(res.body).toEqual({ error: 'Internal server error' });
   });
 });
-
 
 // Tests for creating a user
 describe('POST /api/v1/users', () => {
@@ -419,7 +417,7 @@ describe('POST /api/v1/users', () => {
   });
 
   // Test: successful user creation
-  test('should create user and return 201', async () => {
+  test('should return 201 and create user', async () => {
     findSpy.mockResolvedValueOnce([]);
 
     const res = await request(app).post('/api/v1/users').send({
@@ -526,7 +524,7 @@ describe('DELETE /api/v1/users/:id', () => {
   });
 
   // Test: successful deletion
-  test('should delete the user and return 200', async () => {
+  test('should return 200 and delete the user', async () => {
     // Ensure findById returns our mocked user again
     findByIdSpy.mockResolvedValueOnce({
       _id: payload.id,

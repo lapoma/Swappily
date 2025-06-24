@@ -99,7 +99,7 @@ router.get('/:id', async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching users:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
@@ -271,7 +271,7 @@ router.put('/:id', async (req, res) => {
         });
     } catch (error) {
       console.error('Error updating user:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ error: 'Server error' });
     }
 });
 
@@ -283,7 +283,7 @@ router.delete('/:id', tokenChecker, async (req, res) => {
         res.status(200).json(user); // meglio 200 + user per i test
     } catch (error) {
         console.error('Error deleting user:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: 'Server error' });
     } 
 });
 
