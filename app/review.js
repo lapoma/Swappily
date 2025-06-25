@@ -21,6 +21,10 @@ router.post('', async (req, res) => {
   if (reviewer === reviewed) {
     return res.status(400).json({ error: 'You cannot review yourself' });
   }
+  // Verifica lunghezza testo
+        if (req.body.text.length > 2000) {
+            return res.status(400).json({ error: 'Text too long (max 2000 chars)' });
+        }
 
   // Creazione dell’istanza Review
   const review = new Review({

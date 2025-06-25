@@ -7,6 +7,7 @@ const users = require('./users.js');
 const listings = require('./listings.js');
 const exchanges = require('./exchanges.js');
 const reviews = require('./review.js');
+const reports = require('./report.js');
 
 const app = express();
 app.use(express.json());
@@ -25,6 +26,7 @@ app.use('/api/v1/users', users);
 app.use('/api/v1/listings', listings);
 app.use('/api/v1/exchanges', exchanges);
 app.use('/api/v1/reviews', reviews);
+app.use('/api/v1/reports', reports);
 
 // 404
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
