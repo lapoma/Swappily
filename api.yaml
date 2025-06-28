@@ -187,6 +187,10 @@ paths:
               description: Link to the newly created listing.
         '400':
           description: Bad request.
+        '403':
+          description: Not authorizated.
+        '500':
+          description: Internal server error.
       x-stoplight:
         id: v25x1q7izo1kb
     get:
@@ -231,6 +235,58 @@ paths:
           description: Server error
       x-stoplight:
         id: ptsqe6xnbvb33
+  '/listings/:userId/favourites':
+    get:
+      description: Gets the listings selected as favourites by a user.
+      summary: View all favourite listings of a user.
+      security:
+        - TokenQueryAuth: []
+        - accessTokenHeader: []
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Collection of favourite listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Listing'
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+  '/listings/:userId/following':
+    get:
+      description: Gest the listing of the user following.
+      summary: View all listings of the users followed by a user.
+      security:
+        - TokenQueryAuth: []
+        - accessTokenHeader: [] 
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Collection of listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Listing'
+        '404':
+          description: User not found
+        '500':
+          description: Server error
   '/listings/{listingId}':
     get:
       description: Gets a listing by ID.
