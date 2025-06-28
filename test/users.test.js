@@ -468,6 +468,146 @@ describe('POST /api/v1/users', () => {
   });
 });
 
+// Tests for updating a user
+describe('PUT /api/v1/users/:id', () => {
+  let findByIdSpy;
+  let saveSpy;
+  let compareSpy;
+  let hashSpy;
+
+  const existingUser = {
+    _id: 'abcd1234',
+    userId: 42,
+    username: 'oldusername',
+    email: 'old@example.com',
+    name: 'Old',
+    surname: 'User',
+    password: 'oldHashedPassword',
+    usertype: 'user',
+    phone: '000',
+    favorite: [],
+    followed: [],
+    n_followed: 0,
+    followers: [],
+    n_followers: 0,
+    blocklist: [],
+    n_exchanges: 0,
+    save: jest.fn(),
+  };
+
+  beforeAll(() => {
+    // Mock User.findById, bcrypt.compare, and bcrypt.hash
+    findByIdSpy = jest.spyOn(User, 'findById');
+    compareSpy = jest.spyOn(bcrypt, 'compare');
+    hashSpy = jest.spyOn(bcrypt, 'hash');
+  });
+
+  afterAll(() => {
+    // Restore mocks
+    findByIdSpy.mockRestore();
+    compareSpy.mockRestore();
+    hashSpy.mockRestore();
+  });
+
+  afterEach(() => {
+    // Clear mocks after each test
+    jest.clearAllMocks();
+  });
+
+  // Test: successful user update
+  test('should update user and return 200', async () => {
+    findByIdSpy.mockResolvedValue(existingUser);
+    compareSpy.mockResolvedValue(false);
+    hashSpy.mockResolvedValue('newHashedPassword');
+
+    existingUser.save.mockResolvedValue({
+      ...existingUser,
+      email: 'new@example.com',
+      username: 'newusername',
+      name: 'NewName',
+      surname: 'NewSurname',
+      password: 'newHashedPassword',
+    });
+
+    const res = await request(app).put(`/api/v1/users/${existingUser._id}`).send({
+      email: 'new@example.com',
+      username: 'newusername',
+      name: 'NewName',
+      surname: 'NewSurname',
+      password: 'NewPassword123!',
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty('email', 'new@example.com');
+    expect(res.body).toHaveProperty('username', 'newusername');
+    expect(hashSpy).toHaveBeenCalledWith('NewPassword123!', 10);
+    expect(existingUser.save).toHaveBeenCalled();
+  });
+
+  // Test: user not found
+  test('should return 404 if user not found', async () => {
+    findByIdSpy.mockResolvedValue(null);
+
+    const res = await request(app).put('/api/v1/users/nonexistentid').send({
+      email: 'test@example.com',
+      username: 'testuser',
+      name: 'Test',
+      surname: 'User',
+    });
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toEqual({ error: 'User not found' });
+  });
+
+  // Test: invalid email format
+  test('should return 400 if email is invalid', async () => {
+    findByIdSpy.mockResolvedValue(existingUser);
+
+    const res = await request(app).put(`/api/v1/users/${existingUser._id}`).send({
+      email: 'invalidemail',
+      username: 'newusername',
+      name: 'NewName',
+      surname: 'NewSurname',
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toMatch(/email.*valid/i);
+  });
+
+  // Test: password same as old
+  test('should return 400 if password is same as old one', async () => {
+    findByIdSpy.mockResolvedValue(existingUser);
+    compareSpy.mockResolvedValue(true);
+
+    const res = await request(app).put(`/api/v1/users/${existingUser._id}`).send({
+      email: 'new@example.com',
+      username: 'newusername',
+      name: 'NewName',
+      surname: 'NewSurname',
+      password: 'SameOldPassword!',
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toMatch(/Password MUST be different/i);
+  });
+
+  // Test: database error
+  test('should return 500 on database error', async () => {
+    findByIdSpy.mockRejectedValue(new Error('DB failure'));
+
+    const res = await request(app).put(`/api/v1/users/${existingUser._id}`).send({
+      email: 'new@example.com',
+      username: 'newusername',
+      name: 'NewName',
+      surname: 'NewSurname',
+    });
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body).toHaveProperty('error', 'Server error');
+  });
+});
+
+
 // Tests for DELETE user by ID
 describe('DELETE /api/v1/users/:id', () => {
   let findByIdSpy;
