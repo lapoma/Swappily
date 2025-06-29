@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 module.exports = mongoose.model('User', new Schema({
     userId: {
-        type: Number,
+        type: String,
         required: true,
         unique: true
     },
