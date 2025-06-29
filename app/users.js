@@ -121,8 +121,8 @@ router.post('', async (req, res) => {
         blocklist,
         n_exchanges} = req.body;
   
-    if (!userId || typeof userId !== 'number') {
-        return res.status(400).json({ error: '"userId" is required and must be a number' });
+    if (!userId || typeof userId !== 'string') {
+        return res.status(400).json({ error: '"userId" is required and must be a non-empty a string' });
     }
     
     if (!name || typeof name !== 'string') {
@@ -135,6 +135,11 @@ router.post('', async (req, res) => {
     
     if (!email || !checkIfEmailInString(email)) {
         return res.status(400).json({ error: '"email" must be a valid email' });
+    }
+
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+        return res.status(400).json({ error: 'Email already in use' });
     }
     
     const isUsernameValid = await checkUsername(username);
@@ -214,6 +219,11 @@ router.put('/:id', async (req, res) => {
 
         if (!email || !checkIfEmailInString(email))
             return res.status(400).json({ error: 'The field "email" must be a valid email' });
+
+        const existingEmail = await User.findOne({ email });
+            if (existingEmail) {
+            return res.status(400).json({ error: 'Email already in use' });
+        }
   
         if (!username || username.length < 3 || username.length > 20)
             return res.status(400).json({
