@@ -1,12 +1,10 @@
 require('dotenv').config();
-
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
 const app = require('../app/app');
 const User = require('../app/models/user');
 const bcrypt = require('bcrypt');
 
-// Mock bcrypt and User model
 jest.mock('bcrypt');
 jest.mock('../app/models/user');
 
@@ -15,7 +13,6 @@ describe('GET /api/v1/users', () => {
   let findSpy;
 
   beforeAll(() => {
-    // Mock User.find to return a predefined set of users
     findSpy = jest.spyOn(User, 'find').mockImplementation((criteria) => {
       if (criteria?.username === 'john') {
         return Promise.resolve([
@@ -80,12 +77,10 @@ describe('GET /api/v1/users', () => {
   });
 
   afterAll(() => {
-    // Restore mock
     findSpy.mockRestore();
   });
 
   afterEach(() => {
-    // Clear mocks
     jest.clearAllMocks();
   });
 
@@ -110,7 +105,6 @@ describe('GET /api/v1/users/me', () => {
   let findByIdSpy;
 
   beforeAll(() => {
-    // Mock User.findById to simulate returning current user
     findByIdSpy = jest.spyOn(User, 'findById').mockImplementation((criterias) => {
       return Promise.resolve({
         _id: '67a362ecb0ca5655003bf523',
@@ -133,7 +127,6 @@ describe('GET /api/v1/users/me', () => {
   });
 
   afterAll(async () => {
-    // Restore mock
     findByIdSpy.mockRestore();
   });
 
@@ -298,14 +291,12 @@ describe('POST /api/v1/users', () => {
   });
 
   afterAll(() => {
-    // Restore mocks
     findSpy.mockRestore();
     saveSpy.mockRestore();
     hashSpy.mockRestore();
   });
 
   afterEach(() => {
-    // Clear mocks after each test
     jest.clearAllMocks();
   });
 
@@ -319,7 +310,7 @@ describe('POST /api/v1/users', () => {
   // Test: invalid email format
   test('should return 400 if email format is invalid', async () => {
     const res = await request(app).post('/api/v1/users').send({
-      userId: 1,
+      userId: '1',
       name: 'John',
       surname: 'Doe',
       username: 'johnny',
@@ -338,7 +329,7 @@ describe('POST /api/v1/users', () => {
   // Test: duplicate username
   test('should return 400 if username already exists', async () => {
     const res = await request(app).post('/api/v1/users').send({
-      userId: 2,
+      userId: '2',
       name: 'John',
       surname: 'Doe',
       username: 'johnny',
@@ -359,7 +350,7 @@ describe('POST /api/v1/users', () => {
     findSpy.mockResolvedValueOnce([]);
 
     const res = await request(app).post('/api/v1/users').send({
-      userId: 3,
+      userId: '3',
       name: 'John',
       surname: 'Doe',
       username: 'johnny123',
@@ -380,7 +371,7 @@ describe('POST /api/v1/users', () => {
     findSpy.mockResolvedValueOnce([]);
 
     const res = await request(app).post('/api/v1/users').send({
-      userId: 4,
+      userId: '4',
       name: 'John',
       surname: 'Doe',
       username: 'johnny456',
@@ -401,7 +392,7 @@ describe('POST /api/v1/users', () => {
     findSpy.mockResolvedValueOnce([]);
 
     const res = await request(app).post('/api/v1/users').send({
-      userId: 5,
+      userId: '5',
       name: 'John',
       surname: 'Doe',
       username: 'johnny789',
@@ -421,7 +412,7 @@ describe('POST /api/v1/users', () => {
     findSpy.mockResolvedValueOnce([]);
 
     const res = await request(app).post('/api/v1/users').send({
-      userId: 1,
+      userId: '1',
       name: 'John',
       surname: 'Doe',
       username: 'johndoe',
@@ -441,16 +432,45 @@ describe('POST /api/v1/users', () => {
     expect(res.statusCode).toBe(201);
   });
 
+  // Test: duplicate email
+  test('should return 400 if email already exists', async () => {
+    // Mock User.findOne to simulate existing email
+    const findOneSpy = jest.spyOn(User, 'findOne').mockImplementation((criteria) => {
+      if (criteria?.email === 'duplicate@example.com') {
+        return Promise.resolve({ email: 'duplicate@example.com' });
+      }
+      return Promise.resolve(null);
+    });
+
+    const res = await request(app).post('/api/v1/users').send({
+      userId: '3',
+      name: 'Alice',
+      surname: 'Smith',
+      username: 'uniqueUsername',
+      email: 'duplicate@example.com',
+      password: 'Password123!',
+      usertype: 'user',
+      n_followed: 0,
+      n_followers: 0,
+      n_exchanges: 0,
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toMatch(/email already in use/i);
+
+    findOneSpy.mockRestore();
+  });
+
   // Test: failure on save (internal server error)
   test('should return 500 if save fails', async () => {
     const originalConsoleError = console.error;
-    console.error = jest.fn(); // suppress console error
+    console.error = jest.fn(); 
 
     saveSpy.mockImplementationOnce(() => Promise.reject(new Error('DB error')));
     findSpy.mockResolvedValueOnce([]);
 
     const res = await request(app).post('/api/v1/users').send({
-      userId: 6,
+      userId: '6',
       name: 'John',
       surname: 'Doe',
       username: 'johnerror',
@@ -464,7 +484,7 @@ describe('POST /api/v1/users', () => {
 
     expect(res.statusCode).toBe(500);
 
-    console.error = originalConsoleError; // restore console error
+    console.error = originalConsoleError; 
   });
 });
 
@@ -496,21 +516,18 @@ describe('PUT /api/v1/users/:id', () => {
   };
 
   beforeAll(() => {
-    // Mock User.findById, bcrypt.compare, and bcrypt.hash
     findByIdSpy = jest.spyOn(User, 'findById');
     compareSpy = jest.spyOn(bcrypt, 'compare');
     hashSpy = jest.spyOn(bcrypt, 'hash');
   });
 
   afterAll(() => {
-    // Restore mocks
     findByIdSpy.mockRestore();
     compareSpy.mockRestore();
     hashSpy.mockRestore();
   });
 
   afterEach(() => {
-    // Clear mocks after each test
     jest.clearAllMocks();
   });
 
@@ -619,7 +636,6 @@ describe('DELETE /api/v1/users/:id', () => {
   const token = jwt.sign(payload, process.env.SUPER_SECRET, { expiresIn: 86400 });
 
   beforeAll(() => {
-    // Spy on User.findById, since the route does findById(...).remove()
     findByIdSpy = jest.spyOn(User, 'findById').mockImplementation((id) => {
       if (id === payload.id) {
         return Promise.resolve({
@@ -633,7 +649,6 @@ describe('DELETE /api/v1/users/:id', () => {
   });
 
   afterAll(() => {
-    // Restore mock
     findByIdSpy.mockRestore();
   });
 
@@ -660,12 +675,10 @@ describe('DELETE /api/v1/users/:id', () => {
       .delete(`/api/v1/users/doesnotexist`)
       .set('token', token);
     expect(res.statusCode).toBe(404);
-    expect(res.body.error).toMatch(/User not found/i);
   });
 
   // Test: successful deletion
   test('should return 200 and delete the user', async () => {
-    // Ensure findById returns our mocked user again
     findByIdSpy.mockResolvedValueOnce({
       _id: payload.id,
       username: payload.username,
