@@ -265,14 +265,14 @@ describe('GET /api/v1/listings', () =>{
   });
 
     //test: return all the listings
-  test('should return all the listings', async() =>{
+  test('should return 200 and all the listings', async() =>{
     const res= request(app)
       .get('/api/v1/listings');
     expect((await res).statusCode).toBe(200);
   });
 
   //test: return the listing filtered by title
-  test('should return the listings fitting the criteria',async() =>{
+  test('should return 200 and the listings fitting the criteria',async() =>{
     const res = await request(app)
     .get('/api/v1/listings')
     .query({
@@ -283,7 +283,7 @@ describe('GET /api/v1/listings', () =>{
   });
 
   //test: return the listing filtered by status
-  test('should return the listings filtered by status', async() =>{
+  test('should return 200 and the listings filtered by status', async() =>{
     const res = await request(app)
     .get('/api/v1/listings')
     .query({
@@ -293,7 +293,7 @@ describe('GET /api/v1/listings', () =>{
     expect(res.body[0].status).toBe('Ok');
   });
   //tets: return the listing filtered by title and status
-  test('should return the listings filtered by title and status', async() =>{
+  test('should return 200 and the listings filtered by title and status', async() =>{
     const res = await request(app)
     .get('/api/v1/listings')
     .query({
@@ -303,6 +303,16 @@ describe('GET /api/v1/listings', () =>{
     expect(res.statusCode).toBe(200);
     expect(res.body[0].title).toBe('cat');
     expect(res.body[0].status).toBe('Very good');
+  });
+
+  test('should return 500 if there is a database error', async () =>{
+    findSpy.mockImplementationOnce(() => Promise.reject(new Error('Database error')));
+
+    const res = await request(app)
+      .get('/api/v1/listings');
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.error).toBe('Internal server error');
   });
 })
 
@@ -343,7 +353,7 @@ describe('GET /api/v1/listings/:userId/favorites', () => {
     jest.clearAllMocks();
   });
 
-  test('should return the user\'s favorite listings', async () => {
+  test('should return 200 and the user\'s favorite listings', async () => {
     const res = await request(app)
       .get('/api/v1/listings/12345/favorites');
 
