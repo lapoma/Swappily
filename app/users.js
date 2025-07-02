@@ -18,13 +18,13 @@ async function checkUsername(username) {
   return existing.length === 0;
 }
 
+//Password check
 function checkIfEmailInString(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
 
 // GET /me - Utente autenticato
-
 router.get('/me', tokenChecker, async (req, res) => {
     console.log('[GET /me] req.loggedUser:', req.loggedUser);
     try {
@@ -38,6 +38,7 @@ router.get('/me', tokenChecker, async (req, res) => {
     }
   });
 
+// GET utente
 router.get('', async (req, res) => {
   try {
     let users;
@@ -103,6 +104,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// POST Nuovo utente
 router.post('', async (req, res) => {
     const { 
         userId,
@@ -205,8 +207,7 @@ router.post('', async (req, res) => {
     }
 });
 
-
-// PUT - aggiorna utente
+// PUT Aggiorna utente
 router.put('/:id', async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -285,6 +286,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+// DELETE utente
 router.delete('/:id', tokenChecker, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -296,5 +298,70 @@ router.delete('/:id', tokenChecker, async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     } 
 });
+
+// GET Lista preferiti
+router.get('/:id/favorites', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        const favorites = await User.find({ userId: { $in: user.favorite } })
+            .select('userId username name surname usertype');
+
+        res.status(200).json(favorites);
+    } catch (err) {
+        console.error('Error fetching favorites:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// GET Lista utenti bloccati
+router.get('/:id/blocked', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        const blockedUsers = await User.find({ userId: { $in: user.blocklist } })
+            .select('userId username name surname usertype');
+
+        res.status(200).json(blockedUsers);
+    } catch (err) {
+        console.error('Error fetching blocked users:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// GET Lista utenti seguiti
+router.get('/:id/following', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        const following = await User.find({ userId: { $in: user.followed } })
+            .select('userId username name surname usertype');
+
+        res.status(200).json(following);
+    } catch (err) {
+        console.error('Error fetching following users:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// GET Lista followers
+router.get('/:id/followers', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        const followers = await User.find({ userId: { $in: user.followers } })
+            .select('userId username name surname usertype');
+
+        res.status(200).json(followers);
+    } catch (err) {
+        console.error('Error fetching followers:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 
 module.exports = router;

@@ -250,6 +250,102 @@ describe('GET /api/v1/users/:id', () => {
   });
 });
 
+// Tests for GET /:id/favorites, /:id/blocked, /:id/following, /:id/followers
+describe('GET /api/v1/users/:id/(favorites|blocked|following|followers)', () => {
+  const existingUserId = 'existingUserId';
+
+  beforeAll(() => {
+    // Mock User.findById per restituire un utente con le liste
+    jest.spyOn(User, 'findById').mockImplementation((id) => {
+      if (id === existingUserId) {
+        return Promise.resolve({
+          _id: id,
+          favorite: ['fav1Id'],
+          blocklist: ['blk1Id'],
+          followed: ['fol1Id'],
+          followers: ['fer1Id'],
+        });
+      }
+      return Promise.resolve(null); // Utente non trovato
+    });
+
+    // Mock User.find per restituire utenti filtrati dagli ID
+    jest.spyOn(User, 'find').mockImplementation((query) => {
+      const ids = query.userId?.$in || [];
+      const mapIdToUser = {
+        fav1Id: { userId: 'fav1Id', username: 'fav1', name: 'Fav', surname: 'User', usertype: 'normal' },
+        blk1Id: { userId: 'blk1Id', username: 'blk1', name: 'Blk', surname: 'User', usertype: 'normal' },
+        fol1Id: { userId: 'fol1Id', username: 'fol1', name: 'Fol', surname: 'User', usertype: 'normal' },
+        fer1Id: { userId: 'fer1Id', username: 'fer1', name: 'Fer', surname: 'User', usertype: 'normal' },
+      };
+      const results = ids.map(id => mapIdToUser[id]).filter(Boolean);
+
+      return {
+        select: jest.fn().mockResolvedValue(results),
+      };
+    });
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks(); // Ripristina i mock
+  });
+
+  test('should return 200 and list of favorites', async () => {
+    const res = await request(app).get(`/api/v1/users/${existingUserId}/favorites`);
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body[0]).toHaveProperty('username', 'fav1');
+  });
+
+  test('should return 200 and list of blocked users', async () => {
+    const res = await request(app).get(`/api/v1/users/${existingUserId}/blocked`);
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body[0]).toHaveProperty('username', 'blk1');
+  });
+
+  test('should return 200 and list of following users', async () => {
+    const res = await request(app).get(`/api/v1/users/${existingUserId}/following`);
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body[0]).toHaveProperty('username', 'fol1');
+  });
+
+  test('should return 200 and list of followers', async () => {
+    const res = await request(app).get(`/api/v1/users/${existingUserId}/followers`);
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body[0]).toHaveProperty('username', 'fer1');
+  });
+
+  test('should return 404 if user not found', async () => {
+    jest.spyOn(User, 'findById').mockResolvedValueOnce(null);
+  
+    const res = await request(app).get(`/api/v1/users/nonexistentId/favorites`);
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toHaveProperty('error', 'User not found');
+  });
+  
+  test('should return 500 on server error in findById', async () => {
+    jest.spyOn(User, 'findById').mockImplementationOnce(() => {
+      throw new Error('DB error');
+    });
+  
+    const res = await request(app).get(`/api/v1/users/${existingUserId}/favorites`);
+    expect(res.statusCode).toBe(500);
+    expect(res.body).toHaveProperty('error', 'Internal server error');
+  });
+  
+  test('should return empty array if favorites list is empty or undefined', async () => {
+    jest.spyOn(User, 'findById').mockResolvedValueOnce({ _id: existingUserId, favorite: [] });
+    jest.spyOn(User, 'find').mockReturnValueOnce({ select: jest.fn().mockResolvedValueOnce([]) });
+  
+    const res = await request(app).get(`/api/v1/users/${existingUserId}/favorites`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual([]);
+  });  
+});
+
 // Tests for creating a user
 describe('POST /api/v1/users', () => {
   let findSpy;
