@@ -481,9 +481,6 @@ paths:
     post:
       description: Create a new review
       summary: Write a review
-      security:
-        - TokenQueryAuth: []
-        - accessTokenHeader: []
       requestBody:
         content:
           application/json:
@@ -565,24 +562,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - reporterId
-                - text
-              properties:
-                reporterId:
-                  type: string
-                  description: ID of the user creating the report
-                reporteeId:
-                  type: string
-                  description: ID of the user being reported (optional)
-                listingId:
-                  type: string
-                  description: ID of the listing being reported (optional)
-                text:
-                  type: string
-                  description: Textual description of the report
-                  maxLength: 2000
+              $ref: '#/components/schemas/Report'
       responses:
         '201':
           description: Report created successfully
@@ -794,19 +774,21 @@ components:
       properties:
         reportId:
           type: string
-          description: Unique identifier for the report
+          description: Unique identifier for the report (auto-generated)
         reporterId:
           type: string
           description: ID of the user creating the report
         reporteeId:
           type: string
           description: ID of the user being reported (optional)
+          default: null
         listingId:
           type: string
           description: ID of the listing being reported (optional)
+          default: null
         text:
           type: string
           description: Textual description of the report
           maxLength: 2000
       x-stoplight:
-        id: ao0e8ptncc0y7
+        id: ao0e8ptncc0y7792
