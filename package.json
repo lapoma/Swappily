@@ -15,7 +15,7 @@
     "url": "git+https://github.com/lapoma/Swappily.git"
   },
   "license": "ISC",
-  "author": "Lapo Marta, Soufian Akil, Benedetta Bicego",
+  "author": "Marta Lapo, Soufian Akil, Benedetta Bicego",
   "type": "commonjs",
   "main": "index.js",
   "directories": {
