@@ -6,10 +6,10 @@ const tokenChecker = require('./authentication/tokenChecker');
 
 router.post('', tokenChecker, async (req, res) => {
 
-    const { id, title, username, userId, description, status, available } = req.body;
+    const { title, username, userId, description, status, available, listing_url } = req.body;
 
     if(!title || typeof title !== 'string' || title.trim() === '' || !checkTitle(title)) {
-        res.status(400).json({ error: '"Title" must be a non-empty string between 3 and 30 characters' });
+        res.status(400).json({ error: '"Title" must be a non-empty string between 3 and 50 characters' });
         return;
     }
     if(typeof description !== 'string' || !checkDescription(description)){
@@ -21,10 +21,15 @@ router.post('', tokenChecker, async (req, res) => {
         return;
     }
     //https://mongoosejs.com/docs/api/model.html#Model.exists()
-    if(!userId || !User.exists(userId)) {
+    if(!userId || !(await User.exists({_id: userId}))) {
         res.status(400).json({ error: '"userId" must be a valid ObjectId' });
         return;
     }
+    if(listing_url && (!Array.isArray(listing_url) || listing_url.length > 10 || !listing_url.every(url => typeof url === 'string'))){
+        res.status(400).json({ error: '"listing_url" must be an array of max 10 strings' });
+        return;
+    }
+
     try {
         //const hashedPassword = await bcrypt.hash(req.body.password, 10); // Assuming password is part of the request body
         const listing = new Listing({
@@ -33,22 +38,24 @@ router.post('', tokenChecker, async (req, res) => {
             userId, // Assuming req.user._id is the user's ID
             description,
             status,
-            available: available || true // Default to true if not provided
+            available: typeof available === 'boolean' ? available : true, // Default to true if not provided
+            listing_url: listing_url || []
         });
 
         let savedListing = await listing.save();
 
-        res.location('/api/v1/listings/${savedListing._id}');
+        res.location(`/api/v1/listings/${savedListing._id}`);
         res.status(201).json({
              //https://expressjs.com/en/5x/api.html#req.body
-            self: '/api/v1/listings/${savedListing._id}',
-            id: savedListing.id,
+            self: `/api/v1/listings/${savedListing._id}`,
+            id: savedListing._id,
             title: savedListing.title,
             username: savedListing.username,
             userId: savedListing.userId,
             description: savedListing.description,
             status: savedListing.status,
-            available: savedListing.available
+            available: savedListing.available,
+            listing_url: savedListing.listing_url
         });
     } catch (error) {
         console.error('Error saving listing:', error);
@@ -82,7 +89,8 @@ router.get('', async (req, res) => {
                         userId: listing.userId,
                         description: listing.description,
                         status: listing.status,
-                        available: listing.available
+                        available: listing.available,
+                        listing_url: listing.listing_url
                     };
                 })
                 res.status(200).json(listings);
@@ -92,12 +100,15 @@ router.get('', async (req, res) => {
             listings = await Listing.find({});
             listings = listings.map( listing =>{
             return {
-                self: '/api/v1/listings' + listing._id,
+                self: '/api/v1/listings/' + listing._id,
                 id: listing._id,
+                title: listing.title,
                 username: listing.username,
+                userId: listing.userId,
                 description: listing.description,
                 status: listing.status,
-                available: listing.available
+                available: listing.available,
+                listing_url: listing.listing_url
             }
         });
         res.status(200).json(listings); 
@@ -105,71 +116,6 @@ router.get('', async (req, res) => {
         
     }catch (error) {
         console.error('Error fetching listings:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-})
-
-router.get('/:userId/favorites', async (req, res) => {
-    try {
-        let userId = req.params.userId;
-        //https://mongoosejs.com/docs/api/model.html#Model.findById()
-        let user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-        //https://mongoosejs.com/docs/api/model.html#Model.find()
-        //https://www.mongodb.com/docs/manual/reference/operator/query/in/
-        let listings = await Listing.find({ _id: { $in: user.favorite } });
-        if (listings.length === 0) {
-            return res.status(404).json({ error: 'No favorite listings found for this user' });
-        }
-        listings = listings.map( listing =>{
-            return {
-                self: '/api/v1/listings/' + listing._id,
-                id: listing._id,
-                title: listing.title,
-                username: listing.username,
-                userId: listing.userId,
-                description: listing.description,
-                status: listing.status,
-                available: listing.available
-            };
-        })
-        res.status(200).json(listings);
-    } catch (error) {
-        console.error('Error fetching favorite listings:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-})
-
-router.get('/:userId/following', async (req, res) => {
-    try {
-        const userId = req.params.userId;
-        //https://mongoosejs.com/docs/api/model.html#Model.findById()
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-        //https://mongoosejs.com/docs/api/model.html#Model.find()
-        const listings = await Listing.find({ userId: { $in: user.following } });
-        if (listings.length === 0) {
-            return res.status(404).json({ error: 'No following listings found for this user' });
-        }
-        listings = listings.map( listing =>{
-            return {
-                self: '/api/v1/listings/' + listing._id,
-                id: listing._id,
-                title: listing.title,
-                username: listing.username,
-                userId: listing.userId,
-                description: listing.description,
-                status: listing.status,
-                available: listing.available
-            };
-        })
-        res.status(200).json(listings);
-    } catch (error) {
-        console.error('Error fetching following listings:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 })
@@ -191,7 +137,8 @@ router.get('/:id', async (req,res) =>{
             userId: listing.userId,
             description: listing.description,
             status: listing.status,
-            available: listing.available
+            available: listing.available,
+            listing_url: listing.listing_url
         });
     }catch (error) {
         console.error('Error fetching listing:', error);
@@ -236,7 +183,7 @@ router.put('/:id',tokenChecker, async(req,res) => {
         // Update the listing with the new data
         if(req.body.title){
             if(!req.body.title || typeof req.body.title !== 'string' || req.body.title.trim() === '' || !checkTitle(req.body.title)) {
-                res.status(400).json({ error: '"Title" must be a non-empty string between 3 and 30 characters' });
+                res.status(400).json({ error: '"Title" must be a non-empty string between 3 and 50 characters' });
                 return;
             }
             listing.title = req.body.title; 
@@ -249,29 +196,37 @@ router.put('/:id',tokenChecker, async(req,res) => {
             }
         } 
         if(req.body.status){
-            if(!listing.status){
+            if(!req.body.status || !checkStatus(req.body.status)){
                 res.status(400).json({ error: '"Status" must be selected'});
                 return;
             }
             listing.status = req.body.status;
         } 
-        if(req.body.available) {
+        if(typeof req.body.available === 'boolean') {
             listing.available = req.body.available;
+        }
+        if(req.body.listing_url){
+            if(!Array.isArray(req.body.listing_url) || req.body.listing_url.length > 10 || !req.body.listing_url.every(url => typeof url === 'string')) {
+                res.status(400).json({ error: '"listing_url" must be an array of max 10 strings' });
+                return;
+            }
+            listing.listing_url = req.body.listing_url;
         }
 
         //https://mongoosejs.com/docs/api/model.html#Model.findByIdAndUpdate()
         const savedListing = await Listing.findByIdAndUpdate(listingId, listing, { new: true });
-        res.location('/api/v1/listings/${savedListing._id}');
+        res.location(`/api/v1/listings/${savedListing._id}`);
         res.status(200).json({
              //https://expressjs.com/en/5x/api.html#req.body
-            self: '/api/v1/listings/${savedListing._id}',
-            id: savedListing.id,
+            self: `/api/v1/listings/${savedListing._id}`,
+            id: savedListing._id,
             title: savedListing.title,
             username: savedListing.username,
             userId: savedListing.userId,
             description: savedListing.description,
             status: savedListing.status,
-            available: savedListing.available
+            available: savedListing.available,
+            listing_url: savedListing.listing_url
         });
     }catch(error){
         console.error('Error updating listing:',error);
@@ -280,21 +235,21 @@ router.put('/:id',tokenChecker, async(req,res) => {
 })
 
 function checkTitle(title){
-    if(title.length < 3 || title.length > 30){
+    if(title.length < 3 || title.length > 50){
         return false;
     }
     return true;
 }
 
 function checkDescription(description){
-    if(description.length < 3 || description.lenght > 2000){
+    if(description.length < 3 || description.length > 2000){
         return false;
     }
     return true;
 }
 
 function checkStatus(status){
-    if(status === 'Very good' || status === 'Good' || status === 'Ok' || status === 'Not Good'){
+    if(status === 'As new' || status === 'Good' || status === 'Ok' || status === 'Not Good'){
         return true;
     }
     return false;
