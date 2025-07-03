@@ -1,10 +1,8 @@
-
 const express = require('express');
 const router = express.Router();
 const Report = require('./models/report');
 const User = require('./models/user');
 const Listing = require('./models/listing');
-
 
 // Helper per estrarre ID dall'URL
 function extractIdFromUrl(url) {

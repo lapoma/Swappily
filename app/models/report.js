@@ -1,8 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-module.exports = mongoose.model('Report', reportSchema);
 
-const reportSchema = new Schema({
+var reportSchema = new Schema({
   listingId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Listing',
@@ -25,5 +24,4 @@ const reportSchema = new Schema({
   }
 });
 
-
-
+module.exports = mongoose.model('Report', reportSchema);
