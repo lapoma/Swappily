@@ -18,7 +18,6 @@ describe('GET /api/v1/users', () => {
         return Promise.resolve([
           {
             _id: '1',
-            userId: 1,
             username: 'john',
             email: 'john@example.com',
             name: 'John',
@@ -38,7 +37,6 @@ describe('GET /api/v1/users', () => {
         return Promise.resolve([
           {
             _id: '1',
-            userId: 1,
             username: 'john',
             email: 'john@example.com',
             name: 'John',
@@ -55,7 +53,6 @@ describe('GET /api/v1/users', () => {
           },
           {
             _id: '2',
-            userId: 2,
             username: 'jane',
             email: 'jane@example.com',
             name: 'Jane',
@@ -108,7 +105,6 @@ describe('GET /api/v1/users/me', () => {
     findByIdSpy = jest.spyOn(User, 'findById').mockImplementation((criterias) => {
       return Promise.resolve({
         _id: '67a362ecb0ca5655003bf523',
-        userId: 2,
         username: 'jane',
         email: 'jane@example.com',
         name: 'Jane',
@@ -175,7 +171,6 @@ describe('GET /api/v1/users/:id', () => {
 
   const existingUser = {
     _id: 'abcd1234',
-    userId: 42,
     username: 'alice',
     email: 'alice@example.com',
     name: 'Alice',
@@ -368,7 +363,6 @@ describe('POST /api/v1/users', () => {
     saveSpy = jest.spyOn(User.prototype, 'save').mockImplementation(function () {
       return Promise.resolve({
         _id: '1234567890',
-        userId: this.userId,
         username: this.username,
         email: this.email,
         name: this.name,
@@ -593,7 +587,6 @@ describe('PUT /api/v1/users/:id', () => {
 
   const existingUser = {
     _id: 'abcd1234',
-    userId: 42,
     username: 'oldusername',
     email: 'old@example.com',
     name: 'Old',

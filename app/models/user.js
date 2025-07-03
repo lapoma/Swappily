@@ -3,16 +3,7 @@ var Schema = mongoose.Schema;
 
 module.exports = mongoose.model('User', new Schema({
     userId: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    username: {
-        type: String,
-        required: true,
-        unique: true,
-        minlength: 3,
-        maxlength: 20
+        type: String
     },
     name: {
         type: String,
@@ -21,6 +12,13 @@ module.exports = mongoose.model('User', new Schema({
     surname: {
         type: String,
         required: true
+    },
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+        minlength: 3,
+        maxlength: 20
     },
     email: {
         type: String,
@@ -51,7 +49,7 @@ module.exports = mongoose.model('User', new Schema({
     },
     n_followed: {
         type: Number,
-        required: true
+        default: 0
     },
     followers: {
         type: [String],
@@ -59,7 +57,7 @@ module.exports = mongoose.model('User', new Schema({
     },
     n_followers: {
         type: Number,
-        required: true
+        default: 0
     },
     blocklist: {
         type: [String],
@@ -67,6 +65,15 @@ module.exports = mongoose.model('User', new Schema({
     },
     n_exchanges: {
         type: Number,
-        required: true
+        default: 0
+    },
+    description: {
+        type: String,
+        minlength: 3,
+        maxlength: 2000,
+        default: ""
+    },
+    profile_url: {
+        type: String
     }
 }));

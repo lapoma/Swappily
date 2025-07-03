@@ -4,8 +4,7 @@ const User = require('./models/user');
 const bcrypt = require('bcrypt');
 const tokenChecker = require('./authentication/tokenChecker.js');
 
-// Email check
-//https://stackoverflow.com/questions/63118717/how-do-i-validate-a-password-using-regular-expressions
+// Password check
 function checkPassword(str) {
     var decimal = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,50}$/;
     return decimal.test(str);
@@ -18,27 +17,30 @@ async function checkUsername(username) {
   return existing.length === 0;
 }
 
-//Password check
+// Email check
 function checkIfEmailInString(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
-  }
+}
 
-// GET /me - Utente autenticato
+// GET /me
 router.get('/me', tokenChecker, async (req, res) => {
-    console.log('[GET /me] req.loggedUser:', req.loggedUser);
     try {
       const user = await User.findById(req.loggedUser.id);
       if (!user) return res.status(404).json({ error: 'User not found' });
-  
-      return res.status(200).json({ username: user.username });
+
+      return res.status(200).json({
+        username: user.username,
+        description: user.description,
+        profile_url: user.profile_url
+      });
     } catch (err) {
       console.error('[GET /me] error:', err);
       return res.status(500).json({ error: 'Internal Server Error' });
     }
-  });
+});
 
-// GET utente
+// GET utenti (all or by username)
 router.get('', async (req, res) => {
   try {
     let users;
@@ -66,7 +68,9 @@ router.get('', async (req, res) => {
         followers: user.followers,
         n_followers: user.n_followers,
         blocklist: user.blocklist,
-        n_exchanges: user.n_exchanges
+        n_exchanges: user.n_exchanges,
+        description: user.description,
+        profile_url: user.profile_url
     }));
 
     res.status(200).json(users);
@@ -76,6 +80,7 @@ router.get('', async (req, res) => {
   }
 });
 
+// GET user by ID
 router.get('/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -96,15 +101,17 @@ router.get('/:id', async (req, res) => {
         followers: user.followers,
         n_followers: user.n_followers,
         blocklist: user.blocklist,
-        n_exchanges: user.n_exchanges
+        n_exchanges: user.n_exchanges,
+        description: user.description,
+        profile_url: user.profile_url
     });
   } catch (error) {
-    console.error('Error fetching users:', error);
+    console.error('Error fetching user:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-// POST Nuovo utente
+// POST new user
 router.post('', async (req, res) => {
     const { 
         userId,
@@ -121,48 +128,43 @@ router.post('', async (req, res) => {
         followers,
         n_followers,
         blocklist,
-        n_exchanges} = req.body;
+        n_exchanges,
+        description,
+        profile_url
+    } = req.body;
   
     if (!userId || typeof userId !== 'string') {
-        return res.status(400).json({ error: '"userId" is required and must be a non-empty a string' });
+        return res.status(400).json({ error: '"userId" is required and must be a non-empty string' });
     }
     
-    if (!name || typeof name !== 'string') {
+    if (!name || typeof name !== 'string')
         return res.status(400).json({ error: '"Name" must be a non-empty string' });
-    }
     
-    if (!surname || typeof surname !== 'string') {
+    if (!surname || typeof surname !== 'string')
         return res.status(400).json({ error: '"Surname" must be a non-empty string' });
-    }
     
-    if (!email || !checkIfEmailInString(email)) {
+    if (!email || !checkIfEmailInString(email))
         return res.status(400).json({ error: '"email" must be a valid email' });
-    }
 
     const existingEmail = await User.findOne({ email });
-    if (existingEmail) {
+    if (existingEmail)
         return res.status(400).json({ error: 'Email already in use' });
-    }
     
     const isUsernameValid = await checkUsername(username);
-    if (!isUsernameValid) {
+    if (!isUsernameValid)
         return res.status(400).json({ error: '"username" must be 3-20 chars, and unique' });
-    }
     
-    if (!password || !checkPassword(password)) {
+    if (!password || !checkPassword(password))
         return res.status(400).json({ error: 'Password must be 8+ chars with uppercase, lowercase, number, special char' });
-    }
     
-    if (!usertype || !['user', 'operator'].includes(usertype)) {
+    if (!usertype || !['user', 'operator'].includes(usertype))
         return res.status(400).json({ error: '"usertype" must be either "user" or "operator"' });
-    }
     
-    if (typeof n_followed !== 'number' || typeof n_followers !== 'number' || typeof n_exchanges !== 'number') {
+    if (typeof n_followed !== 'number' || typeof n_followers !== 'number' || typeof n_exchanges !== 'number')
         return res.status(400).json({ error: '"n_followed", "n_followers", "n_exchanges" must be numbers' });
-    }
   
     try {
-        const hashedPassword = await bcrypt.hash(password, 10); // password criptata
+        const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({
             userId,
             username,
@@ -178,7 +180,9 @@ router.post('', async (req, res) => {
             followers: followers || [], 
             n_followers,
             blocklist: blocklist || [], 
-            n_exchanges
+            n_exchanges,
+            description: description || '',
+            profile_url: profile_url || ''
         });
 
         const savedUser = await user.save();
@@ -193,13 +197,15 @@ router.post('', async (req, res) => {
             surname: savedUser.surname,
             usertype: savedUser.usertype,
             phone: savedUser.phone,
-            favorite: savedUser.favorite,            
+            favorite: savedUser.favorite,
             followed: savedUser.followed,
             n_followed: savedUser.n_followed,
             followers: savedUser.followers,
             n_followers: savedUser.n_followers,
             blocklist: savedUser.blocklist,
-            n_exchanges: savedUser.n_exchanges
+            n_exchanges: savedUser.n_exchanges,
+            description: savedUser.description,
+            profile_url: savedUser.profile_url
         });
     } catch (error) {        
         console.error('Error creating user:', error);
@@ -207,7 +213,7 @@ router.post('', async (req, res) => {
     }
 });
 
-// PUT Aggiorna utente
+// PUT update user
 router.put('/:id', async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -215,21 +221,19 @@ router.put('/:id', async (req, res) => {
   
         const {
             email, username, name, surname, password, usertype, phone,
-            favorite, followed, n_followed, followers, n_followers, blocklist, n_exchanges
+            favorite, followed, n_followed, followers, n_followers, blocklist, n_exchanges,
+            description, profile_url
         } = req.body;
 
         if (!email || !checkIfEmailInString(email))
             return res.status(400).json({ error: 'The field "email" must be a valid email' });
 
         const existingEmail = await User.findOne({ email });
-            if (existingEmail) {
+        if (existingEmail && existingEmail._id.toString() !== user._id.toString())
             return res.status(400).json({ error: 'Email already in use' });
-        }
   
         if (!username || username.length < 3 || username.length > 20)
-            return res.status(400).json({
-            error: 'The field "username" must be a non-empty string, 3-20 characters'
-        });
+            return res.status(400).json({ error: 'The field "username" must be 3-20 characters' });
   
         if (!name || typeof name !== 'string')
             return res.status(400).json({ error: '"Name" must be a non-empty string' });
@@ -240,9 +244,7 @@ router.put('/:id', async (req, res) => {
         if (password) {
             const isSame = await bcrypt.compare(password, user.password);
             if (isSame)
-                return res.status(400).json({
-                error: 'Password MUST be different from the previous one'
-            });
+                return res.status(400).json({ error: 'Password MUST be different from the previous one' });
             user.password = await bcrypt.hash(password, 10);
         }
   
@@ -259,7 +261,8 @@ router.put('/:id', async (req, res) => {
         if (typeof n_followers === 'number') user.n_followers = n_followers;
         if (blocklist) user.blocklist = blocklist;
         if (typeof n_exchanges === 'number') user.n_exchanges = n_exchanges;
-
+        if (description) user.description = description;
+        if (profile_url) user.profile_url = profile_url;
   
         const updatedUser = await user.save();
   
@@ -278,7 +281,9 @@ router.put('/:id', async (req, res) => {
             followers: updatedUser.followers,
             n_followers: updatedUser.n_followers,
             blocklist: updatedUser.blocklist,
-            n_exchanges: updatedUser.n_exchanges
+            n_exchanges: updatedUser.n_exchanges,
+            description: updatedUser.description,
+            profile_url: updatedUser.profile_url
         });
     } catch (error) {
       console.error('Error updating user:', error);
@@ -286,13 +291,13 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// DELETE utente
+// DELETE user
 router.delete('/:id', tokenChecker, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ error: 'User not found' });
         await user.remove();
-        res.status(200).json(user); // meglio 200 + user per i test
+        res.status(200).json(user);
     } catch (error) {
         console.error('Error deleting user:', error);
         res.status(500).json({ error: 'Server error' });
@@ -362,6 +367,5 @@ router.get('/:id/followers', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
 
 module.exports = router;
