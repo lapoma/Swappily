@@ -192,7 +192,7 @@ paths:
       x-stoplight:
         id: v25x1q7izo1kb
     get:
-      description: 'Gets the list of listings. It is possible to show the listing by their title or filtered by favorites, followed or status.'
+      description: 'Gets the list of listings. It is possible to show the listing by their title or filtered by status.'
       summary: View all listings or filtered listings.
       parameters:
         - in: query
@@ -210,14 +210,6 @@ paths:
               - Good
               - Ok
               - Not Good
-        - in: query
-          name: favorite
-          schema:
-            type: boolean
-        - in: query
-          name: followed
-          schema:
-            type: boolean
       responses:
         '200':
           description: Collection of listings
@@ -233,62 +225,6 @@ paths:
           description: Server error
       x-stoplight:
         id: ptsqe6xnbvb33
-  '/listings/{userId}/favourites':
-    get:
-      description: Gets the listings selected as favourites by a user.
-      summary: View all favourite listings of a user.
-      security:
-        - TokenQueryAuth: []
-        - accessTokenHeader: []
-      parameters:
-        - in: path
-          name: userId
-          schema:
-            type: string
-          required: true
-      responses:
-        '200':
-          description: Collection of favourite listings
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Listing'
-        '404':
-          description: User not found
-        '500':
-          description: Server error
-      x-stoplight:
-        id: 3j8d7k2l4m5n9
-  '/listings/{userId}/following':
-    get:
-      description: Gets the listing of the user following.
-      summary: View all listings of the users followed by a user.
-      security:
-        - TokenQueryAuth: []
-        - accessTokenHeader: []
-      parameters:
-        - in: path
-          name: userId
-          schema:
-            type: string
-          required: true
-      responses:
-        '200':
-          description: Collection of listings
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Listing'
-        '404':
-          description: User not found
-        '500':
-          description: Server error
-      x-stoplight:
-        id: 1a2b3c4d5e6f7
   '/listings/{listingId}':
     get:
       description: Gets a listing by ID.
@@ -667,6 +603,15 @@ components:
           type: integer
           description: Number of exchanges made by the user
           default: 0
+        description:
+          type: string
+          description: Profile description of the user
+          default: ""
+          minLength: 3
+          maxLength: 2000
+        profile_url:
+          type: string
+          description: Profile picture of the user
       x-stoplight:
         id: jlrd3bu8k2a0d
     Listing:
@@ -677,6 +622,7 @@ components:
         - description
         - status
         - available
+        - listing_url
       properties:
         listingId:
           type: string
@@ -684,6 +630,8 @@ components:
         title:
           type: string
           description: Title of the listing
+          minLength: 3
+          maxLength: 50
         userId:
           type: string
           description: ID of the user who created the listing
@@ -705,6 +653,12 @@ components:
           type: boolean
           description: Availability of the object
           default: true
+        listing_url:
+          type: array
+          description: Images of the listing
+          items:
+            type: string
+          maxItems: 10
       x-stoplight:
         id: 221d3mf53a0ez
     Exchange:
