@@ -65,7 +65,7 @@
         <div class="mt-6 text-center text-sm text-text_3">
           Non hai un account?
           <span class="text-button_1_hover hover:underline">
-            <router-link to="/Regist">Registrati</router-link>
+            <router-link to="/RegisterPage">Registrati</router-link>
           </span>
         </div>
       </div>
@@ -77,6 +77,7 @@
 <script>
 import axios from "axios";
 import router from "../router";
+import { RouterLink } from "vue-router";
 //import {userStore} from "vuex";
 
 const HOST = import.meta.env.VITE_API_HOST || `http://localhost:8080`
@@ -92,6 +93,9 @@ export default {
         };
     },
     methods: {
+        pushPath(path){
+            this.$router.push(path);
+        },
         async handleLogin() {
             this.error="";
             if(!this.username | !this.password){
