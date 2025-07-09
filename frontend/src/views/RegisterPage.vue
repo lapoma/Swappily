@@ -123,13 +123,12 @@
               Registrati
             </button>
           </div>
-
       </form>
 
         <div class="mt-4 text-center text-sm text-text_3">
           Hai già un account?
           <span href="#" class="text-button_1_hover hover:underline"
-            ><router-link to="/Login">Accedi qui</router-link></span
+            ><router-link to="/LoginPage">Accedi qui</router-link></span
           >
         </div>
       </div>

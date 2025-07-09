@@ -11,11 +11,12 @@
           </p>
 
           <div class="mt-8 flex flex-wrap justify-center gap-4">
-            <router-link to="/RegisterPage">
-              <button class="mt-4 px-4 py-2 bg-button_2 text-text_1 rounded-md hover:bg-button_2_hover text-lg font-medium shadow-md">
+            <!-- <router-link to="/RegisterPage"> -->
+              <button class="mt-4 px-4 py-2 bg-button_2 text-text_1 rounded-md hover:bg-button_2_hover text-lg font-medium shadow-md"
+                  @click ="regist">
                 Registrati
               </button>
-            </router-link>
+            <!-- </router-link> -->
           </div>
         </div>
       </div>
@@ -23,7 +24,13 @@
 </template>
 
 <script>
+import { useRouter,RouterLink } from 'vue-router';
 export default {
-    name: "HomePage"
+    name: "HomePage",
+    methods: {
+        regist() {
+            this.$router.push('/RegisterPage');
+        }
+    }
 };
 </script>
