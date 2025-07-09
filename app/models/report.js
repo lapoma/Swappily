@@ -22,6 +22,9 @@ var reportSchema = new Schema({
     required: true,
     maxlength: 2000
   }
+
 });
+  module.exports = mongoose.model('Report', reportSchema);//da non spostare
+
 
 module.exports = mongoose.model('Report', reportSchema);
