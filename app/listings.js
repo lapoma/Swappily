@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Listing = require('./models/listing');
 const User = require('./models/user');
+const mongoose = require('mongoose');
 const tokenChecker = require('./authentication/tokenChecker');
 
 router.post('', tokenChecker, async (req, res) => {
@@ -31,11 +32,10 @@ router.post('', tokenChecker, async (req, res) => {
     }
 
     try {
-        //const hashedPassword = await bcrypt.hash(req.body.password, 10); // Assuming password is part of the request body
         const listing = new Listing({
             title,
-            username, // Assuming req.user is set by authentication middleware
-            userId, // Assuming req.user._id is the user's ID
+            username, 
+            userId, 
             description,
             status,
             available: typeof available === 'boolean' ? available : true, // Default to true if not provided
@@ -254,5 +254,43 @@ function checkStatus(status){
     }
     return false;
 }
+
+router.get('/user/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        
+        // Verifica che l'userId sia un ObjectId valido
+        if(!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ error: '"userId" must be a valid ObjectId' });
+        }
+
+        // Trova tutte i listing associate a questo userId
+        const listings = await Listing.find({ userId: userId });
+        
+        if (listings.length === 0) {
+            return res.status(404).json({ error: 'No listings found for this user' });
+        }
+
+        const formattedListings = listings.map(listing => {
+            return {
+                self: '/api/v1/listings/' + listing._id,
+                id: listing._id,
+                title: listing.title,
+                username: listing.username,
+                userId: listing.userId,
+                description: listing.description,
+                status: listing.status,
+                available: listing.available,
+                listing_url: listing.listing_url
+            };
+        });
+
+        res.status(200).json(formattedListings);
+    } catch (error) {
+        console.error('Error fetching user listings:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 
 module.exports = router;

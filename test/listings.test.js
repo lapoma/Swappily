@@ -1,11 +1,11 @@
 require('dotenv').config();
-const mongoose = require('mongoose')
 const request = require('supertest'); //https://www.npmjs.com/package/supertest
 const jwt = require('jsonwebtoken');
 const app = require('../app/app');
 const Listing = require('../app/models/listing');
-const User = require('../app/models/user'); // Assuming you have a User model
+const User = require('../app/models/user'); 
 const bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
 //const { afterEach, describe, default: test } = require('node:test');
 
 jest.mock('bcrypt');
@@ -593,7 +593,7 @@ describe('PUT /api/v1/listings/{listingId}', () => {
     // test: user not authorized (wrong token)
     test('should return 403 if the user is not authorized to update the listing', async () => {
       const res = await request(app)
-        .put('/api/v1/listings/01') // listing belongs to userId '12345', token is for userId '2222'
+        .put('/api/v1/listings/01') 
         .set('token', token)
         .send({
           title: 'updated cat',
@@ -650,4 +650,85 @@ describe('PUT /api/v1/listings/{listingId}', () => {
       expect(res.body.error).toBe('Internal server error');
     });
 });
-  
+
+describe('GET /api/v1/listings/user/:userId', () => {
+  let findSpy;
+  let isValidObjectIdSpy;
+
+  beforeAll(() => {
+    // Mock Listing.find() per restituire listing basate su userId
+    findSpy = jest.spyOn(Listing, 'find').mockImplementation((criteria) => {
+      if (criteria.userId === '12345') {
+        return Promise.resolve([
+          {
+            _id: '01',
+            title: 'cat',
+            username: 'jhonny',
+            userId: '12345',
+            description: 'A cute cat',
+            status: 'Very good'
+          },
+          {
+            _id: '02',
+            title: 'laptop',
+            username: 'jhonny',
+            userId: '12345',
+            description: 'MacBook Pro',
+            status: 'Good'
+          }
+        ]);
+      }
+      return Promise.resolve([]);
+    });
+
+    // Mock mongoose.Types.ObjectId.isValid
+    isValidObjectIdSpy = jest.spyOn(mongoose.Types.ObjectId, 'isValid').mockImplementation((id) => {
+      return id === '12345' || id === '2222';
+    });
+  });
+
+  afterAll(() => {
+    findSpy.mockRestore();
+    isValidObjectIdSpy.mockRestore();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('should return 200 and listings for a valid user ID', async () => {
+    const res = await request(app)
+      .get('/api/v1/listings/user/12345');
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.length).toBe(2);
+    expect(res.body[0].userId).toBe('12345');
+    expect(res.body[1].userId).toBe('12345');
+  });
+
+  test('should return 404 if no listings found for the user', async () => {
+    const res = await request(app)
+      .get('/api/v1/listings/user/2222');
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body.error).toBe('No listings found for this user');
+  });
+
+  test('should return 400 for invalid user ID format', async () => {
+    const res = await request(app)
+      .get('/api/v1/listings/user/invalidUserId');
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe('"userId" must be a valid ObjectId');
+  });
+
+  test('should return 500 if there is a database error', async () => {
+    findSpy.mockImplementationOnce(() => Promise.reject(new Error('Database error')));
+
+    const res = await request(app)
+      .get('/api/v1/listings/user/12345');
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.error).toBe('Internal server error');
+  });
+});
