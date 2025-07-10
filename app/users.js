@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('./models/user');
 const bcrypt = require('bcrypt');
 const tokenChecker = require('./authentication/tokenChecker.js');
+const Listing = require('./models/listing');
 
 // Password check
 function checkPassword(str) {
@@ -132,10 +133,7 @@ router.post('', async (req, res) => {
         description,
         profile_url
     } = req.body;
-  
-    if (!userId || typeof userId !== 'string') {
-        return res.status(400).json({ error: '"userId" is required and must be a non-empty string' });
-    }
+
     
     if (!name || typeof name !== 'string')
         return res.status(400).json({ error: '"Name" must be a non-empty string' });
@@ -216,8 +214,8 @@ router.post('', async (req, res) => {
 // PUT update user
 router.put('/:id', async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
-        if (!user) return res.status(404).json({ error: 'User not found' });
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
   
         const {
             email, username, name, surname, password, usertype, phone,
@@ -304,68 +302,133 @@ router.delete('/:id', tokenChecker, async (req, res) => {
     } 
 });
 
-// GET Lista preferiti
-router.get('/:id/favorites', async (req, res) => {
+// Aggiungere ai preferiti
+router.post('/:userId/favorites/:listingId', async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.params.userId);
         if (!user) return res.status(404).json({ error: 'User not found' });
-
-        const favorites = await User.find({ userId: { $in: user.favorite } })
-            .select('userId username name surname usertype');
-
-        res.status(200).json(favorites);
-    } catch (err) {
-        console.error('Error fetching favorites:', err);
+    
+        const listing = await Listing.findById(req.params.listingId);
+        if (!listing) return res.status(404).json({ error: 'Listing not found' });
+    
+        // Controlla se il listing è già nei preferiti
+        if (!user.favorites.includes(req.params.listingId)) {
+            user.favorites.push(req.params.listingId);
+            await user.save();
+        }
+    
+        // Restituisci la lista aggiornata dei preferiti
+        res.status(200).json(user.favorites);
+    } catch (error) {
+        console.error('Error adding favorite:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-// GET Lista utenti bloccati
-router.get('/:id/blocked', async (req, res) => {
+  //rimuovi dai preferiti
+  router.delete('/:userId/favorites/:listingId', async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.params.userId);
         if (!user) return res.status(404).json({ error: 'User not found' });
-
-        const blockedUsers = await User.find({ userId: { $in: user.blocklist } })
-            .select('userId username name surname usertype');
-
-        res.status(200).json(blockedUsers);
-    } catch (err) {
-        console.error('Error fetching blocked users:', err);
+    
+        // Filtra l'ID da rimuovere
+        user.favorites = user.favorites.filter(
+            fav => fav.toString() !== req.params.listingId
+        );
+        
+        await user.save();
+        res.status(200).json(user.favorites);
+    } catch (error) {
+        console.error('Error removing favorite:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-// GET Lista utenti seguiti
-router.get('/:id/following', async (req, res) => {
+  //ottieni preferiti
+  router.get('/:userId/favorites', async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.params.userId)
+            .populate('favorites', 'title price images');
+    
         if (!user) return res.status(404).json({ error: 'User not found' });
-
-        const following = await User.find({ userId: { $in: user.followed } })
-            .select('userId username name surname usertype');
-
-        res.status(200).json(following);
-    } catch (err) {
-        console.error('Error fetching following users:', err);
+    
+        res.status(200).json(user.favorites || []);
+    } catch (error) {
+        console.error('Error getting favorites:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-// GET Lista followers
-router.get('/:id/followers', async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id);
-        if (!user) return res.status(404).json({ error: 'User not found' });
 
-        const followers = await User.find({ userId: { $in: user.followers } })
-            .select('userId username name surname usertype');
-
-        res.status(200).json(followers);
-    } catch (err) {
-        console.error('Error fetching followers:', err);
-        res.status(500).json({ error: 'Internal server error' });
+// Blocca un utente
+router.post('/:userId/block/:blockedUserId', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).json({ error: 'Utente non trovato' });
+    
+    // Verifica se l'utente sta tentando di bloccare se stesso
+    if (req.params.userId === req.params.blockedUserId) {
+      return res.status(400).json({ error: 'Non puoi bloccare te stesso' });
     }
+    
+    // Verifica se l'utente è già bloccato
+    if (user.blockedUsers.includes(req.params.blockedUserId)) {
+      return res.status(400).json({ error: 'Utente già bloccato' });
+    }
+    
+    user.blockedUsers.push(req.params.blockedUserId);
+    await user.save();
+    
+    res.status(200).json({ 
+      message: 'Utente bloccato con successo',
+      blockedUsers: user.blockedUsers 
+    });
+  } catch (error) {
+    console.error('Errore nel bloccare utente:', error);
+    res.status(500).json({ error: 'Errore del server' });
+  }
 });
 
+// Sblocca un utente
+router.delete('/:userId/block/:blockedUserId', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).json({ error: 'Utente non trovato' });
+    
+    // Verifica se l'utente è effettivamente bloccato
+    if (!user.blockedUsers.includes(req.params.blockedUserId)) {
+      return res.status(400).json({ error: 'Utente non bloccato' });
+    }
+    
+    // Rimuovi l'utente dalla lista dei bloccati
+    user.blockedUsers = user.blockedUsers.filter(
+      id => id.toString() !== req.params.blockedUserId
+    );
+    
+    await user.save();
+    res.status(200).json({ 
+      message: 'Utente sbloccato con successo',
+      blockedUsers: user.blockedUsers 
+    });
+  } catch (error) {
+    console.error('Errore nello sbloccare utente:', error);
+    res.status(500).json({ error: 'Errore del server' });
+  }
+});
+
+// Ottieni la lista degli utenti bloccati
+router.get('/:userId/blocked', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId)
+      .populate('blockedUsers', 'username name surname');
+    
+    if (!user) return res.status(404).json({ error: 'Utente non trovato' });
+    
+    res.status(200).json(user.blockedUsers || []);
+  } catch (error) {
+    console.error('Errore nel recuperare utenti bloccati:', error);
+    res.status(500).json({ error: 'Errore del server' });
+  }
+});
+  
 module.exports = router;
