@@ -226,4 +226,15 @@ describe('Report API', () => {
     const res = await request(app).delete('/api/v1/reports/unknown');
     expect(res.status).toBe(404);
   });
+  // 17. Errore del database durante DELETE
+it('DELETE - 500 Internal Server Error', async () => {
+  Report.findByIdAndDelete = jest.fn().mockRejectedValue(new Error('DB error'));
+
+  const res = await request(app)
+    .delete('/api/v1/reports/report123');
+
+  expect(res.status).toBe(500);
+  expect(res.body.error).toMatch(/server error/i);
+});
+
 });
