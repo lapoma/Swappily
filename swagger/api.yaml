@@ -238,9 +238,6 @@ paths:
                     title:
                       type: string
                       description: Listing title
-                    price:
-                      type: number
-                      description: Listing price
                     images:
                       type: array
                       items:
@@ -347,12 +344,190 @@ paths:
                     username:
                       type: string
                       description: User's username
-                    name:
-                      type: string
-                      description: User's name
-                    surname:
-                      type: string
-                      description: User's surname
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+  '/users/{userId}/follow/{targetUserId}':
+    post:
+      description: Follow another user
+      summary: Follow a user
+      security:
+        - TokenQueryAuth: []
+        - accessTokenHeader: []
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: targetUserId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successfully followed user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Ora segui username"
+                  n_followed:
+                    type: integer
+                    description: Number of users followed
+                  n_followers:
+                    type: integer
+                    description: Number of followers of target user
+        '400':
+          description: Bad request (self-follow or already following)
+        '403':
+          description: Forbidden (not authorized or blocked by target user)
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+    delete:
+      description: Unfollow another user
+      summary: Unfollow a user
+      security:
+        - TokenQueryAuth: []
+        - accessTokenHeader: []
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: targetUserId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successfully unfollowed user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Hai smesso di seguire username"
+                  n_followed:
+                    type: integer
+                    description: Number of users followed
+                  n_followers:
+                    type: integer
+                    description: Number of followers of target user
+        '400':
+          description: Bad request (not following the user)
+        '403':
+          description: Forbidden (not authorized)
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+
+  '/users/{userId}/following':
+    get:
+      description: Get list of followed users
+      summary: Get following list
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: List of followed users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  following:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          description: User ID
+                        username:
+                          type: string
+                  count:
+                    type: integer
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+
+  '/users/{userId}/followers':
+    get:
+      description: Get list of followers
+      summary: Get followers list
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: List of followers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  followers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          description: User ID
+                        username:
+                          type: string
+                  count:
+                    type: integer
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+  '/users/{userId}/isFollowing/{targetUserId}':
+    get:
+      description: Check if a user is following another user
+      summary: Check following status
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: targetUserId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Following status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isFollowing:
+                    type: boolean
         '404':
           description: User not found
         '500':
