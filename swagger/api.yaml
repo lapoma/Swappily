@@ -165,6 +165,227 @@ paths:
           description: User not found
       x-stoplight:
         id: 68pk8lzqlqvcy
+  '/users/{userId}/favorites/{listingId}':
+    post:
+      description: Add a listing to user's favorites
+      summary: Add to favorites
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: listingId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Favorites list updated
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: objectId
+        '400':
+          description: Listing already in favorites
+        '404':
+          description: User or listing not found
+        '500':
+          description: Internal server error
+      x-stoplight:
+        id: 7j2k4m5n6b8v9
+    delete:
+      description: Remove a listing from user's favorites
+      summary: Remove from favorites
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: listingId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Favorites list updated
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: objectId
+        '400':
+          description: Listing not in favorites
+        '404':
+          description: User or listing not found
+        '500':
+          description: Internal server error
+      x-stoplight:
+        id: 1q2w3e4r5t6y7
+
+  '/users/{userId}/favorites':
+    get:
+      description: Get user's favorite listings
+      summary: Get favorites
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: List of favorite listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      description: Listing ID
+                    title:
+                      type: string
+                      description: Listing title
+                    price:
+                      type: number
+                      description: Listing price
+                    images:
+                      type: array
+                      items:
+                        type: string
+                      description: Listing images
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+      x-stoplight:
+        id: 8u7i6y5t4r3e
+
+  '/users/{userId}/block/{blockedUserId}':
+    post:
+      description: Block a user
+      summary: Block user
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: blockedUserId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: User blocked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  blockedUsers:
+                    type: array
+                    items:
+                      type: string
+                      format: objectId
+        '400':
+          description: Cannot block yourself or user already blocked
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+      x-stoplight:
+        id: 2w3e4r5t6y7u8
+    delete:
+      description: Unblock a user
+      summary: Unblock user
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: blockedUserId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: User unblocked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  blockedUsers:
+                    type: array
+                    items:
+                      type: string
+                      format: objectId
+        '400':
+          description: User not blocked
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+      x-stoplight:
+        id: 9i8u7y6t5r4e
+
+  '/users/{userId}/blocked':
+    get:
+      description: Get list of blocked users
+      summary: Get blocked users
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: List of blocked users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      description: User ID
+                    username:
+                      type: string
+                      description: User's username
+                    name:
+                      type: string
+                      description: User's name
+                    surname:
+                      type: string
+                      description: User's surname
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+      x-stoplight:
+        id: 3e4r5t6y7u8i9
   /listings:
     post:
       description: Creates a new listing.
@@ -748,3 +969,4 @@ components:
           maxLength: 2000
       x-stoplight:
         id: ao0e8ptncc0y7792
+  
