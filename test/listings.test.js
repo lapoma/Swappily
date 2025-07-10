@@ -1,5 +1,5 @@
 require('dotenv').config();
-
+const mongoose = require('mongoose')
 const request = require('supertest'); //https://www.npmjs.com/package/supertest
 const jwt = require('jsonwebtoken');
 const app = require('../app/app');
@@ -19,12 +19,11 @@ describe('POST /api/v1/listings', () =>{
   let saveSpy;
   let existsSpy;
   let findUserByIdSpy;
-
+  
   const payload = {
     id: '12345',
     username: 'jhonny',
   };
-
   const token = jwt.sign(payload, process.env.SUPER_SECRET, {expiresIn: 86400});
 
   beforeAll(async ()=>{
