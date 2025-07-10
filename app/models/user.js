@@ -39,29 +39,33 @@ module.exports = mongoose.model('User', new Schema({
         type: String,
         unique: true
     },
-    favorite: {
-        type: [String],
+    favorite: { 
+        type: [mongoose.Schema.Types.ObjectId], 
+        ref: 'Listing',
         default: []
     },
-    followed: {
-        type: [String],
+    followed: { 
+        type: [mongoose.Schema.Types.ObjectId], 
+        ref: 'User',
         default: []
     },
     n_followed: {
         type: Number,
         default: 0
     },
-    followers: {
-        type: [String],
+    followers: { 
+        type: [mongoose.Schema.Types.ObjectId], 
+        ref: 'User',
         default: []
     },
     n_followers: {
         type: Number,
         default: 0
     },
-    blocklist: {
-        type: [String],
-        default: []
+    blocklist: { 
+        type: [mongoose.Schema.Types.ObjectId], 
+        ref: 'User',
+        default: [],
     },
     n_exchanges: {
         type: Number,
