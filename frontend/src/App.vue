@@ -1,10 +1,5 @@
 <script setup>
-import EditListing from './components/EditListing.vue';
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-import HomePage from './views/HomePage.vue';
-import LoginPage from './views/LoginPage.vue';
-import RegisterPage from './views/RegisterPage.vue';
+
 </script>
 
 <template>
