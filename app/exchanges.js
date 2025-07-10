@@ -3,138 +3,224 @@ const router = express.Router();
 const Exchange = require('./models/exchange');
 const User = require('./models/user');
 const Listing = require('./models/listing');
+const jwt = require('jsonwebtoken');
 
-router.post('', async (req,res) =>{
-    let senderUrl = req.body.sender;
-    let receiverUrl = req.body.receiver;
-    let offeredListingUrl = req.body.offeredListing;
-    let requestedListingUrl = req.body.requestedListing;
-
-    let senderID = senderUrl.split('/').pop();
-    let receiverID = receiverUrl.split('/').pop();
-    let offeredListingID = offeredListingUrl.split('/').pop();  
-    let requestedListingID = requestedListingUrl.split('/').pop();
-
-    try{
-        sender = await User.findById(senderID);
-        if(sender == null){
-        return res.status(404).json({ error: 'Sender not found' });
-        }  
-    }catch (error) {
-    }  
+const authenticateJWT = (req, res, next) => {
+    const authHeader = req.headers['x-access-token'] || req.query.token;
     
-    try{
-        receiver = await User.findById(receiverID);
-        if(receiver == null){  
-        return res.status(404).json({ error: 'Receiver not found' });
-        }
-    }catch (error) {
-    }
-    
-    try{
-        offeredListing = await Listing.findById(offeredListingID);
-        if(offeredListing == null){
-            return res.status(404).json({ error: 'Offered listing not found' });
-        }
-    }catch (error) {
+    if (!authHeader) {
+        return res.status(403).json({ error: 'Token mancante' });
     }
 
-    try{
-        requestedListing = await Listing.findById(requestedListingID);
-        if(requestedListing == null){
-            return res.status(404).json({ error: 'Requested listing not found' });
+    jwt.verify(authHeader, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+            return res.status(401).json({ error: 'Token non valido' });
         }
-    }catch (error) {
-    }
-
-    let exchange = new Exchange({
-        sender: sender._id,
-        receiver: receiver._id,
-        offeredListing: offeredListing._id,
-        requestedListing: requestedListing._id
+        req.userId = user.userId;
+        next();
     });
+};
 
-    exchange = await exchange.save();
-
-    let exchangeId = exchange._id;
-
-    res.location("/api/v1/exchanges/" + exchangeId).status(201).json({
-        id: exchangeId,
-        sender: senderUrl,
-        receiver: receiverUrl,
-        offeredListing: offeredListingUrl,
-        requestedListing: requestedListingUrl
-    }).send();
-})
-
-router.get(' ', async (req, res) => {
+// POST /exchange/listing/{listingId}
+router.post('/listing/:listingId', authenticateJWT, async (req, res) => {
     try {
-        exchanges = await Exchange.find({}).populate(exchanges);
-        exchanges = exchanges.map(exchange => ({
-            id: exchange._id,
-            self: '/api/v1/exchanges/' + exchange._id,
-            sender:{
-                self: '/api/v1/users/' + exchange.senderID,
-            },
-            receiver:{
-                self: '/api/v1/users/' + exchange.receiverID,
-            },
-            offeredListing: {
-                self: '/api/v1/listings/' + exchange.offeredListingId
-            },
-            requestedListing:{
-                self: '/api/v1/listings/' + exchange.requestedListingId  
-            }
-        }));
-        res.status(200).json(exchanges);
+        const { listingId } = req.params;
+        const { offeredListing, receiver } = req.body;
+
+        if (!offeredListing || !receiver) {
+            return res.status(400).json({ error: 'Campi obbligatori mancanti' });
+        }
+
+        const [requestedListing, offeredListingDoc, receiverUser] = await Promise.all([
+            Listing.findById(listingId),
+            Listing.findById(offeredListing),
+            User.findById(receiver)
+        ]);
+
+        if (!requestedListing || !offeredListingDoc || !receiverUser) {
+            return res.status(404).json({ error: 'Listing o utente non trovato' });
+        }
+
+        if (offeredListingDoc.userId.toString() !== req.userId) {
+            return res.status(403).json({ error: 'Non sei il proprietario del listing offerto' });
+        }
+
+        const exchange = new Exchange({
+            sender: req.userId,
+            receiver: receiver,
+            offeredListing: offeredListing,
+            requestedListing: listingId,
+            status: 'pending',
+            date: new Date()
+        });
+
+        await exchange.save();
+
+        res.location(`/api/v1/exchanges/${exchange._id}`).status(201).json({
+            exchangeId: exchange._id,
+            sender: `/api/v1/users/${exchange.sender}`,
+            receiver: `/api/v1/users/${exchange.receiver}`,
+            offeredListing: `/api/v1/listings/${exchange.offeredListing}`,
+            requestedListing: `/api/v1/listings/${exchange.requestedListing}`,
+            status: exchange.status,
+            date: exchange.date.toISOString(),
+            self: `/api/v1/exchanges/${exchange._id}`
+        });
+
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        console.error(error);
+        res.status(500).json({ error: 'Errore del server' });
     }
-})
+});
 
-router.get('/:id', async (req, res) => {
-    let exchange = await Exchange.findById(req.params.id).exec()
-    if(!exchange) {
-        res.status(404).send();
-        console.error('Exchange not found');
-        return;
-    }
+// GET /exchange?status={status}
+router.get('/', async (req, res) => {
     try {
-        exchange = {
-            id: exchange._id,
-            self: '/api/v1/exchanges/' + exchange._id,
+        const { status } = req.query;
+        const query = status ? { status } : {};
+        
+        const exchanges = await Exchange.find(query)
+            .populate('sender', 'username')
+            .populate('receiver', 'username')
+            .populate('offeredListing', 'title')
+            .populate('requestedListing', 'title');
+
+        if (exchanges.length === 0) {
+            return res.status(404).json({ error: 'Nessuno scambio trovato' });
+        }
+
+        const formattedExchanges = exchanges.map(exchange => ({
+            exchangeId: exchange._id,
             sender: {
-                self: '/api/v1/users/' + exchange.senderID,
+                userId: exchange.sender._id,
+                username: exchange.sender.username,
+                self: `/api/v1/users/${exchange.sender._id}`
             },
             receiver: {
-                self: '/api/v1/users/' + exchange.receiverID,
+                userId: exchange.receiver._id,
+                username: exchange.receiver.username,
+                self: `/api/v1/users/${exchange.receiver._id}`
             },
             offeredListing: {
-                self: '/api/v1/listings/' + exchange.offeredListingId
+                listingId: exchange.offeredListing._id,
+                title: exchange.offeredListing.title,
+                self: `/api/v1/listings/${exchange.offeredListing._id}`
             },
             requestedListing: {
-                self: '/api/v1/listings/' + exchange.requestedListingId  
-            }
-        };
-        res.status(200).json(exchange);
-    } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
-    }
-})
+                listingId: exchange.requestedListing._id,
+                title: exchange.requestedListing.title,
+                self: `/api/v1/listings/${exchange.requestedListing._id}`
+            },
+            status: exchange.status,
+            date: exchange.date.toISOString(),
+            self: `/api/v1/exchanges/${exchange._id}`
+        }));
 
-router.delete('/:id', async (req, res) => {
-    let exchange = await Exchange.findById(req.params.id).exec() ;
-    if(!exchange) {
-        res.status(404).send();
-        console.error('Exchange not found');
-        return;
+        res.status(200).json(formattedExchanges);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Errore del server' });
     }
+});
+
+// GET /exchange/{exchangeId}
+router.get('/:exchangeId', async (req, res) => {
     try {
-        await Exchange.findByIdAndDelete(exchangeId);
+        const exchange = await Exchange.findById(req.params.exchangeId)
+            .populate('sender', 'username')
+            .populate('receiver', 'username')
+            .populate('offeredListing', 'title')
+            .populate('requestedListing', 'title');
+
+        if (!exchange) {
+            return res.status(404).json({ error: 'Scambio non trovato' });
+        }
+
+        const formattedExchange = {
+            exchangeId: exchange._id,
+            sender: {
+                userId: exchange.sender._id,
+                username: exchange.sender.username,
+                self: `/api/v1/users/${exchange.sender._id}`
+            },
+            receiver: {
+                userId: exchange.receiver._id,
+                username: exchange.receiver.username,
+                self: `/api/v1/users/${exchange.receiver._id}`
+            },
+            offeredListing: {
+                listingId: exchange.offeredListing._id,
+                title: exchange.offeredListing.title,
+                self: `/api/v1/listings/${exchange.offeredListing._id}`
+            },
+            requestedListing: {
+                listingId: exchange.requestedListing._id,
+                title: exchange.requestedListing.title,
+                self: `/api/v1/listings/${exchange.requestedListing._id}`
+            },
+            status: exchange.status,
+            date: exchange.date.toISOString(),
+            self: `/api/v1/exchanges/${exchange._id}`
+        };
+
+        res.status(200).json(formattedExchange);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Errore del server' });
+    }
+});
+
+// PUT /exchange/{exchangeId}
+router.put('/:exchangeId', authenticateJWT, async (req, res) => {
+    try {
+        const { status } = req.body;
+        const { exchangeId } = req.params;
+
+        if (!['pending', 'accepted', 'rejected'].includes(status)) {
+            return res.status(400).json({ error: 'Stato non valido' });
+        }
+
+        const exchange = await Exchange.findById(exchangeId);
+        if (!exchange) {
+            return res.status(404).json({ error: 'Scambio non trovato' });
+        }
+
+        if (exchange.receiver.toString() !== req.userId) {
+            return res.status(403).json({ error: 'Non autorizzato' });
+        }
+
+        exchange.status = status;
+        await exchange.save();
+
+        res.status(200).json({
+            exchangeId: exchange._id,
+            status: exchange.status,
+            self: `/api/v1/exchanges/${exchange._id}`
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Errore del server' });
+    }
+});
+
+// DELETE /exchange/{exchangeId}
+router.delete('/:exchangeId', authenticateJWT, async (req, res) => {
+    try {
+        const exchange = await Exchange.findById(req.params.exchangeId);
+        if (!exchange) {
+            return res.status(404).json({ error: 'Scambio non trovato' });
+        }
+
+        if (exchange.sender.toString() !== req.userId && exchange.receiver.toString() !== req.userId) {
+            return res.status(403).json({ error: 'Non autorizzato' });
+        }
+
+        await Exchange.findByIdAndDelete(req.params.exchangeId);
         res.status(204).send();
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        console.error(error);
+        res.status(500).json({ error: 'Errore del server' });
     }
-})
+});
 
 module.exports = router;
