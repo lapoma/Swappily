@@ -128,6 +128,23 @@ async function archive(listId){
         alert('Error archiving listing');
     }
 }
+
+async function getUserListings(userId){
+    try{
+        if(localStorage.getItem('user')){
+            const response = await axios.get(LISTINGS_URL+`/user/${userId}`);
+            return response.data;
+        }else{
+            alert('You should log in first');
+            return;
+        }
+    }catch(error){
+        alert('Error fetching user listings');
+        console.error(error);
+        return;
+    }
+}
+
 function checkTitle(title){
     if(title.length < 3 || title.length > 50){
         return false;

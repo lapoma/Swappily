@@ -162,7 +162,7 @@ export default{
             }
         },
         async toggleFavorite(){
-            if(!this.listing.user_id === JSON.parse(localStorage.getItem('user')).id) {
+            if(!this.listing.user_id === JSON.parse(localStorage.getItem('userId'))) {
                 alert('You should log in first');
                 return;
             }
