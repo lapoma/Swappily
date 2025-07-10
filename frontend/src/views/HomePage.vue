@@ -16,6 +16,10 @@
                   @click ="regist">
                 Registrati
               </button>
+              <button class="mt-4 px-4 py-2 bg-button_2 text-text_1 rounded-md hover:bg-button_2_hover text-lg font-medium shadow-md"
+                  @click ="login">
+                Accedi
+              </button>
             <!-- </router-link> -->
           </div>
         </div>
@@ -30,6 +34,9 @@ export default {
     methods: {
         regist() {
             this.$router.push('/RegisterPage');
+        },
+        login() {
+          this.$router.push('/LoginPage')
         }
     }
 };
