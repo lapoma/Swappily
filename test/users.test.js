@@ -1010,3 +1010,212 @@ describe('Blocked Users Management', () => {
     });
   });
 });
+
+describe('User Follow System', () => {
+  let findByIdSpy;
+  let saveSpy;
+  let payload;
+  let token;
+
+  beforeAll(() => {
+    // Mock payload e token
+    payload = {
+      id: 'user1',
+      username: 'testuser'
+    };
+    token = jwt.sign(payload, process.env.SUPER_SECRET, { expiresIn: 86400 });
+
+    // Mock User.findById
+    findByIdSpy = jest.spyOn(User, 'findById').mockImplementation((id) => {
+      const users = {
+        user1: {
+          _id: 'user1',
+          username: 'testuser',
+          followed: ['user2'],
+          n_followed: 1,
+          followers: ['user3'],
+          n_followers: 1,
+          blocklist: [],
+          save: jest.fn().mockImplementation(function() {
+            return Promise.resolve(this);
+          })
+        },
+        user2: {
+          _id: 'user2',
+          username: 'user2',
+          followed: [],
+          n_followed: 0,
+          followers: ['user1'],
+          n_followers: 1,
+          blocklist: [],
+          save: jest.fn().mockImplementation(function() {
+            return Promise.resolve(this);
+          })
+        },
+        user3: {
+          _id: 'user3',
+          username: 'user3',
+          followed: [],
+          n_followed: 0,
+          followers: [],
+          n_followers: 0,
+          blocklist: ['user1'],
+          save: jest.fn().mockImplementation(function() {
+            return Promise.resolve(this);
+          })
+        },
+        user4: {
+          _id: 'user4',
+          username: 'user4',
+          followed: [],
+          n_followed: 0,
+          followers: [],
+          n_followers: 0,
+          blocklist: [],
+          save: jest.fn().mockImplementation(function () {
+            return Promise.resolve(this);
+          })
+        }
+      };
+      return Promise.resolve(users[id] || null);
+    });
+
+    saveSpy = jest.spyOn(User.prototype, 'save').mockImplementation(function() {
+      return Promise.resolve(this);
+    });
+  });
+
+  afterAll(() => {
+    findByIdSpy.mockRestore();
+    saveSpy.mockRestore();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('POST /:userId/follow/:targetUserId', () => {
+    test('should follow another user successfully', async () => {
+      const res = await request(app)
+        .post('/api/v1/users/user1/follow/user4')
+        .set('token', token)
+        .send();
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.message).toBe('Ora segui user4');
+      expect(res.body.n_followed).toBe(2);
+    });
+
+    test('should return 400 when already following the user', async () => {
+      const res = await request(app)
+        .post('/api/v1/users/user1/follow/user2')
+        .set('token', token)
+        .send();
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toBe('Stai già seguendo questo utente');
+    });
+
+    test('should return 404 when user not found', async () => {
+      const res = await request(app)
+        .post('/api/v1/users/user1/follow/nonexistent')
+        .set('token', token)
+        .send();
+
+      expect(res.statusCode).toBe(404);
+      expect(res.body.error).toBe('Utente non trovato');
+    });
+  });
+
+  describe('DELETE /:userId/follow/:targetUserId', () => {
+    test('should unfollow another user successfully', async () => {
+      const res = await request(app)
+        .delete('/api/v1/users/user1/follow/user2')
+        .set('token', token)
+        .send();
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.message).toBe('Hai smesso di seguire user2');
+      expect(res.body.n_followed).toBe(0);
+    });
+  });
+
+  describe('GET /:userId/following', () => {
+    test('should return the list of followed users', async () => {
+      User.findById.mockImplementationOnce(() => ({
+        populate: jest.fn().mockResolvedValue({
+          _id: 'user1',
+          followed: [
+            { _id: 'user2', username: 'user2', name: 'User', surname: 'Two', profile_url: '' }
+          ],
+          n_followed: 1
+        })
+      }));
+
+      const res = await request(app)
+        .get('/api/v1/users/user1/following')
+        .send();
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.following.length).toBe(1);
+      expect(res.body.count).toBe(1);
+    });
+
+    test('should return 404 when user not found', async () => {
+      User.findById.mockImplementationOnce(() => ({
+        populate: jest.fn().mockResolvedValue(null)
+      }));
+    
+      const res = await request(app)
+        .get('/api/v1/users/nonexistent/following')
+        .send();
+    
+      expect(res.statusCode).toBe(404);
+      expect(res.body.error).toBe('Utente non trovato');
+    });
+    
+  });
+
+  describe('GET /:userId/followers', () => {
+    test('should return the list of followers', async () => {
+      // Mock specifico per populate
+      User.findById.mockImplementationOnce(() => ({
+        populate: jest.fn().mockResolvedValue({
+          _id: 'user1',
+          followers: [
+            { _id: 'user3', username: 'user3', name: 'User', surname: 'Three', profile_url: '' }
+          ],
+          n_followers: 1
+        })
+      }));
+
+      const res = await request(app)
+        .get('/api/v1/users/user1/followers')
+        .send();
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.followers.length).toBe(1);
+      expect(res.body.count).toBe(1);
+    });
+  });
+
+  describe('GET /:userId/isFollowing/:targetUserId', () => {
+    test('should return true when user is following target', async () => {
+      const res = await request(app)
+        .get('/api/v1/users/user1/isFollowing/user2')
+        .send();
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.isFollowing).toBe(true);
+    });
+
+    test('should return false when user is not following target', async () => {
+      const res = await request(app)
+        .get('/api/v1/users/user1/isFollowing/user3')
+        .send();
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.isFollowing).toBe(false);
+    });
+  });
+});

@@ -366,12 +366,10 @@ router.post('/:userId/block/:blockedUserId', async (req, res) => {
     const user = await User.findById(req.params.userId);
     if (!user) return res.status(404).json({ error: 'Utente non trovato' });
     
-    // Verifica se l'utente sta tentando di bloccare se stesso
     if (req.params.userId === req.params.blockedUserId) {
       return res.status(400).json({ error: 'Non puoi bloccare te stesso' });
     }
     
-    // Verifica se l'utente è già bloccato
     if (user.blockedUsers.includes(req.params.blockedUserId)) {
       return res.status(400).json({ error: 'Utente già bloccato' });
     }
@@ -395,12 +393,10 @@ router.delete('/:userId/block/:blockedUserId', async (req, res) => {
     const user = await User.findById(req.params.userId);
     if (!user) return res.status(404).json({ error: 'Utente non trovato' });
     
-    // Verifica se l'utente è effettivamente bloccato
     if (!user.blockedUsers.includes(req.params.blockedUserId)) {
       return res.status(400).json({ error: 'Utente non bloccato' });
     }
-    
-    // Rimuovi l'utente dalla lista dei bloccati
+
     user.blockedUsers = user.blockedUsers.filter(
       id => id.toString() !== req.params.blockedUserId
     );
@@ -428,6 +424,149 @@ router.get('/:userId/blocked', async (req, res) => {
   } catch (error) {
     console.error('Errore nel recuperare utenti bloccati:', error);
     res.status(500).json({ error: 'Errore del server' });
+  }
+});
+
+// Segui un utente
+router.post('/:userId/follow/:targetUserId', tokenChecker, async (req, res) => {
+  try {
+      if (req.loggedUser.id !== req.params.userId) {
+          return res.status(403).json({ error: 'Non autorizzato a seguire per conto di altri utenti' });
+      }
+
+      if (req.params.userId === req.params.targetUserId) {
+          return res.status(400).json({ error: 'Non puoi seguire te stesso' });
+      }
+
+      const user = await User.findById(req.params.userId);
+      const targetUser = await User.findById(req.params.targetUserId);
+
+      if (!user || !targetUser) {
+          return res.status(404).json({ error: 'Utente non trovato' });
+      }
+
+      if (user.followed.includes(req.params.targetUserId)) {
+          return res.status(400).json({ error: 'Stai già seguendo questo utente' });
+      }
+
+      if (targetUser.blocklist.includes(req.params.userId)) {
+          return res.status(403).json({ error: 'Non puoi seguire questo utente' });
+      }
+
+      user.followed.push(req.params.targetUserId);
+      user.n_followed = user.followed.length;
+
+      targetUser.followers.push(req.params.userId);
+      targetUser.n_followers = targetUser.followers.length;
+
+      await Promise.all([user.save(), targetUser.save()]);
+
+      res.status(200).json({
+          message: `Ora segui ${targetUser.username}`,
+          n_followed: user.n_followed,
+          n_followers: targetUser.n_followers
+      });
+
+  } catch (error) {
+      console.error('Errore nel seguire utente:', error);
+      res.status(500).json({ error: 'Errore del server' });
+  }
+});
+
+// Smetti di seguire un utente
+router.delete('/:userId/follow/:targetUserId', tokenChecker, async (req, res) => {
+  try {
+    
+      if (req.loggedUser.id !== req.params.userId) {
+          return res.status(403).json({ error: 'Non autorizzato a smettere di seguire per conto di altri utenti' });
+      }
+
+      const user = await User.findById(req.params.userId);
+      const targetUser = await User.findById(req.params.targetUserId);
+
+      if (!user || !targetUser) {
+          return res.status(404).json({ error: 'Utente non trovato' });
+      }
+
+      if (!user.followed.includes(req.params.targetUserId)) {
+          return res.status(400).json({ error: 'Non stai seguendo questo utente' });
+      }
+  
+      user.followed = user.followed.filter(id => id.toString() !== req.params.targetUserId);
+      user.n_followed = user.followed.length;
+
+      targetUser.followers = targetUser.followers.filter(id => id.toString() !== req.params.userId);
+      targetUser.n_followers = targetUser.followers.length;
+
+      await Promise.all([user.save(), targetUser.save()]);
+
+      res.status(200).json({
+          message: `Hai smesso di seguire ${targetUser.username}`,
+          n_followed: user.n_followed,
+          n_followers: targetUser.n_followers
+      });
+
+  } catch (error) {
+      console.error('Errore nello smettere di seguire utente:', error);
+      res.status(500).json({ error: 'Errore del server' });
+  }
+});
+
+// Ottieni la lista degli utenti seguiti
+router.get('/:userId/following', async (req, res) => {
+  try {
+      const user = await User.findById(req.params.userId)
+          .populate('followed', 'username name surname profile_url');
+
+      if (!user) {
+          return res.status(404).json({ error: 'Utente non trovato' });
+      }
+
+      res.status(200).json({
+          following: user.followed,
+          count: user.n_followed
+      });
+  } catch (error) {
+      console.error('Errore nel recuperare utenti seguiti:', error);
+      res.status(500).json({ error: 'Errore del server' });
+  }
+});
+
+// Ottieni la lista dei follower
+router.get('/:userId/followers', async (req, res) => {
+  try {
+      const user = await User.findById(req.params.userId)
+          .populate('followers', 'username name surname profile_url');
+
+      if (!user) {
+          return res.status(404).json({ error: 'Utente non trovato' });
+      }
+
+      res.status(200).json({
+          followers: user.followers,
+          count: user.n_followers
+      });
+  } catch (error) {
+      console.error('Errore nel recuperare follower:', error);
+      res.status(500).json({ error: 'Errore del server' });
+  }
+});
+
+// Verifica se un utente segue un altro utente
+router.get('/:userId/isFollowing/:targetUserId', async (req, res) => {
+  try {
+      const user = await User.findById(req.params.userId);
+      
+      if (!user) {
+          return res.status(404).json({ error: 'Utente non trovato' });
+      }
+
+      const isFollowing = user.followed.some(id => id.toString() === req.params.targetUserId);
+
+      res.status(200).json({ isFollowing });
+  } catch (error) {
+      console.error('Errore nel verificare il follow:', error);
+      res.status(500).json({ error: 'Errore del server' });
   }
 });
   
