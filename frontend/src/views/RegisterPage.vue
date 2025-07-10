@@ -1,139 +1,36 @@
 <template>
-  <div>
-    <div class="flex justify-center items-center h-screen">
-      <div class="bg-white p-8 sm:p-12 rounded-lg shadow-lg w-full max-w-4xl">
-        <h2
-          class="text-2xl sm:text-3xl font-medium text-text_2 mb-8 text-center"
-        >
-          Crea il tuo Account
-        </h2>
-
-        <!-- Messaggio di errore -->
-        <div
-          v-if="error"
-          class="mb-4 p-4 text-red-700 bg-red-100 border border-red-300 rounded-lg"
-        >
-          {{ errorMessage }}
-        </div>
-
-        <form @submit.prevent="handleRegister" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Username -->
-          <div class="flex flex-col">
-            <label for="username" class="text-sm font-medium text-text_3 mb-1"
-              >Username</label
-            >
-            <div
-              class="flex items-center border rounded-lg bg-gray-50 focus-within:ring-2 focus-within:button_1_hover"
-            >
-              <input
-                id="username"
-                type="text"
-                v-model="username"
-                class="flex-1 px-3 py-2 bg-transparent outline-none"
-                placeholder="username"
-              />
-            </div>
-          </div>
-
-          <!-- Seleziona Ruolo -->
-          <div class="flex flex-col">
-            <label for="role" class="text-sm font-medium text-text_3 mb-1"
-              >Seleziona Ruolo</label
-            >
-            <select
-              id="role"
-              v-model="ruolo"
-              class="border rounded-lg px-3 py-2 text-text_3 bg-gray-50 focus:ring-2 focus:button_1_hover outline-none"
-            >
-              <option value="user">Utente</option>
-              <option value="admin">Operatore</option>
-            </select>
-          </div>
-
-          <!-- Email -->
-          <div class="flex flex-col">
-            <label for="email" class="text-sm font-medium text-text_3 mb-1"
-              >Email</label
-            >
-            <div
-              class="flex items-center border rounded-lg bg-gray-50 focus-within:ring-2 focus-within:button_1_hover"
-            >
-              <input
-                id="email"
-                type="email"
-                v-model="email"
-                class="flex-1 px-3 py-2 bg-transparent outline-none"
-                placeholder="email@address.com"
-              />
-            </div>
-          </div>
-
-          <!-- Nome -->
-          <div class="flex flex-col">
-            <label for="nome" class="text-sm font-medium text-text_3 mb-1"
-              >Nome</label
-            >
-            <input
-              id="nome"
-              type="text"
-              v-model="nome"
-              class="border rounded-lg px-3 py-2 bg-gray-50 focus:ring-2 focus:button_1_hover outline-none"
-              placeholder="Nome"
-            />
-          </div>
-
-          <!-- Cognome -->
-          <div class="flex flex-col">
-            <label for="cognome" class="text-sm font-medium text-text_3 mb-1"
-              >Cognome</label
-            >
-            <input
-              id="cognome"
-              type="text"
-              v-model="cognome"
-              class="border rounded-lg px-3 py-2 bg-gray-50 focus:ring-2 focus:button_1_hover outline-none"
-              placeholder="Cognome"
-            />
-          </div>
-
-          <!-- Password -->
-          <div class="flex flex-col">
-            <label for="password" class="text-sm font-medium text-text_3 mb-1"
-              >Password</label
-            >
-            <div
-              class="flex items-center border rounded-lg bg-gray-50 focus-within:ring-2 focus-within:button_1_hover"
-            >
-              <input
-                id="password"
-                type="password"
-                v-model="password"
-                class="flex-1 px-3 py-2 bg-transparent outline-none"
-                placeholder="********"
-              />
-            </div>
-          </div>
-
-          <!-- Bottoni -->
-          <div class="mt-8 text-center">
-              <button
-              class="w-full px-6 py-3 bg-button_2 text-text_1 font-medium rounded-lg hover:bg-button_2_hover"
-              type="submit"
-              >
-              Registrati
-            </button>
-          </div>
-      </form>
-
-        <div class="mt-4 text-center text-sm text-text_3">
-          Hai già un account?
-          <span href="#" class="text-button_1_hover hover:underline"
-            ><router-link to="/LoginPage">Accedi qui</router-link></span
-          >
-        </div>
+  <!-- component -->
+<!-- <script src="https://cdn.tailwindcss.com"></script> -->
+<body class="bg-gray-100">
+  <div class="container mx-auto py-8">
+    <h1 class="text-2xl font-bold mb-6 text-center">Registration Form</h1>
+    <form class="w-full max-w-sm mx-auto bg-white p-8 rounded-md shadow-md">
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="name">Name</label>
+        <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+          type="text" id="name" name="name" placeholder="John Doe">
       </div>
-    </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Email</label>
+        <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+          type="email" id="email" name="email" placeholder="john@example.com">
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="password">Password</label>
+        <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+          type="password" id="password" name="password" placeholder="********">
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="confirm-password">Confirm Password</label>
+        <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+          type="password" id="confirm-password" name="confirm-password" placeholder="********">
+      </div>
+      <button
+        class="w-full bg-indigo-500 text-white text-sm font-bold py-2 px-4 rounded-md hover:bg-indigo-600 transition duration-300"
+        type="submit">Register</button>
+    </form>
   </div>
+</body>
 </template>
 
 <script>
