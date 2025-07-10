@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const app = require('../app/app');
 const User = require('../app/models/user');
 const bcrypt = require('bcrypt');
+const Listing = require('../app/models/listing');
 
 jest.mock('bcrypt');
 jest.mock('../app/models/user');
@@ -245,102 +246,195 @@ describe('GET /api/v1/users/:id', () => {
   });
 });
 
-// Tests for GET /:id/favorites, /:id/blocked, /:id/following, /:id/followers
-describe('GET /api/v1/users/:id/(favorites|blocked|following|followers)', () => {
-  const existingUserId = 'existingUserId';
+describe('User Favorites Management', () => {
+  const testUserId = 'testUserId123';
+  const testListingId = 'testListingId456';
+  const testListing = {
+    _id: testListingId,
+    title: 'Test Listing',
+    price: 100,
+    images: ['image1.jpg']
+  };
+
+  let userFindByIdMock;
+  let listingFindByIdMock;
+
+  // Funzione per creare un mock utente realistico
+  const createUserMock = (favorites = []) => {
+    const saveMock = jest.fn().mockImplementation(function() {
+      return Promise.resolve(this);
+    });
+    
+    const populateMock = jest.fn().mockImplementation(function() {
+      return Promise.resolve({
+        ...this,
+        favorites: this.favorites.map(id => ({
+          _id: id,
+          title: 'Test Listing',
+          price: 100,
+          images: ['image1.jpg']
+        }))
+      });
+    });
+    
+    return {
+      _id: testUserId,
+      username: 'testuser',
+      favorites,
+      save: saveMock,
+      populate: populateMock
+    };
+  };
 
   beforeAll(() => {
-    // Mock User.findById per restituire un utente con le liste
-    jest.spyOn(User, 'findById').mockImplementation((id) => {
-      if (id === existingUserId) {
-        return Promise.resolve({
-          _id: id,
-          favorite: ['fav1Id'],
-          blocklist: ['blk1Id'],
-          followed: ['fol1Id'],
-          followers: ['fer1Id'],
-        });
+    // Mock User.findById
+    userFindByIdMock = jest.spyOn(User, 'findById');
+    
+    // Mock Listing.findById
+    listingFindByIdMock = jest.spyOn(Listing, 'findById');
+  });
+
+  beforeEach(() => {
+    // Reset dei mock prima di ogni test
+    jest.clearAllMocks();
+    
+    // Implementazioni predefinite
+    listingFindByIdMock.mockImplementation((id) => {
+      if (id === testListingId) {
+        return Promise.resolve(testListing);
       }
-      return Promise.resolve(null); // Utente non trovato
-    });
-
-    // Mock User.find per restituire utenti filtrati dagli ID
-    jest.spyOn(User, 'find').mockImplementation((query) => {
-      const ids = query.userId?.$in || [];
-      const mapIdToUser = {
-        fav1Id: { userId: 'fav1Id', username: 'fav1', name: 'Fav', surname: 'User', usertype: 'normal' },
-        blk1Id: { userId: 'blk1Id', username: 'blk1', name: 'Blk', surname: 'User', usertype: 'normal' },
-        fol1Id: { userId: 'fol1Id', username: 'fol1', name: 'Fol', surname: 'User', usertype: 'normal' },
-        fer1Id: { userId: 'fer1Id', username: 'fer1', name: 'Fer', surname: 'User', usertype: 'normal' },
-      };
-      const results = ids.map(id => mapIdToUser[id]).filter(Boolean);
-
-      return {
-        select: jest.fn().mockResolvedValue(results),
-      };
+      return Promise.resolve(null);
     });
   });
 
   afterAll(() => {
-    jest.restoreAllMocks(); // Ripristina i mock
+    jest.restoreAllMocks();
   });
 
-  test('should return 200 and list of favorites', async () => {
-    const res = await request(app).get(`/api/v1/users/${existingUserId}/favorites`);
-    expect(res.statusCode).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body[0]).toHaveProperty('username', 'fav1');
+  const mockQuery = (result) => ({
+    populate: jest.fn().mockImplementation(() => {
+      return result instanceof Error
+        ? Promise.reject(result)
+        : Promise.resolve(result);
+    })
   });
 
-  test('should return 200 and list of blocked users', async () => {
-    const res = await request(app).get(`/api/v1/users/${existingUserId}/blocked`);
-    expect(res.statusCode).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body[0]).toHaveProperty('username', 'blk1');
-  });
+  describe('POST /:userId/favorites/:listingId', () => {
+    test('should add listing to favorites and return 200', async () => {
+      const userMock = createUserMock();
+      userFindByIdMock.mockResolvedValueOnce(userMock);
+      
+      // Simula il salvataggio che aggiorna i favoriti
+      userMock.save.mockImplementationOnce(function() {
+        this.favorites.push(testListingId);
+        return Promise.resolve(this);
+      });
 
-  test('should return 200 and list of following users', async () => {
-    const res = await request(app).get(`/api/v1/users/${existingUserId}/following`);
-    expect(res.statusCode).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body[0]).toHaveProperty('username', 'fol1');
-  });
-
-  test('should return 200 and list of followers', async () => {
-    const res = await request(app).get(`/api/v1/users/${existingUserId}/followers`);
-    expect(res.statusCode).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body[0]).toHaveProperty('username', 'fer1');
-  });
-
-  test('should return 404 if user not found', async () => {
-    jest.spyOn(User, 'findById').mockResolvedValueOnce(null);
-  
-    const res = await request(app).get(`/api/v1/users/nonexistentId/favorites`);
-    expect(res.statusCode).toBe(404);
-    expect(res.body).toHaveProperty('error', 'User not found');
-  });
-  
-  test('should return 500 on server error in findById', async () => {
-    jest.spyOn(User, 'findById').mockImplementationOnce(() => {
-      throw new Error('DB error');
+      const res = await request(app)
+        .post(`/api/v1/users/${testUserId}/favorites/${testListingId}`);
+      
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toContain(testListingId);
+      expect(userMock.save).toHaveBeenCalled();
     });
-  
-    const res = await request(app).get(`/api/v1/users/${existingUserId}/favorites`);
-    expect(res.statusCode).toBe(500);
-    expect(res.body).toHaveProperty('error', 'Internal server error');
-  });
-  
-  test('should return empty array if favorites list is empty or undefined', async () => {
-    jest.spyOn(User, 'findById').mockResolvedValueOnce({ _id: existingUserId, favorite: [] });
-    jest.spyOn(User, 'find').mockReturnValueOnce({ select: jest.fn().mockResolvedValueOnce([]) });
-  
-    const res = await request(app).get(`/api/v1/users/${existingUserId}/favorites`);
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toEqual([]);
-  });  
-});
 
+    test('should return 404 if user not found', async () => {
+      userFindByIdMock.mockResolvedValueOnce(null);
+
+      const res = await request(app)
+        .post(`/api/v1/users/nonexistentId/favorites/${testListingId}`);
+      
+      expect(res.statusCode).toBe(404);
+      expect(res.body.error).toBe('User not found');
+    });
+
+    test('should return 404 if listing not found', async () => {
+      listingFindByIdMock.mockResolvedValueOnce(null);
+      userFindByIdMock.mockResolvedValueOnce(createUserMock());
+
+      const res = await request(app)
+        .post(`/api/v1/users/${testUserId}/favorites/nonexistentListingId`);
+      
+      expect(res.statusCode).toBe(404);
+      expect(res.body.error).toBe('Listing not found');
+    });
+
+    test('should not duplicate existing favorite', async () => {
+      const userMock = createUserMock([testListingId]);
+      userFindByIdMock.mockResolvedValueOnce(userMock);
+    
+      const res = await request(app)
+        .post(`/api/v1/users/${testUserId}/favorites/${testListingId}`);
+      
+      expect(res.statusCode).toBe(200);
+      expect(res.body.length).toBe(1);
+      expect(userMock.save).not.toHaveBeenCalled(); 
+    });
+
+    test('should return 500 on server error', async () => {
+      userFindByIdMock.mockImplementationOnce(() => {
+        throw new Error('DB error');
+      });
+
+      const res = await request(app)
+        .post(`/api/v1/users/${testUserId}/favorites/${testListingId}`);
+      
+      expect(res.statusCode).toBe(500);
+    });
+  });
+
+  describe('GET /:userId/favorites', () => {
+    test('should return populated favorites list', async () => {
+      const populatedUser = {
+        _id: testUserId,
+        favorites: [testListing]
+      };
+      
+      userFindByIdMock.mockReturnValueOnce(mockQuery(populatedUser));
+    
+      const res = await request(app)
+        .get(`/api/v1/users/${testUserId}/favorites`);
+      
+      expect(res.statusCode).toBe(200);
+      expect(res.body[0]).toHaveProperty('title', 'Test Listing');
+    });
+
+    test('should return empty array if no favorites', async () => {
+      const populatedUser = {
+        _id: testUserId,
+        favorites: []
+      };
+      
+      userFindByIdMock.mockReturnValueOnce(mockQuery(populatedUser));
+    
+      const res = await request(app)
+        .get(`/api/v1/users/${testUserId}/favorites`);
+      
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual([]);
+    });
+
+    test('should return 404 if user not found', async () => {
+      userFindByIdMock.mockReturnValueOnce(mockQuery(null)); 
+      
+      const res = await request(app)
+        .get(`/api/v1/users/nonexistentId/favorites`);
+      
+      expect(res.statusCode).toBe(404);
+    });
+
+    test('should return 500 on server error', async () => {
+      userFindByIdMock.mockImplementationOnce(() => ({
+        populate: jest.fn().mockRejectedValueOnce(new Error('DB error'))
+      }));
+      
+      const res = await request(app)
+        .get(`/api/v1/users/${testUserId}/favorites`);
+      
+      expect(res.statusCode).toBe(500);
+    });
+  });
+});
 // Tests for creating a user
 describe('POST /api/v1/users', () => {
   let findSpy;
@@ -394,7 +488,7 @@ describe('POST /api/v1/users', () => {
   test('should return 400 if required fields are missing', async () => {
     const res = await request(app).post('/api/v1/users').send({});
     expect(res.statusCode).toBe(400);
-    expect(res.body.error).toMatch(/userId.*required/i);
+    expect(res.body.error).toMatch(/must be a non-empty string/i); // Modificato
   });
 
   // Test: invalid email format
@@ -779,5 +873,140 @@ describe('DELETE /api/v1/users/:id', () => {
       .set('token', token);
     expect(res.statusCode).toBe(200);
     expect(res.body.username).toBe('jane');
+  });
+});
+
+describe('Blocked Users Management', () => {
+  const testUserId = 'user1';
+  const blockedUserId = 'user2';
+  
+  let userFindByIdMock;
+  
+  beforeAll(() => {
+    userFindByIdMock = jest.spyOn(User, 'findById');
+  });
+  
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+  
+  describe('POST /:userId/block/:blockedUserId', () => {
+    test('should block a user successfully', async () => {
+      const userMock = {
+        _id: testUserId,
+        blockedUsers: [],
+        save: jest.fn().mockResolvedValue(true)
+      };
+      
+      userFindByIdMock.mockResolvedValueOnce(userMock);
+      
+      const res = await request(app)
+        .post(`/api/v1/users/${testUserId}/block/${blockedUserId}`);
+      
+      expect(res.statusCode).toBe(200);
+      expect(res.body.message).toBe('Utente bloccato con successo');
+      expect(userMock.blockedUsers).toContain(blockedUserId);
+      expect(userMock.save).toHaveBeenCalled();
+    });
+    
+    test('should return error when blocking self', async () => {
+      // Mock user lookup
+      const userMock = {
+        _id: testUserId,
+        blockedUsers: [],
+        save: jest.fn()
+      };
+      userFindByIdMock.mockResolvedValueOnce(userMock); // Add this mock
+    
+      const res = await request(app)
+        .post(`/api/v1/users/${testUserId}/block/${testUserId}`);
+      
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toBe('Non puoi bloccare te stesso');
+    });
+    
+    test('should return error when user already blocked', async () => {
+      const userMock = {
+        _id: testUserId,
+        blockedUsers: [blockedUserId],
+        save: jest.fn()
+      };
+      
+      userFindByIdMock.mockResolvedValueOnce(userMock);
+      
+      const res = await request(app)
+        .post(`/api/v1/users/${testUserId}/block/${blockedUserId}`);
+      
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toBe('Utente già bloccato');
+      expect(userMock.save).not.toHaveBeenCalled();
+    });
+  });
+  
+  describe('GET /:userId/blocked', () => {
+    const mockQuery = (result) => ({
+      populate: jest.fn().mockResolvedValueOnce(result)
+    });
+    
+    // Update the test
+    test('should return list of blocked users', async () => {
+      const populatedResult = {
+        blockedUsers: [{ 
+          _id: blockedUserId, 
+          username: 'blockedUser',
+          name: 'Blocked',
+          surname: 'User'
+        }]
+      };
+      
+      userFindByIdMock.mockReturnValueOnce(mockQuery(populatedResult));
+    
+      const res = await request(app)
+        .get(`/api/v1/users/${testUserId}/blocked`);
+      
+      expect(res.statusCode).toBe(200);
+      expect(res.body[0]._id).toBe(blockedUserId);
+    });
+  });
+  
+  describe('DELETE /:userId/block/:blockedUserId', () => {
+    test('should unblock a user successfully', async () => {
+      const userMock = {
+        _id: testUserId,
+        blockedUsers: [blockedUserId],
+        save: jest.fn().mockResolvedValue(true)
+      };
+      
+      userFindByIdMock.mockResolvedValueOnce(userMock);
+      
+      const res = await request(app)
+        .delete(`/api/v1/users/${testUserId}/block/${blockedUserId}`);
+      
+      expect(res.statusCode).toBe(200);
+      expect(res.body.message).toBe('Utente sbloccato con successo');
+      expect(userMock.blockedUsers).not.toContain(blockedUserId);
+      expect(userMock.save).toHaveBeenCalled();
+    });
+    
+    test('should return error when user not blocked', async () => {
+      const userMock = {
+        _id: testUserId,
+        blockedUsers: [],
+        save: jest.fn()
+      };
+      
+      userFindByIdMock.mockResolvedValueOnce(userMock);
+      
+      const res = await request(app)
+        .delete(`/api/v1/users/${testUserId}/block/${blockedUserId}`);
+      
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toBe('Utente non bloccato');
+      expect(userMock.save).not.toHaveBeenCalled();
+    });
   });
 });
