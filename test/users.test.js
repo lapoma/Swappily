@@ -319,7 +319,7 @@ describe('User Favorites Management', () => {
     })
   });
 
-  describe('POST /:userId/favorites/:listingId', () => {
+  describe('POST /api/v1/users/:userId/favorites/:listingId', () => {
     test('should add listing to favorites and return 200', async () => {
       const userMock = createUserMock();
       userFindByIdMock.mockResolvedValueOnce(userMock);
@@ -383,7 +383,7 @@ describe('User Favorites Management', () => {
     });
   });
 
-  describe('GET /:userId/favorites', () => {
+  describe('GET /api/v1/users/:userId/favorites', () => {
     test('should return populated favorites list', async () => {
       const populatedUser = {
         _id: testUserId,
@@ -894,8 +894,8 @@ describe('Blocked Users Management', () => {
     jest.restoreAllMocks();
   });
   
-  describe('POST /:userId/block/:blockedUserId', () => {
-    test('should block a user successfully', async () => {
+  describe('POST /api/v1/users/:userId/block/:blockedUserId', () => {
+    test('should return 200 andblock a user successfully', async () => {
       const userMock = {
         _id: testUserId,
         blockedUsers: [],
@@ -913,7 +913,7 @@ describe('Blocked Users Management', () => {
       expect(userMock.save).toHaveBeenCalled();
     });
     
-    test('should return error when blocking self', async () => {
+    test('should return 400 when blocking self', async () => {
       // Mock user lookup
       const userMock = {
         _id: testUserId,
@@ -929,7 +929,7 @@ describe('Blocked Users Management', () => {
       expect(res.body.error).toBe('Non puoi bloccare te stesso');
     });
     
-    test('should return error when user already blocked', async () => {
+    test('should return 400 when user already blocked', async () => {
       const userMock = {
         _id: testUserId,
         blockedUsers: [blockedUserId],
@@ -947,13 +947,13 @@ describe('Blocked Users Management', () => {
     });
   });
   
-  describe('GET /:userId/blocked', () => {
+  describe('GET /api/v1/users/:userId/blocked', () => {
     const mockQuery = (result) => ({
       populate: jest.fn().mockResolvedValueOnce(result)
     });
     
     // Update the test
-    test('should return list of blocked users', async () => {
+    test('should return 200 and the list of blocked users', async () => {
       const populatedResult = {
         blockedUsers: [{ 
           _id: blockedUserId, 
@@ -973,8 +973,8 @@ describe('Blocked Users Management', () => {
     });
   });
   
-  describe('DELETE /:userId/block/:blockedUserId', () => {
-    test('should unblock a user successfully', async () => {
+  describe('DELETE /api/v1/users/:userId/block/:blockedUserId', () => {
+    test('should return 200 and unblock a user successfully', async () => {
       const userMock = {
         _id: testUserId,
         blockedUsers: [blockedUserId],
@@ -992,7 +992,7 @@ describe('Blocked Users Management', () => {
       expect(userMock.save).toHaveBeenCalled();
     });
     
-    test('should return error when user not blocked', async () => {
+    test('should return 400 when user not blocked', async () => {
       const userMock = {
         _id: testUserId,
         blockedUsers: [],
@@ -1094,8 +1094,8 @@ describe('User Follow System', () => {
     jest.clearAllMocks();
   });
 
-  describe('POST /:userId/follow/:targetUserId', () => {
-    test('should follow another user successfully', async () => {
+  describe('POST /api/v1/users/:userId/follow/:targetUserId', () => {
+    test('should return 200 and follow another user successfully', async () => {
       const res = await request(app)
         .post('/api/v1/users/user1/follow/user4')
         .set('token', token)
@@ -1127,8 +1127,8 @@ describe('User Follow System', () => {
     });
   });
 
-  describe('DELETE /:userId/follow/:targetUserId', () => {
-    test('should unfollow another user successfully', async () => {
+  describe('DELETE /api/v1/users/:userId/follow/:targetUserId', () => {
+    test('should return 200 and unfollow another user successfully', async () => {
       const res = await request(app)
         .delete('/api/v1/users/user1/follow/user2')
         .set('token', token)
@@ -1140,8 +1140,8 @@ describe('User Follow System', () => {
     });
   });
 
-  describe('GET /:userId/following', () => {
-    test('should return the list of followed users', async () => {
+  describe('GET /api/v1/users/:userId/following', () => {
+    test('should return 200 and the list of followed users', async () => {
       User.findById.mockImplementationOnce(() => ({
         populate: jest.fn().mockResolvedValue({
           _id: 'user1',
@@ -1176,8 +1176,8 @@ describe('User Follow System', () => {
     
   });
 
-  describe('GET /:userId/followers', () => {
-    test('should return the list of followers', async () => {
+  describe('GET /api/v1/users/:userId/followers', () => {
+    test('should return 200 and the list of followers', async () => {
       // Mock specifico per populate
       User.findById.mockImplementationOnce(() => ({
         populate: jest.fn().mockResolvedValue({
@@ -1199,8 +1199,8 @@ describe('User Follow System', () => {
     });
   });
 
-  describe('GET /:userId/isFollowing/:targetUserId', () => {
-    test('should return true when user is following target', async () => {
+  describe('GET /api/v1/users/:userId/isFollowing/:targetUserId', () => {
+    test('should return 200 and true when user is following target', async () => {
       const res = await request(app)
         .get('/api/v1/users/user1/isFollowing/user2')
         .send();
@@ -1209,7 +1209,7 @@ describe('User Follow System', () => {
       expect(res.body.isFollowing).toBe(true);
     });
 
-    test('should return false when user is not following target', async () => {
+    test('should return 200 and false when user is not following target', async () => {
       const res = await request(app)
         .get('/api/v1/users/user1/isFollowing/user3')
         .send();
