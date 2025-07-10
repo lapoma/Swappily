@@ -84,14 +84,15 @@ async function deleteUser(user){
     }
 }
 
-const fetchUserData = async() =>{
+const fetchUserData = async(userId) =>{
     try{
         const storedUser = JSON.parse(localStorage.getItem('userId'));
-        if(!storedUser || !storedUser._id){
-            console.error("User ID not found in localStorage");
+        const user = await axios.get(USERS_URL+`/${userId}`);
+        if(!user){
+            console.error("User ID not found");
             return;
         }else{
-            const response = await axios.get(USERS_URL+`/${storedUser._id}`);
+            const response = await axios.get(USERS_URL+`/${user._id}`);
             username.value = response.data.username;
             name.value = response.data.name;
             surname.value = response.data.surname;

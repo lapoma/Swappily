@@ -20,7 +20,12 @@ const router = createRouter({
             path: '/RegisterPage',
             name:'RegisterPage',
             component: RegisterPage
-        }
+        },
+        {
+          path: '/UserProfile/:id',
+          name: 'UserProfile',
+          component: () => import('../views/UserProfile.vue'),
+        },
     ]
 })
 
