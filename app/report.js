@@ -4,7 +4,7 @@ const Report = require('./models/report');
 const User = require('./models/user');
 const Listing = require('./models/listing');
 
-// Helper per estrarre ID dall'URL
+//estrae ID dall'URL
 function extractIdFromUrl(url) {
   const parts = url.split('/');
   return parts[parts.length - 1];
@@ -15,7 +15,6 @@ router.post('/', async (req, res) => {
   try {
     const { reporter, reportee, listing, text } = req.body;
 
-    // Validazione base
     if (!reporter || !text || typeof text !== 'string' || text.trim() === '' || text.length > 2000) {
       return res.status(400).json({ error: 'Invalid input' });
     }
@@ -27,7 +26,6 @@ router.post('/', async (req, res) => {
     const hasReportee = !!reportee;
     const hasListing = !!listing;
 
-    // Non è ammesso specificare sia reportee che listing
     if (hasReportee && hasListing) {
       return res.status(400).json({ error: 'Cannot report both a user and a listing' });
     }
