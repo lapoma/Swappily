@@ -5,7 +5,7 @@ const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
 const API_URL = HOST + '/api/v1'
 const LISTINGS_URL = API_URL + '/listings'
 
-const listings = reactive([])
+let listings = reactive([])
 
 async function fetchListings(){
     listings = await axios.get(LISTINGS_URL)
