@@ -1,6 +1,4 @@
 openapi: 3.0.0
-x-stoplight:
-  id: zk30b9144hq8c
 info:
   version: 1.0.0
   title: Swappil OpenAPI 3.0
@@ -50,8 +48,6 @@ paths:
                 password:
                   type: string
                   description: Password of the user
-      x-stoplight:
-        id: y6lnq6qeeuh6y
   /users:
     post:
       description: Creates a new user in the system.
@@ -71,8 +67,6 @@ paths:
               description: Link to the newly created user.
         '400':
           description: Bad request. The input is not correct
-      x-stoplight:
-        id: fjxu6ek9e7nty
     get:
       description: Get all the users. It is possible to show users by their username.
       summary: View all users or filtered by username.
@@ -95,8 +89,6 @@ paths:
           description: User not found
         '500':
           description: Server error
-      x-stoplight:
-        id: sfcm9n8d5ek6u
   '/users/{userId}':
     get:
       description: Gets a user by ID.
@@ -118,8 +110,6 @@ paths:
           description: User not found
         '500':
           description: Server error
-      x-stoplight:
-        id: 9rbzpnod84p84
     delete:
       description: Delete a user
       summary: Delete a user.
@@ -139,8 +129,6 @@ paths:
           description: User not found
         '500':
           description: Server error
-      x-stoplight:
-        id: 9uo75co78uiyd
     put:
       description: Updates an existing user.
       summary: Update an existing user
@@ -163,8 +151,6 @@ paths:
           description: User updated
         '404':
           description: User not found
-      x-stoplight:
-        id: 68pk8lzqlqvcy
   '/users/{userId}/favorites/{listingId}':
     post:
       description: Add a listing to user's favorites
@@ -196,8 +182,6 @@ paths:
           description: User or listing not found
         '500':
           description: Internal server error
-      x-stoplight:
-        id: 7j2k4m5n6b8v9
     delete:
       description: Remove a listing from user's favorites
       summary: Remove from favorites
@@ -228,9 +212,6 @@ paths:
           description: User or listing not found
         '500':
           description: Internal server error
-      x-stoplight:
-        id: 1q2w3e4r5t6y7
-
   '/users/{userId}/favorites':
     get:
       description: Get user's favorite listings
@@ -269,9 +250,6 @@ paths:
           description: User not found
         '500':
           description: Internal server error
-      x-stoplight:
-        id: 8u7i6y5t4r3e
-
   '/users/{userId}/block/{blockedUserId}':
     post:
       description: Block a user
@@ -308,8 +286,6 @@ paths:
           description: User not found
         '500':
           description: Internal server error
-      x-stoplight:
-        id: 2w3e4r5t6y7u8
     delete:
       description: Unblock a user
       summary: Unblock user
@@ -345,9 +321,6 @@ paths:
           description: User not found
         '500':
           description: Internal server error
-      x-stoplight:
-        id: 9i8u7y6t5r4e
-
   '/users/{userId}/blocked':
     get:
       description: Get list of blocked users
@@ -384,8 +357,6 @@ paths:
           description: User not found
         '500':
           description: Internal server error
-      x-stoplight:
-        id: 3e4r5t6y7u8i9
   /listings:
     post:
       description: Creates a new listing.
@@ -412,8 +383,6 @@ paths:
           description: Not authorized.
         '500':
           description: Internal server error.
-      x-stoplight:
-        id: v25x1q7izo1kb
     get:
       description: 'Gets the list of listings. It is possible to show the listing by their title or filtered by status.'
       summary: View all listings or filtered listings.
@@ -446,8 +415,6 @@ paths:
           description: Not found
         '500':
           description: Server error
-      x-stoplight:
-        id: ptsqe6xnbvb33
   '/listings/{listingId}':
     get:
       description: Gets a listing by ID.
@@ -467,8 +434,6 @@ paths:
                 $ref: '#/components/schemas/Listing'
         '404':
           description: Listing not found
-      x-stoplight:
-        id: l18m3t6a2a81d
     delete:
       description: Deletes a listing by ID.
       summary: Delete a listing
@@ -490,8 +455,6 @@ paths:
           description: Listing not found
         '500':
           description: Internal server error
-      x-stoplight:
-        id: hhbfxz19wavn5
     put:
       description: Updates an existing listing.
       summary: Update an existing listing
@@ -514,8 +477,32 @@ paths:
           description: Listing modified
         '404':
           description: Listing not found
-      x-stoplight:
-        id: 9tkvaq3k652dv
+  '/users/{userId}/listings':
+    get:
+      summary: Get all listings of a user
+      description: Returns all listings created by the specified user.
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: ID of the user
+      responses:
+        '200':
+          description: Array of listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Listing'
+        '400':
+          description: Invalid userId
+        '404':
+          description: No listings found for this user
+        '500':
+          description: Internal server error
   /exchange:
     get:
       description: Gets the list of exchanges. It is possible to show the exchanges by their status.
@@ -542,8 +529,6 @@ paths:
                   $ref: '#/components/schemas/Exchange'
         '404':
           description: Exchanges not found
-      x-stoplight:
-        id: pz72gepzxjqm7
   '/exchange/listing/{listingId}':
     post:
       description: Creates a new exchange.
@@ -570,8 +555,6 @@ paths:
               schema:
                 type: string
               description: Link to the newly created exchange.
-      x-stoplight:
-        id: rz90tzdtusqj1
   '/exchange/{exchangeId}':
     get:
       description: Gets an exchange by ID.
@@ -591,8 +574,6 @@ paths:
                 $ref: '#/components/schemas/Exchange'
         '404':
           description: Exchange not found
-      x-stoplight:
-        id: x0a2y30d3av84
     put:
       description: Modify an exchange
       summary: Modify an exchange
@@ -615,8 +596,6 @@ paths:
           description: Exchange modified
         '404':
           description: Exchange not found
-      x-stoplight:
-        id: v9li0ergdbuon
     delete:
       description: Deleting an existing exchange
       summary: Deleting an exchange
@@ -634,8 +613,6 @@ paths:
           description: Exchange deleted
         '404':
           description: Exchange not found
-      x-stoplight:
-        id: u8k57cg9ri9a0
   /review:
     post:
       description: Create a new review
@@ -657,8 +634,6 @@ paths:
           description: Bad request. The input is not correct
         '500':
           description: Server error
-      x-stoplight:
-        id: hs9crfslb2mxw
   '/review/{reviewId}':
     delete:
       description: The user deletes one of his reviews
@@ -679,8 +654,6 @@ paths:
           description: This user does not have the authorization
         '404':
           description: Review not found
-      x-stoplight:
-        id: rkw39va24nc9t
   '/review/reviewee/{revieweeId}':
     get:
       description: Get all the reviews of one user
@@ -708,8 +681,6 @@ paths:
           description: Not found
         '500':
           description: Server error
-      x-stoplight:
-        id: 2y39wyme3ew7d
   /report:
     post:
       description: Creating a new report
@@ -736,8 +707,6 @@ paths:
           description: User or listing not found
         '500':
           description: Server error
-      x-stoplight:
-        id: uoper50c9xunx
 components:
   securitySchemes:
     accessTokenHeader:
@@ -835,8 +804,6 @@ components:
         profile_url:
           type: string
           description: Profile picture of the user
-      x-stoplight:
-        id: jlrd3bu8k2a0d
     Listing:
       type: object
       required:
@@ -882,8 +849,6 @@ components:
           items:
             type: string
           maxItems: 10
-      x-stoplight:
-        id: 221d3mf53a0ez
     Exchange:
       type: object
       required:
@@ -920,8 +885,6 @@ components:
           type: string
           format: date-time
           description: Date when the exchange was created
-      x-stoplight:
-        id: wv6hktdojgdt4
     Review:
       type: object
       required:
@@ -941,8 +904,6 @@ components:
         text:
           type: string
           description: Body of the review
-      x-stoplight:
-        id: f7t8et4y946gv
     Report:
       type: object
       required:
@@ -967,6 +928,3 @@ components:
           type: string
           description: Textual description of the report
           maxLength: 2000
-      x-stoplight:
-        id: ao0e8ptncc0y7792
-  
