@@ -1,12 +1,12 @@
 <template>
   <nav class="bg-background_2 shadow w-full fixed top-0 left-0 right-0 z-50">
     <div class="container mx-auto h-20 flex items-center justify-between px-6">
-      <!-- Logo con margine aggiuntivo -->
+      <!-- Logo -->
       <router-link to="/" class="flex items-center mr-10">
         <img src="@/assets/logo.svg" alt="Logo" class="h-10 w-10" />
       </router-link>
 
-      <!-- Menu con spaziature ottimizzate -->
+      <!-- Menu principale -->
       <div class="flex flex-1 justify-center">
         <div class="flex space-x-10 max-w-2xl w-full justify-evenly">
           <router-link 
@@ -16,13 +16,15 @@
           >
             Home
           </router-link>
+          
           <router-link 
-            to="/cerca" 
+            to="/notifiche" 
             class="text-text_1 hover:text-button_2 transition-colors px-5 py-2 rounded-md text-lg font-semibold whitespace-nowrap"
             active-class="text-button_2 font-bold border-b-2 border-button_2"
           >
-            Cerca
+            Notifiche
           </router-link>
+          
           <router-link 
             to="/messaggi" 
             class="text-text_1 hover:text-button_2 transition-colors px-5 py-2 rounded-md text-lg font-semibold whitespace-nowrap"
@@ -30,8 +32,17 @@
           >
             Messaggi
           </router-link>
+          
           <router-link 
-            to="/profilo" 
+            to="/LoginPage" 
+            class="text-text_1 hover:text-button_2 transition-colors px-5 py-2 rounded-md text-lg font-semibold whitespace-nowrap"
+            active-class="text-button_2 font-bold border-b-2 border-button_2"
+          >
+            Login
+          </router-link>
+          
+          <router-link 
+            to="/UserProfile" 
             class="text-text_1 hover:text-button_2 transition-colors px-5 py-2 rounded-md text-lg font-semibold whitespace-nowrap"
             active-class="text-button_2 font-bold border-b-2 border-button_2"
           >
@@ -39,7 +50,6 @@
           </router-link>
         </div>
       </div>
-
     </div>
   </nav>
 </template>
@@ -63,9 +73,4 @@ const logout = async () => {
     console.error("Logout failed:", error);
   }
 };
-
-
-function newFunction() {
-    return "text-text_1 hover:text-button_2 transition-colors px-5 py-2 rounded-md text-lg font-semibold whitespace-nowrap";
-}
 </script>

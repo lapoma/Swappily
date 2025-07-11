@@ -48,8 +48,8 @@
               v-model="userType"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
             >
-              <option value="user">Utente</option>
-              <option value="admin">Operatore</option>
+              <option value="utente">Utente</option>
+              <option value="operatore">Operatore</option>
             </select>
           </div>
       <button
@@ -85,8 +85,8 @@ export default {
   methods: {
     async handleRegister() {
         this.error="";
-        console.log(this.username);
-        if (!this.email || !this.username) {
+
+        if (!this.email || !this.username || !this.name || !this.surname) {
         this.error = 'Required fields are missing';
         return;
         }
@@ -112,20 +112,21 @@ export default {
         password: this.password,
         name: this.name,
         surname: this.surnname,
-        userType: "user" 
+        userType: this.userType 
       };
 
+        // this.$router.push('/');
         try {
         let response;
         response = await axios.post(API_URL+`/users`, authData);
-
+        
         console.log(response);
         // Se la richiesta ha successo, resetta gli errori e continua
         console.log(user);
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('userId', response.data._id);
         localStorage.setItem('username',response.data.username);
-        localStorage.setItem('userType', user.data.userType);
+        localStorage.setItem('userType', response.data.userType);
                 
         console.log(JSON.parse(localStorage.getItem('user')));
 
