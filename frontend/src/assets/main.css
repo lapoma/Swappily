@@ -13,14 +13,14 @@ max-width: none;
 a,
 .green {
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
+  color: rgb(255, 244, 234);
   transition: 0.4s;
   padding: 3px;
 }
 
 @media (hover: hover) {
   a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+    background-color: hsla(160, 30%, 45%, 0.2);
   }
 }
 
@@ -35,4 +35,11 @@ a,
     padding: 0 2rem; 
     grid-template-columns: none;
   }
+  /* Aggiungi questo in fondo al file */
+@layer components {
+  /* Puoi sovrascrivere qui le classi Tailwind se necessario */
+  body {
+    padding-top: 80px; /* Compensa l'altezza della navbar fixed */
+  }
+}
 }

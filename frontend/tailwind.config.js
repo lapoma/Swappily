@@ -8,10 +8,11 @@ module.exports = {
     extend: {
       colors: {
         // Aggiungi QUI i tuoi colori personalizzati
-        background_2: "#fbf8f7",  // Esempio: grigio chiaro
+        background_2: "#fbf8f7",  
         button_2: "#5ae110",
-        button_1: '#2563eb',       // Esempio: blu Tailwind
-        text_1: "#000000",         // Esempio: grigio scuro
+        button_1: '#2563eb',       
+        text_1: "#000000",   
+        my_green: "#4da8da",      
       },
     },
   },

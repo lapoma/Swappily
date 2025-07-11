@@ -1,3 +1,18 @@
+export default {
+  props: {
+    mockData: Object,
+    mockUser: Object
+  },
+  mounted() {
+    if (this.mockData) {
+      this.listing = this.mockData
+      if (this.mockUser?.favoriteList.includes(this.mockData.id)) {
+        this.isFavorite = true
+      }
+    } else {
+      this.fetchListingData()
+    }
+  },
 <template>
   <div class="min-h-screen bg-gray-50">
     <!-- HEADER (rimane invariato) -->
@@ -241,3 +256,4 @@ export default{
     }
 }
 </script>
+}

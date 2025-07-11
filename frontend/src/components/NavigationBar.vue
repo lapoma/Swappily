@@ -1,60 +1,64 @@
 <template>
-  <nav class="bg-background_2 shadow w-full fixed top-0 left-0 right-0 z-50">
-    <div class="container mx-auto h-20 flex items-center justify-between px-6">
+  <nav class="navbar">
+    <div class="navbar-container">
       <!-- Logo -->
-      <router-link to="/" class="flex items-center mr-10">
-        <img src="@/assets/logo.svg" alt="Logo" class="h-10 w-10" />
-      </router-link>
+      <div class="logo">
+        <img src="@/assets/Logo.png" alt="Logo" />
+      </div>
 
-      <!-- Menu principale -->
-      <div class="flex flex-1 justify-center">
-        <div class="flex space-x-10 max-w-2xl w-full justify-evenly">
+      <!-- Menu -->
+      <div class="menu-container">
+        <div class="menu">
+         
           <router-link 
             to="/" 
-            class="text-text_1 hover:text-button_2 transition-colors px-5 py-2 rounded-md text-lg font-semibold whitespace-nowrap"
-            active-class="text-button_2 font-bold border-b-2 border-button_2"
+            class="nav-link"
+            exact-active-class="active"
           >
             Home
           </router-link>
-          
+        <!-- Per ora non serve essere loggati perchè è in testing -->
           <router-link 
-            to="/notifiche" 
-            class="text-text_1 hover:text-button_2 transition-colors px-5 py-2 rounded-md text-lg font-semibold whitespace-nowrap"
-            active-class="text-button_2 font-bold border-b-2 border-button_2"
+            to="/NotificationPage"
+            class="nav-link"
+            exact-active-class="active"
           >
             Notifiche
-          </router-link>
-          
-          <router-link 
-            to="/messaggi" 
-            class="text-text_1 hover:text-button_2 transition-colors px-5 py-2 rounded-md text-lg font-semibold whitespace-nowrap"
-            active-class="text-button_2 font-bold border-b-2 border-button_2"
-          >
+            </router-link>
+
+            <router-link 
+            :to="isLoggedIn ? '/MessagePage' : '/LoginPage'" 
+            class="nav-link"
+            :class="{ active: isLoggedIn && $route.path.startsWith('/MessagePage') }"
+            >
             Messaggi
-          </router-link>
-          
+            </router-link>
+
           <router-link 
             to="/LoginPage" 
-            class="text-text_1 hover:text-button_2 transition-colors px-5 py-2 rounded-md text-lg font-semibold whitespace-nowrap"
-            active-class="text-button_2 font-bold border-b-2 border-button_2"
+            class="nav-link"
+            exact-active-class="active"
           >
             Login
           </router-link>
-          
+
           <router-link 
-            to="/UserProfile" 
-            class="text-text_1 hover:text-button_2 transition-colors px-5 py-2 rounded-md text-lg font-semibold whitespace-nowrap"
-            active-class="text-button_2 font-bold border-b-2 border-button_2"
-          >
+            :to="isLoggedIn ? '/profilo' : '/LoginPage'" 
+            class="nav-link"
+            :class="{ active: isLoggedIn && $route.path.startsWith('/profilo') }"
+         >
             Profilo
-          </router-link>
+</router-link>
         </div>
       </div>
     </div>
   </nav>
 </template>
 
-<script setup>
+<script>
+export default {
+  name: 'Navbar'
+}
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
@@ -63,14 +67,77 @@ const store = useStore();
 const router = useRouter();
 
 const isLoggedIn = computed(() => store.state.isLoggedIn);
-const username = computed(() => store.state.username);
 
-const logout = async () => {
-  try {
-    await store.dispatch('logout');
-    router.push('/login');
-  } catch (error) {
-    console.error("Logout failed:", error);
+const handleProtectedClick = (routeName) => {
+  if (!isLoggedIn.value) {
+    router.push('/LoginPage');
+  } else {
+    router.push({ name: routeName });
   }
 };
 </script>
+
+<style scoped>
+.navbar {
+  background-color: #7eacb5; /* Verde */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: 80px;
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+}
+
+.logo {
+  position: absolute;
+  left: -30px;
+}
+
+.logo img {
+  height: 80px;
+  width: 80px;
+}
+
+.menu-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.menu {
+  display: flex;
+  gap: 30px;
+}
+
+.nav-link {
+  color: rgb(255, 244, 234);
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #C1FACD; /* Verde chiaro per hover */
+}
+
+.active {
+  color: rgb(255, 244, 234);
+  font-weight: 700;
+  border-bottom: 2px solid rgb(255, 244, 234);
+}
+</style>

@@ -22,9 +22,25 @@ const router = createRouter({
             component: RegisterPage
         },
         {
+            path: '/mock-listing',
+            name: 'MockListing',
+            component: () => import('../views/ListingTableMockView.vue')
+      },
+        {
           path: '/UserProfile/:id',
           name: 'UserProfile',
           component: () => import('../views/UserProfile.vue'),
+        },
+         {
+          path: '/MessagePage/', //per ora non c'è :id perchè sono in testing
+          name: 'MessagePage',
+          component: () => import('../views/MessagePage.vue'),
+              meta: { requiresAuth: true } 
+        },
+        {
+            path: '/NotificationPage', //per ora non c'è :id perchè sono in testing
+            name:'NotificationPage',
+            component: () => import('../views/NotificationPage.vue')
         },
     ]
 })
