@@ -5,11 +5,18 @@ import TheWelcome from './components/TheWelcome.vue'
 import HomePage from './views/HomePage.vue';
 import LoginPage from './views/LoginPage.vue';
 import RegisterPage from './views/RegisterPage.vue';
+import NavigationBar from './components/NavigationBar.vue';  // Importa la Navbar
 </script>
 
 <template>
-  <router-view />
+  <div class="app-container">
+    <NavigationBar /> 
+    <main class="main-content">
+      <router-view /> 
+    </main>
+  </div>
 </template>
+
 
 <style scoped>
 header {
@@ -37,5 +44,15 @@ header {
     place-items: flex-start;
     flex-wrap: wrap;
   }
+  .app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
-</style>
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+}
+}
+</style> -->
