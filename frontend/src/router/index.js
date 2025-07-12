@@ -21,11 +21,11 @@ const router = createRouter({
             name:'RegisterPage',
             component: RegisterPage
         },
-        {
-            path: '/mock-listing',
-            name: 'MockListing',
-            component: () => import('../views/ListingTableMockView.vue')
-      },
+      //   {
+      //       path: '/mock-listing',
+      //       name: 'MockListing',
+      //       component: () => import('../views/ListingTableMockView.vue')
+      // },
         {
           path: '/UserProfile/:id',
           name: 'UserProfile',
@@ -41,6 +41,11 @@ const router = createRouter({
             path: '/NotificationPage', //per ora non c'è :id perchè sono in testing
             name:'NotificationPage',
             component: () => import('../views/NotificationPage.vue')
+        },
+        {
+            path: '/HomePage1', 
+            name:'HomePage1',
+            component: () => import('../views/HomePage1.vue')
         },
     ]
 })

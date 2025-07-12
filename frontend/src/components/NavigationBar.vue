@@ -79,7 +79,7 @@ const handleProtectedClick = (routeName) => {
 
 <style scoped>
 .navbar {
-  background-color: #7eacb5; /* Verde */
+  background-color: #7eacb5; 
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   width: 100%;
   position: fixed;
@@ -132,7 +132,7 @@ const handleProtectedClick = (routeName) => {
 }
 
 .nav-link:hover {
-  color: #C1FACD; /* Verde chiaro per hover */
+  color: #C1FACD; 
 }
 
 .active {

@@ -1,58 +1,30 @@
 <script setup>
-// import EditListing from './components/EditListing.vue';
-// import HelloWorld from './components/HelloWorld.vue'
-// import TheWelcome from './components/TheWelcome.vue'
-// import HomePage from './views/HomePage.vue';
-// import LoginPage from './views/LoginPage.vue';
-// import RegisterPage from './views/RegisterPage.vue';
-import NavigationBar from './components/NavigationBar.vue';  // Importa la Navbar
+import NavigationBar from './components/NavigationBar.vue';
 </script>
 
 <template>
   <div class="app-container">
-    <NavigationBar /> 
+    <NavigationBar />
     <main class="main-content">
-      <router-view /> 
+      <router-view />
     </main>
   </div>
 </template>
 
-
 <style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-  .app-container {
+/* Rimuovi tutti gli stili esistenti e sostituisci con: */
+.app-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100vw; /* Occupa tutta la larghezza dello schermo */
+  overflow-x: hidden; /* Previene scroll orizzontale indesiderato */
 }
 
 .main-content {
   flex: 1;
-  padding: 20px;
+  width: 100%;
+  padding: 0; /* Rimuovi il padding predefinito */
+  margin-top: 0px; /* Compensa l'altezza della navbar fixed */
 }
-}
-</style> -->
+</style>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex justify-center items-center h-screen">
+    <div class="flex justify-center items-start h-screen pt-12 sm:pt-24">
       <div class="bg-white p-8 sm:p-12 rounded-lg shadow-lg w-full max-w-md">
         <h2
           class="text-2xl sm:text-3xl font-medium text-text_2 mb-8 text-center"
@@ -64,7 +64,7 @@
 
         <div class="mt-6 text-center text-sm text-text_3">
           Non hai un account?
-          <span class="text-button_1_hover hover:underline">
+          <span class="!text-red-500 hover:underline"> 
             <router-link to="/RegisterPage">Registrati</router-link>
           </span>
         </div>

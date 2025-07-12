@@ -1,6 +1,7 @@
 @import './base.css';
 @import "tailwindcss";
 
+
 #app {
 max-width: none; 
   margin: 0;
