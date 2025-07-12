@@ -27,7 +27,7 @@
           class="relative overflow-hidden rounded-lg shadow-md hover:shadow-lg transition duration-300 aspect-square cursor-pointer"
         >
           <img 
-            :src="listing.imageUrl" 
+            :src="listing.listing_url" 
             :alt="'Listing ' + (index + 1)"
             class="w-full h-full object-cover hover:scale-105 transition duration-300"
           >
@@ -45,8 +45,14 @@
 </template>
 
 <script>
+import axios from 'axios';
 import SearchBar from '@/components/SearchBar.vue'
 import ListingTable from '@/components/ListingTable.vue'
+//import { fetchListings } from '@/services/listings';
+
+const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
+const API_URL = HOST + '/api/v1'
+const LISTINGS_URL = API_URL + '/listings'
 
 export default {
   name: "HomePage1",
@@ -57,24 +63,25 @@ export default {
   data() {
     return {
       selectedListing: null,
-      listings: [
-        { 
-          id: 1,
-          images: ["url1", "url2"], // Array di immagini
-          title: "Titolo",
-          description: "Descrizione",
-          condition: "as_new" // o 'good', 'ok', 'not_good'
-        },
-        { 
-          id: 2,
-          imageUrl: "https://www.campodicanapa.it/wp-content/uploads/2021/03/32449_2.jpg", // URL dell'immagine
-          images: ["https://www.campodicanapa.it/wp-content/uploads/2021/03/32449_2.jpg", "https://www.bricofer.it/media/catalog/product/cache/b3640ebe2da949b4692b50d3b9ef91ce/8/0/8055719465055.jpg"], // Array di immagini
-          title: "Ventilatori",
-          description: "2 ventilatori in ottime condizioni, uno con telecomando",
-          condition: "not_good"
-        },
+      // listings: [
+      //   { 
+      //     id: 1,
+      //     images: ["url1", "url2"], // Array di immagini
+      //     title: "Titolo",
+      //     description: "Descrizione",
+      //     condition: "as_new" // o 'good', 'ok', 'not_good'
+      //   },
+      //   { 
+      //     id: 2,
+      //     imageUrl: "https://www.campodicanapa.it/wp-content/uploads/2021/03/32449_2.jpg", // URL dell'immagine
+      //     images: ["https://www.campodicanapa.it/wp-content/uploads/2021/03/32449_2.jpg", "https://www.bricofer.it/media/catalog/product/cache/b3640ebe2da949b4692b50d3b9ef91ce/8/0/8055719465055.jpg"], // Array di immagini
+      //     title: "Ventilatori",
+      //     description: "2 ventilatori in ottime condizioni, uno con telecomando",
+      //     condition: "not_good"
+      //   },
         
-      ]
+      // ]
+      listings: []
     };
   },
   methods: {
@@ -86,7 +93,26 @@ export default {
     },
     deselectListing() {
       this.selectedListing = null;
+    },
+    async fetchListings() {
+      try {
+        const listings = await axios.get(LISTINGS_URL)
+
+        
+        console.log("Fetched listings:", listings.data);
+
+
+        this.listings = listings.data;
+    } catch (error) {
+        console.error("Errore durante il recupero degli annunci", error);
+        throw error; 
     }
+    }
+  },
+  async mounted() {
+    // Carica le listings quando il componente è montato
+    this.fetchListings();
+    console.log("Listings fetched:", this.listings);
   }
 }
 </script>

@@ -5,12 +5,13 @@ const User = require('./models/user');
 const mongoose = require('mongoose');
 const tokenChecker = require('./authentication/tokenChecker');
 
-router.post('', tokenChecker, async (req, res) => {
+router.post('',tokenChecker, async (req, res) => {
 
     const { title, username, userId, description, status, available, listing_url } = req.body;
 
     if(!title || typeof title !== 'string' || title.trim() === '' || !checkTitle(title)) {
         res.status(400).json({ error: '"Title" must be a non-empty string between 3 and 50 characters' });
+        console.log(error);
         return;
     }
     if(typeof description !== 'string' || !checkDescription(description)){

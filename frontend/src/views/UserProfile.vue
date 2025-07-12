@@ -26,7 +26,11 @@
               </button>
             </router-link>
             <!-- <PostButton /> -->
-            
+            <router-link to="/NewListing">
+              <button class="mt-4 px-4 py-2 bg-button_1 text-text_1 rounded-md hover:bg-button_1_hover font-medium shadow-md">
+              Crea Annuncio
+              </button>
+            </router-link>
           </div>
         </div>
 
