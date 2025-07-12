@@ -20,12 +20,13 @@
           <div v-if="isAuthor()"
             class="flex flex-wrap justify-between md:justify-center space-x-4 mt-16 md:mt-0"
           >
-            <router-link to="/ModificaProfilo">
+            <router-link to="/EditProfile">
               <button class="mt-4 px-4 py-2 bg-button_1 text-text_1 rounded-md hover:bg-button_1_hover font-medium shadow-md">
               Modifica Profilo
               </button>
             </router-link>
             <!-- <PostButton /> -->
+            
           </div>
         </div>
 
@@ -90,12 +91,8 @@ function isAuthor(){
     }
 }
 
-function isAuthor(){
-  return false;
-}
-
  async function follow(){
-    if(!localStorage.getItem('username')){
+    if(!!localStorage.getItem('username')){
         if(localStorage.getItem(userId)!== this.userId){
             const user = JSON.parse(localStorage.getItem('user'));
             const token = localStorage.get('token');

@@ -93,7 +93,7 @@ router.get('/:id', async (req, res) => {
 
     res.status(200).json({
         self: '/api/v1/users/' + user._id,
-        userId: user.userId,
+        userId: user._id,
         username: user.username,
         email: user.email,
         name: user.name,
