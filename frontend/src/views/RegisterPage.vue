@@ -188,7 +188,8 @@ export default {
         password: this.password,
         name: this.name,
         surname: this.surname,
-        usertype: this.userType 
+        usertype: this.userType,
+        phone: this.phone || ""
       };
 
         // this.$router.push('/');
