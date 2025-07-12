@@ -9,10 +9,10 @@
           <!-- Immagine Profilo -->
           <div class="relative">
             <div>
-              <img
+              <!-- <img
                 src="https://picsum.photos/200/300"
                 class="w-36 h-36 sm:w-48 sm:h-48 bg-text-text_3 mx-auto rounded-full shadow-2xl absolute inset-x-0 top-0 -mt-24"
-              />
+              /> -->
             </div>
           </div>
 
@@ -25,7 +25,7 @@
               Modifica Profilo
               </button>
             </router-link>
-            <PostButton />
+            <!-- <PostButton /> -->
           </div>
         </div>
 
@@ -46,19 +46,27 @@
       <!-- <h2 class="text-2xl font-bold mb-6">I Tuoi Post</h2> -->
 
       <!-- Singolo Post -->
-      <div v-for="post in posts" :key="post.id">
-        <Post :post="post" @post-deleted="removePost"/>
-      </div>
+      <!-- <div v-for="listing in listings" :key="listing._id">
+        <Post :listing="listing" @post-deleted="removePost"/>
+      </div> -->
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted} from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted,watch} from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
+import {getUserListings} from '@/services/listings'
 
+const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
+const API_URL = HOST + '/api/v1'
+const USERS_URL = API_URL + '/users'
+
+const route = useRoute();
 const router = useRouter();
+
+const userData = ref()
 
 const username = ref('');
 const userId = ref('');
@@ -80,6 +88,10 @@ function isAuthor(){
     }else{
         return false;
     }
+}
+
+function isAuthor(){
+  return false;
 }
 
  async function follow(){
@@ -122,17 +134,41 @@ function isAuthor(){
     }
 }
 
+const props = defineProps({
+  mockUser: Object
+})
+
 onMounted(() => {
-    fetchUserData();
+  console.log(route.params.id)
+  userId.value = route.params.id;
+  fetchUserData(route.params.id)
 });
 
+
 listings.value = getUserListings(localStorage.getItem('userId'));
-listings.value.then((data) => {
-    n_listings.value = data.length;
-});
+
 
 async function removePost(postId){
     await deletePost(postId);
+}
+
+async function  fetchUserData(userId){
+    try{
+        const user = await axios.get(USERS_URL+`/${userId}`);
+        if(!user){
+            console.error("User ID not found");
+            return;
+        }else{
+            //const response = await axios.get(USERS_URL+`/${userId}`);
+            username.value = user.username;
+            name.value = user.name;
+            surname.value = user.surname;
+            email.value = user.email;
+        }
+    }catch(error){
+        console.error("Error fetching user data:", error);
+        return;
+    }
 }
 
 </script>

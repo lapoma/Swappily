@@ -508,7 +508,6 @@ components:
       type: object
       required:
         - name
-        - userId
         - surname
         - username
         - email
@@ -517,8 +516,6 @@ components:
         name:
           type: string
           description: 'Name of the user'
-        userId:
-          type: integer
         surname:  
           type: string
           description: 'Name of the user'

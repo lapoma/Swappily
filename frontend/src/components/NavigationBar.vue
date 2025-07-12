@@ -43,7 +43,7 @@
           </router-link>
 
           <router-link 
-            :to="isLoggedIn ? '/profilo' : '/LoginPage'" 
+            :to="isLoggedIn ? pathToUserPage() : '/LoginPage'" 
             class="nav-link"
             :class="{ active: isLoggedIn && $route.path.startsWith('/profilo') }"
          >
@@ -75,6 +75,11 @@ const handleProtectedClick = (routeName) => {
     router.push({ name: routeName });
   }
 };
+
+function pathToUserPage(){
+  const userId= localStorage.getItem('userId');
+  router.push(`/UserProfile/${userId}`)  
+}
 </script>
 
 <style scoped>

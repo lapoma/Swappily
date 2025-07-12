@@ -30,6 +30,13 @@ const router = createRouter({
           path: '/UserProfile/:id',
           name: 'UserProfile',
           component: () => import('../views/UserProfile.vue'),
+          props: true
+        },
+        {
+            path: '/mock-user-profile',
+            name: 'MockUserProfile',
+            component: () => import('../views/UserProfile.vue'),
+            props: { mockUser: {id: 1, username: 'john_doe', name: 'John', surname: 'Doe', favoriteList: [1],email: 'johndoe@email.com' } } // Passa i dati di esempio come props
         },
          {
           path: '/MessagePage/', //per ora non c'è :id perchè sono in testing
