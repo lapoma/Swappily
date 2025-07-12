@@ -21,12 +21,11 @@ const router = createRouter({
             name:'RegisterPage',
             component: RegisterPage
         },
-        {
-            path: '/mock-listing',
-            name: 'MockListing',
-            component: () => import('../components/ListingTable.vue'),
-            props: { mockData: { id: 1, title: 'Mock Listing', description: 'This is a mock listing.', status: 'ok', user_id: 1, available: true }, mockUser: { id: 1, name: 'John Doe', favoriteList: [1] } } // Passa i dati di esempio come props
-        },
+      //   {
+      //       path: '/mock-listing',
+      //       name: 'MockListing',
+      //       component: () => import('../views/ListingTableMockView.vue')
+      // },
         {
           path: '/UserProfile/:id',
           name: 'UserProfile',
@@ -49,6 +48,11 @@ const router = createRouter({
             path: '/NotificationPage', //per ora non c'è :id perchè sono in testing
             name:'NotificationPage',
             component: () => import('../views/NotificationPage.vue')
+        },
+        {
+            path: '/HomePage1', 
+            name:'HomePage1',
+            component: () => import('../views/HomePage1.vue')
         },
     ]
 })
