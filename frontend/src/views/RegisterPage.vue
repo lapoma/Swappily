@@ -1,63 +1,138 @@
 <template>
-  <!-- component -->
-<!-- <script src="https://cdn.tailwindcss.com"></script> -->
-<body class="bg-gray-100">
-  <div class="container mx-auto py-8">
-    <h1 class="text-2xl font-bold mb-6 text-center">Registration Form</h1>
-    
-    <!-- Messaggio di errore -->
-      <div v-if="error"  class="mb-4 p-4 text-red-700 bg-red-100 border border-red-300 rounded-lg">
-        {{ error }}
-      </div>
+  <div class="min-h-screen flex items-center justify-center p-4 " style="background-color: rgb(255, 244, 234)">
+    <div class="w-full max-w-md">
+      <!-- Form di registrazione -->
+      <form @submit.prevent="handleRegister" class="p-8 rounded-xl shadow-xl flex flex-col gap-3" 
+      style="background-color: #7eacb5">
+        <!-- Titolo dentro la finestra -->
+        <h1 class="text-3xl font-bold mb-8 text-center" 
+        style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: 700;">
+          Registrazione
+        </h1>
+        
+        <!-- Messaggio di errore -->
+        <div v-if="error" class="mb-6 p-4 rounded-lg" style="background-color: rgba(255, 244, 234, 0.9); color: #d32f2f">
+          {{ error }}
+        </div>
 
-    <form @submit.prevent="handleRegister" class="w-full max-w-sm mx-auto bg-white p-8 rounded-md shadow-md">
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="name">Nome</label>
-        <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
-          v-model="name" type="text" id="name" name="name" placeholder="John" />
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="surname">Cognome</label>
-        <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
-          type="text" id="surname" v-model="surname" name="surname" placeholder="Doe"/>
-      </div>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="username">Username</label>
-        <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
-          type="text" id="username" v-model="username" name="username" placeholder="johndoe" />
-      </div>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Email</label>
-        <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
-          type="email" id="email" v-model="email" name="email" placeholder="john@example.com"/>
-      </div>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="password">Password</label>
-        <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
-          type="password" id="password" v-model="password" name="password" placeholder="********"/>
-      </div>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="confirmPassword">Confirm Password</label>
-        <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
-          type="password" id="confirmPassword" v-model="confirmPassword" name="confirmPassword" placeholder="********"/>
-      </div>
-      <div class="flex flex-col">
-            <label for="role" class="block text-gray-700 text-sm font-bold mb-2"
-              >Seleziona Ruolo</label
-            >
-            <select
-              id="role"
-              v-model="userType"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
-            >
-              <option value="utente">Utente</option>
-              <option value="operatore">Operatore</option>
-            </select>
-          </div>
-      <button
-        class="w-full bg-indigo-500 text-white text-sm font-bold py-2 px-4 rounded-md hover:bg-indigo-600 transition duration-300"
-        type="submit">Registrati</button>
-    </form>
+        <!-- Nome e Cognome -->
+        <div class="mb-6">
+          <label class="block mb-2 font-medium" style="color: rgb(255, 244, 234)" for="name">Nome</label>
+          <input 
+            class="w-full px-4 py-3 border rounded-lg focus:outline-none"
+            style="border-color: rgb(255, 244, 234); background-color: rgba(255, 244, 234, 0.9); color: #7eacb5"
+            v-model="name" 
+            type="text" 
+            id="name" 
+            placeholder="Mario"
+          />
+        </div>
+        
+        <div class="mb-6">
+          <label class="block mb-2 font-medium" style="color: rgb(255, 244, 234)" for="surname">Cognome</label>
+          <input 
+            class="w-full px-4 py-3 border rounded-lg focus:outline-none"
+            style="border-color: rgb(255, 244, 234); background-color: rgba(255, 244, 234, 0.9); color: #7eacb5"
+            v-model="surname" 
+            type="text" 
+            id="surname" 
+            placeholder="Rossi"
+          />
+        </div>
+
+        
+
+        <!-- Username -->
+        <div class="mb-6">
+          <label class="block mb-2 font-medium" style="color: rgb(255, 244, 234)" for="username">Username</label>
+          <input 
+            class="w-full px-4 py-3 border rounded-lg focus:outline-none"
+            style="border-color: rgb(255, 244, 234); background-color: rgba(255, 244, 234, 0.9); color: #7eacb5"
+            v-model="username" 
+            type="text" 
+            id="username" 
+            placeholder="mariorossi"
+          />
+        </div>
+
+        <!-- Email -->
+        <div class="mb-6">
+          <label class="block mb-2 font-medium" style="color: rgb(255, 244, 234)" for="email">Email</label>
+          <input 
+            class="w-full px-4 py-3 border rounded-lg focus:outline-none"
+            style="border-color: rgb(255, 244, 234); background-color: rgba(255, 244, 234, 0.9); color: #7eacb5"
+            v-model="email" 
+            type="email" 
+            id="email" 
+            placeholder="mario@example.com"
+          />
+        </div>
+        <!-- Numero di telefono (opzionale) -->
+        <div class="mb-6">
+          <label class="block mb-2 font-medium" style="color: rgb(255, 244, 234)" for="phone">
+            Numero di telefono <span class="text-sm font-normal">(opzionale)</span>
+          </label>
+          <input 
+            class="w-full px-4 py-3 border rounded-lg focus:outline-none"
+            style="border-color: rgb(255, 244, 234); background-color: rgba(255, 244, 234, 0.9); color: #7eacb5"
+            v-model="phone" 
+            type="tel" 
+            id="phone" 
+            placeholder="123 4567890"
+          />
+        </div>
+
+        <!-- Password -->
+        <div class="mb-6">
+          <label class="block mb-2 font-medium" style="color: rgb(255, 244, 234)" for="password">Password</label>
+          <input 
+            class="w-full px-4 py-3 border rounded-lg focus:outline-none"
+            style="border-color: rgb(255, 244, 234); background-color: rgba(255, 244, 234, 0.9); color: #7eacb5"
+            v-model="password" 
+            type="password" 
+            id="password" 
+            placeholder="********"
+          />
+        </div>
+
+        <!-- Conferma Password -->
+        <div class="mb-6">
+          <label class="block mb-2 font-medium" style="color: rgb(255, 244, 234)" for="confirmPassword">Conferma Password</label>
+          <input 
+            class="w-full px-4 py-3 border rounded-lg focus:outline-none"
+            style="border-color: rgb(255, 244, 234); background-color: rgba(255, 244, 234, 0.9); color: #7eacb5"
+            v-model="confirmPassword" 
+            type="password" 
+            id="confirmPassword" 
+            placeholder="********"
+          />
+        </div>
+
+        <!-- Ruolo -->
+        <div class="mb-8">
+          <label class="block mb-2 font-medium" style="color: rgb(255, 244, 234)" for="role">Seleziona Ruolo</label>
+          <select
+            id="role"
+            v-model="userType"
+            class="w-full px-4 py-3 border rounded-lg focus:outline-none"
+            style="border-color: rgb(255, 244, 234); background-color: rgba(255, 244, 234, 0.9); color: #7eacb5"
+          >
+            <option value="utente">Utente</option>
+            <option value="operatore">Operatore</option>
+          </select>
+        </div>
+
+        <!-- Pulsante Registrati -->
+        <button
+          class="w-full py-3 px-4 rounded-lg font-bold transition duration-300 hover:opacity-90"
+          style="background-color: rgb(201, 104, 104); color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-size: 1.2rem; font-weight: 750;"
+          type="submit"
+        >
+          REGISTRATI
+        </button>
+      </form>
+    </div>
   </div>
-</body>
 </template>
 
 <script>

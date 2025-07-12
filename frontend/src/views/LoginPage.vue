@@ -1,11 +1,17 @@
 <template>
   <div>
     <div class="flex justify-center items-start h-screen pt-12 sm:pt-24">
-      <div class="bg-white p-8 sm:p-12 rounded-lg shadow-lg w-full max-w-md">
+      <!-- MODIFICATO: sfondo blu -->
+      <div
+        class="p-8 sm:p-7 rounded-lg shadow-lg w-full max-w-md"
+        style="background-color: #7eacb5"
+      >
+        <!-- MODIFICATO: testo color crema -->
         <h2
-          class="text-2xl sm:text-3xl font-medium text-text_2 mb-8 text-center"
+          class="text-2xl sm:text-3xl font-medium mb-8 text-center"
+          style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: 700;"
         >
-          Accedi al tuo Account
+          Login
         </h2>
 
         <!-- Messaggio di errore -->
@@ -16,18 +22,22 @@
           {{ error }}
         </div>
 
-        <form @submit.prevent="handleLogin">
+        <form @submit.prevent="handleLogin" class="flex flex-col gap-5">
           <!-- Email -->
           <div class="flex flex-col mb-6">
-            <label for="username" class="text-sm font-medium text-text_3 mb-1"
-              >Username</label
+            <label
+              for="username"
+              class="text-sm font-medium mb-1"
+              style="color: rgb(255, 244, 234)"
             >
+              Username
+            </label>
             <div
-              class="flex items-center border rounded-lg text-text_3 bg-gray-50 focus-within:ring-2 focus-within:button_1_hover"
+              class="flex items-center border rounded-lg bg-gray-50 focus-within:ring-2 focus-within:ring-white"
             >
               <input
                 id="username"
-                type="username"
+                type="text"
                 v-model="username"
                 class="flex-1 px-3 py-2 bg-transparent outline-none"
                 placeholder="username"
@@ -36,12 +46,16 @@
           </div>
 
           <!-- Password -->
-          <div class="flex flex-col mb-4">
-            <label for="password" class="text-sm font-medium text-text_3 mb-1"
-              >Password</label
+          <div class="flex flex-col mb-6">
+            <label
+              for="password"
+              class="text-sm font-medium mb-1"
+              style="color: rgb(255, 244, 234)"
             >
+              Password
+            </label>
             <div
-              class="flex items-center border rounded-lg text-text_3 bg-gray-50 focus-within:ring-2 focus-within:button_1_hover"
+              class="flex items-center border rounded-lg bg-gray-50 focus-within:ring-2 focus-within:ring-white"
             >
               <input
                 id="password"
@@ -53,25 +67,31 @@
             </div>
           </div>
 
-          <!-- Pulsante Login -->
-            <button
-              type="submit"
-              class="w-full px-6 py-3 bg-button_2 text-text_1 font-medium rounded-lg hover:bg-button_2_hover"
-            >
-              Accedi
-            </button>
+          <!-- MODIFICATO: pulsante Accedi personalizzato -->
+          <button
+            type="submit"
+            class="w-full px-6 py-3 rounded-lg font-bold transition hover:bg-red-300 hover:shadow-lg"
+            style="background-color: rgb(201, 104, 104); color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-size: 1.3rem; font-weight: 750;"
+          >
+            Accedi
+          </button>
         </form>
 
-        <div class="mt-6 text-center text-sm text-text_3">
+        <!-- MODIFICATO: testo color crema -->
+        <div class="mt-6 text-center text-sm" style="color: rgb(255, 244, 234)">
           Non hai un account?
-          <span class="!text-red-500 hover:underline"> 
-            <router-link to="/RegisterPage">Registrati</router-link>
-          </span>
+          <router-link
+            to="/RegisterPage"
+            class="text-red-300 hover:underline font-bold"
+          >
+            Registrati
+          </router-link>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 
 
 <script>
