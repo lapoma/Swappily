@@ -131,6 +131,11 @@
 </template>
 
 <script>
+import axios from "axios"
+
+const HOST = import.meta.env.VITE_API_HOST || `http://localhost:8080`
+const API_URL = HOST+`/api/v1`
+
 export default {
   name: 'ListingTable',
   props: {
@@ -163,10 +168,59 @@ export default {
       }
     }
   },
+  computed: {
+    isLoggedIn(){
+      return !!localStorage.getItem("token") 
+    }  
+  },
   methods: {
-    toggleFavorite() {
-      this.isFavorite = !this.isFavorite
-    },
+    async toggleFavorite(){
+            if(!this.isLoggedIn) {
+                alert('You should log in first');
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('user'));
+            const token = localStorage.getItem('token');
+            const userId = localStorage.getItem('userId');
+
+            try{
+                const userGet = await axios.get(API_URL+`/users/${userId}`);
+
+                console.log(userGet)
+
+                const newFavList = userGet.data.favorite.includes(this.listing.id);
+
+
+                if(newFavList){
+                    await axios.put(API_URL+`/users/${userId}`, {
+                        favoriteList: userGet.data.favoriteList.filter(id => id !== this.listing.id)
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+                    this.isFavorite = false;
+                } else {
+                    await axios.put(API_URL+`/users/${user.id}`, {
+                        favoriteList: [...userGet.data.favoriteList, this.listing.id]
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+                    this.isFavorite = true;
+                }
+
+                localStorage.setItem('user', JSON.stringify({
+                    ...userGet.data,
+                    favoriteList: newFavList
+                }));
+            }catch(error){
+                console.error('Failed to toggle favorite: ', error);
+                alert('An error occurred while updating favorites.');
+            }
+        },
     contactSeller() {
       alert(`Contatta il venditore per: ${this.listing.title}`)
     },

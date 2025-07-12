@@ -199,7 +199,6 @@ export default {
         
         console.log(response);
         // Se la richiesta ha successo, resetta gli errori e continua
-        console.log(user);
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('userId', response.data._id);
         localStorage.setItem('username',response.data.username);
@@ -209,7 +208,7 @@ export default {
 
         this.$store.dispatch("login",{username: this.username, userType: this.userType});
 
-        this.$router.push('/');
+        this.$router.push(`/`);
         
       } catch (error) {
         console.log(error)

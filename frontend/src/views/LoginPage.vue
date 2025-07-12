@@ -140,18 +140,25 @@ export default {
 
 
                 response = await axios.post(API_URL+`/authentications`, authData);
+
+                console.log(response);
+
                 const user = await axios.get(API_URL+`/users/${response.data.id}`,);
-                console.log(user);
+
+
+                console.log("UTENTE: "+response.data.id);
+
+
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('userId', response.data.id);
                 localStorage.setItem('username',response.data.username);
-                localStorage.setItem('userType', user.data.usertype);
+                localStorage.setItem('usertype', JSON.stringify(user.data.usertype));
                 
                 console.log(localStorage.getItem("token"));
 
-                this.$store.dispatch("login",{username: this.username, userType: this.userType});
+                //this.$store.dispatch("login",{username: this.username, userType: this.userType});
 
-                this.$router.push("/");
+                this.$router.push(`/UserProfile/${response.data.id}`)
             }catch(error){
               console.log(error)
                 this.error = error.response?.data?.message || "Errore nel Login. Riprova.";
