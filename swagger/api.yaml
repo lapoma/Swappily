@@ -1,0 +1,1105 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Swappil OpenAPI 3.0
+  description: API for managing exchange of goods between users.
+  license:
+    name: MIT
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/unitn-c1a/Swappily/1.0.0
+  - description: Localhost
+    url: 'http://localhost:8080/api/v1'
+paths:
+  /authentications:
+    post:
+      description: Authenticate a user
+      summary: Authenticate a user and return a token.
+      responses:
+        '200':
+          description: Token created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: True if the authentication is a success
+                  token:
+                    type: string
+                    description: JWT token
+        '401':
+          description: Unauthorized. Invalid credential
+      requestBody:
+        description: The username and password must be passed in the Body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  description: Username of the user
+                password:
+                  type: string
+                  description: Password of the user
+  /users:
+    post:
+      description: Creates a new user in the system.
+      summary: Register a new user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: User created. Link in the Location header
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Link to the newly created user.
+        '400':
+          description: Bad request. The input is not correct
+    get:
+      description: Get all the users. It is possible to show users by their username.
+      summary: View all users or filtered by username.
+      parameters:
+        - in: query
+          name: username
+          schema:
+            type: string
+          required: false
+      responses:
+        '200':
+          description: Collection of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+  '/users/{userId}':
+    get:
+      description: Gets a user by ID.
+      summary: View a user
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+    delete:
+      description: Delete a user
+      summary: Delete a user.
+      security:
+        - TokenQueryAuth: []
+        - accessTokenHeader: []
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+      responses:
+        '204':
+          description: User deleted
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+    put:
+      description: Updates an existing user.
+      summary: Update an existing user
+      security:
+        - TokenQueryAuth: []
+        - accessTokenHeader: []
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User updated
+        '404':
+          description: User not found
+  '/users/{userId}/favorites/{listingId}':
+    post:
+      description: Add a listing to user's favorites
+      summary: Add to favorites
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: listingId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Favorites list updated
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: objectId
+        '400':
+          description: Listing already in favorites
+        '404':
+          description: User or listing not found
+        '500':
+          description: Internal server error
+    delete:
+      description: Remove a listing from user's favorites
+      summary: Remove from favorites
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: listingId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Favorites list updated
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: objectId
+        '400':
+          description: Listing not in favorites
+        '404':
+          description: User or listing not found
+        '500':
+          description: Internal server error
+  '/users/{userId}/favorites':
+    get:
+      description: Get user's favorite listings
+      summary: Get favorites
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: List of favorite listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      description: Listing ID
+                    title:
+                      type: string
+                      description: Listing title
+                    images:
+                      type: array
+                      items:
+                        type: string
+                      description: Listing images
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+  '/users/{userId}/block/{blockedUserId}':
+    post:
+      description: Block a user
+      summary: Block user
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: blockedUserId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: User blocked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  blockedUsers:
+                    type: array
+                    items:
+                      type: string
+                      format: objectId
+        '400':
+          description: Cannot block yourself or user already blocked
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+    delete:
+      description: Unblock a user
+      summary: Unblock user
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: blockedUserId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: User unblocked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  blockedUsers:
+                    type: array
+                    items:
+                      type: string
+                      format: objectId
+        '400':
+          description: User not blocked
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+  '/users/{userId}/blocked':
+    get:
+      description: Get list of blocked users
+      summary: Get blocked users
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: List of blocked users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      description: User ID
+                    username:
+                      type: string
+                      description: User's username
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+  '/users/{userId}/follow/{targetUserId}':
+    post:
+      description: Follow another user
+      summary: Follow a user
+      security:
+        - TokenQueryAuth: []
+        - accessTokenHeader: []
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: targetUserId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successfully followed user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Ora segui username"
+                  n_followed:
+                    type: integer
+                    description: Number of users followed
+                  n_followers:
+                    type: integer
+                    description: Number of followers of target user
+        '400':
+          description: Bad request (self-follow or already following)
+        '403':
+          description: Forbidden (not authorized or blocked by target user)
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+    delete:
+      description: Unfollow another user
+      summary: Unfollow a user
+      security:
+        - TokenQueryAuth: []
+        - accessTokenHeader: []
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: targetUserId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successfully unfollowed user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Hai smesso di seguire username"
+                  n_followed:
+                    type: integer
+                    description: Number of users followed
+                  n_followers:
+                    type: integer
+                    description: Number of followers of target user
+        '400':
+          description: Bad request (not following the user)
+        '403':
+          description: Forbidden (not authorized)
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+
+  '/users/{userId}/following':
+    get:
+      description: Get list of followed users
+      summary: Get following list
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: List of followed users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  following:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          description: User ID
+                        username:
+                          type: string
+                  count:
+                    type: integer
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+
+  '/users/{userId}/followers':
+    get:
+      description: Get list of followers
+      summary: Get followers list
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: List of followers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  followers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          description: User ID
+                        username:
+                          type: string
+                  count:
+                    type: integer
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+  '/users/{userId}/isFollowing/{targetUserId}':
+    get:
+      description: Check if a user is following another user
+      summary: Check following status
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: targetUserId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Following status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isFollowing:
+                    type: boolean
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+  /listings:
+    post:
+      description: Creates a new listing.
+      summary: Create a new listing
+      security:
+        - TokenQueryAuth: []
+        - accessTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Listing'
+      responses:
+        '201':
+          description: Listing created. Link in the Location header
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Link to the newly created listing.
+        '400':
+          description: Bad request.
+        '403':
+          description: Not authorized.
+        '500':
+          description: Internal server error.
+    get:
+      description: 'Gets the list of listings. It is possible to show the listing by their title or filtered by status.'
+      summary: View all listings or filtered listings.
+      parameters:
+        - in: query
+          name: title
+          schema:
+            type: string
+        - in: query
+          name: status
+          schema:
+            type: array
+            items:
+              type: string
+            enum:
+              - As new
+              - Good
+              - Ok
+              - Not Good
+      responses:
+        '200':
+          description: Collection of listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Listing'
+        '404':
+          description: Not found
+        '500':
+          description: Server error
+  '/listings/{listingId}':
+    get:
+      description: Gets a listing by ID.
+      summary: View a listing
+      parameters:
+        - in: path
+          name: listingId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Listing found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Listing'
+        '404':
+          description: Listing not found
+    delete:
+      description: Deletes a listing by ID.
+      summary: Delete a listing
+      security:
+        - TokenQueryAuth: []
+        - accessTokenHeader: []
+      parameters:
+        - in: path
+          name: listingId
+          schema:
+            type: string
+          required: true
+      responses:
+        '204':
+          description: Listing deleted
+        '403':
+          description: The user does not have the authorization
+        '404':
+          description: Listing not found
+        '500':
+          description: Internal server error
+    put:
+      description: Updates an existing listing.
+      summary: Update an existing listing
+      security:
+        - TokenQueryAuth: []
+        - accessTokenHeader: []
+      parameters:
+        - in: path
+          name: listingId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Listing'
+      responses:
+        '200':
+          description: Listing modified
+        '404':
+          description: Listing not found
+  '/users/{userId}/listings':
+    get:
+      summary: Get all listings of a user
+      description: Returns all listings created by the specified user.
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: ID of the user
+      responses:
+        '200':
+          description: Array of listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Listing'
+        '400':
+          description: Invalid userId
+        '404':
+          description: No listings found for this user
+        '500':
+          description: Internal server error
+  /exchange:
+    get:
+      description: Gets the list of exchanges. It is possible to show the exchanges by their status.
+      summary: View all exchanges or filtered exchanges.
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: array
+            items:
+              type: string
+            enum:
+              - pending
+              - accepted
+              - rejected
+      responses:
+        '200':
+          description: Collection of exchanges
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Exchange'
+        '404':
+          description: Exchanges not found
+  '/exchange/listing/{listingId}':
+    post:
+      description: Creates a new exchange.
+      summary: Exchange an object
+      security:
+        - TokenQueryAuth: []
+        - accessTokenHeader: []
+      parameters:
+        - in: path
+          name: listingId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Exchange'
+      responses:
+        '201':
+          description: Exchange created. Link in the Location header
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Link to the newly created exchange.
+  '/exchange/{exchangeId}':
+    get:
+      description: Gets an exchange by ID.
+      summary: View an exchange
+      parameters:
+        - in: path
+          name: exchangeId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Exchange found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exchange'
+        '404':
+          description: Exchange not found
+    put:
+      description: Modify an exchange
+      summary: Modify an exchange
+      security:
+        - TokenQueryAuth: []
+        - accessTokenHeader: []
+      parameters:
+        - in: path
+          name: exchangeId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Exchange'
+      responses:
+        '200':
+          description: Exchange modified
+        '404':
+          description: Exchange not found
+    delete:
+      description: Deleting an existing exchange
+      summary: Deleting an exchange
+      parameters:
+        - in: path
+          name: exchangeId
+          schema:
+            type: string
+          required: true
+      security:
+        - TokenQueryAuth: []
+        - accessTokenHeader: []
+      responses:
+        '204':
+          description: Exchange deleted
+        '404':
+          description: Exchange not found
+  /review:
+    post:
+      description: Create a new review
+      summary: Write a review
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+      responses:
+        '201':
+          description: Review created. The header contains a link to the newly created review
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Link to the newly created review.
+        '400':
+          description: Bad request. The input is not correct
+        '500':
+          description: Server error
+  '/review/{reviewId}':
+    delete:
+      description: The user deletes one of his reviews
+      summary: Deleting a review
+      security:
+        - TokenQueryAuth: []
+        - accessTokenHeader: []
+      parameters:
+        - in: path
+          name: reviewId
+          schema:
+            type: string
+          required: true
+      responses:
+        '204':
+          description: Review deleted
+        '403':
+          description: This user does not have the authorization
+        '404':
+          description: Review not found
+  '/review/reviewee/{revieweeId}':
+    get:
+      description: Get all the reviews of one user
+      summary: Reviews of a user
+      parameters:
+        - in: header
+          name: authenticate
+          schema:
+            type: string
+        - in: path
+          name: revieweeId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Reviews found
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Review'
+        '404':
+          description: Not found
+        '500':
+          description: Server error
+  /report:
+    post:
+      description: Creating a new report
+      summary: Create a report
+      security:
+        - TokenQueryAuth: []
+        - accessTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Report'
+      responses:
+        '201':
+          description: Report created successfully
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Link to the newly created report
+        '400':
+          description: Bad request. Missing required fields
+        '404':
+          description: User or listing not found
+        '500':
+          description: Server error
+components:
+  securitySchemes:
+    accessTokenHeader:
+      description: The API authentication. The API key must be a valid JWT token.
+      type: apiKey
+      in: header
+      name: x-access-token
+    TokenQueryAuth:
+      description: The API authentication. The API must be a valid JWT token
+      type: apiKey
+      in: query
+      name: token
+  schemas:
+    User:
+      type: object
+      required:
+        - name
+        - surname
+        - username
+        - email
+        - password
+        - usertype
+      properties:
+        userId:
+          type: string
+          description: Unique identifier for the user
+        name:
+          type: string
+          description: Name of the user
+        surname:
+          type: string
+          description: Surname of the user
+        username:
+          type: string
+          minLength: 3
+          maxLength: 20
+          description: Username of the user
+        email:
+          type: string
+          format: email
+          description: Email address of the user
+        password:
+          type: string
+          minLength: 8
+          description: Password of the user
+        usertype:
+          type: string
+          enum: [user, operator]
+          description: Indicates whether the user is a normal user or an operator
+        phone:
+          type: string
+          description: Phone number of the user
+        favorite:
+          type: array
+          description: List of favorite listings of the user
+          items:
+            type: string
+          default: []
+        followed:
+          type: array
+          items:
+            type: string
+          description: List of followed users
+          default: []
+        n_followed:
+          type: integer
+          description: Number of users followed by the user
+          default: 0
+        followers:
+          type: array
+          description: List of followers of the user 
+          items:
+            type: string
+          default: []
+        n_followers:
+          type: integer
+          description: Number of followers of the user
+          default: 0
+        blocklist:
+          type: array
+          description: List of users blocked by the user
+          items:
+            type: string
+          default: []
+        n_exchanges:
+          type: integer
+          description: Number of exchanges made by the user
+          default: 0
+        description:
+          type: string
+          description: Profile description of the user
+          default: ""
+          minLength: 3
+          maxLength: 2000
+        profile_url:
+          type: string
+          description: Profile picture of the user
+    Listing:
+      type: object
+      required:
+        - title
+        - userId
+        - description
+        - status
+        - available
+        - listing_url
+      properties:
+        listingId:
+          type: string
+          description: Unique identifier for the listing
+        title:
+          type: string
+          description: Title of the listing
+          minLength: 3
+          maxLength: 50
+        userId:
+          type: string
+          description: ID of the user who created the listing
+        username:
+          type: string
+          description: Username of the creator of the listing
+        description:
+          type: string
+          description: Description of the listing
+        status:
+          type: string
+          enum:
+            - As new
+            - Good
+            - Ok
+            - Not Good
+          description: Physical condition of the object
+        available:
+          type: boolean
+          description: Availability of the object
+          default: true
+        listing_url:
+          type: array
+          description: Images of the listing
+          items:
+            type: string
+          maxItems: 10
+    Exchange:
+      type: object
+      required:
+        - sender
+        - receiver
+        - offeredListing
+        - requestedListing
+        - status
+      properties:
+        exchangeId:
+          type: string
+          description: Unique identifier for the exchange
+        sender:
+          type: string
+          description: ID of the user who initiated the exchange
+        receiver:
+          type: string
+          description: ID of the user who received the exchange request
+        offeredListing:
+          type: string
+          description: ID of the listing offered in exchange
+        requestedListing:
+          type: string
+          description: ID of the listing requested in exchange
+        status:
+          type: string
+          enum:
+            - pending
+            - accepted
+            - rejected
+          description: Status of the exchange
+          default: pending
+        date:
+          type: string
+          format: date-time
+          description: Date when the exchange was created
+    Review:
+      type: object
+      required:
+        - revieweeId
+        - reviewerId
+        - text
+      properties:
+        reviewId:
+          type: string
+          description: Unique identifier for the review
+        reviewerId:
+          type: string
+          description: ID of the user writing the review
+        revieweeId:
+          type: string
+          description: ID of the user being reviewed
+        text:
+          type: string
+          description: Body of the review
+    Report:
+      type: object
+      required:
+        - reporterId
+        - text
+      properties:
+        reportId:
+          type: string
+          description: Unique identifier for the report (auto-generated)
+        reporterId:
+          type: string
+          description: ID of the user creating the report
+        reporteeId:
+          type: string
+          description: ID of the user being reported (optional)
+          default: null
+        listingId:
+          type: string
+          description: ID of the listing being reported (optional)
+          default: null
+        text:
+          type: string
+          description: Textual description of the report
+          maxLength: 2000

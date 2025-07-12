@@ -11,6 +11,7 @@
       </div>
 
     <form @submit.prevent="handleRegister" class="w-full max-w-sm mx-auto bg-white p-8 rounded-md shadow-md">
+
       <div class="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="name">Nome</label>
         <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
@@ -30,12 +31,17 @@
           type="email" id="email" v-model="email" name="email" placeholder="john@example.com"/>
       </div>
       <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="phone">Numero di telefono</label>
+        <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+          type="phone" id="phone" v-model="phone" name="phone" placeholder="123456789"/>
+      </div>
+      <div class="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="password">Password</label>
         <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
           type="password" id="password" v-model="password" name="password" placeholder="********"/>
       </div>
       <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="confirmPassword">Confirm Password</label>
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="confirmPassword">Conferma Password</label>
         <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
           type="password" id="confirmPassword" v-model="confirmPassword" name="confirmPassword" placeholder="********"/>
       </div>
@@ -48,8 +54,8 @@
               v-model="userType"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
             >
-              <option value="utente">Utente</option>
-              <option value="operatore">Operatore</option>
+              <option value="user">Utente</option>
+              <option value="operator">Operatore</option>
             </select>
           </div>
       <button
@@ -77,32 +83,33 @@ export default {
       confirmPassword: "",
       name: "",
       surname: "",
-      userType: "Utente",
+      userType: "",
+      phone: "",
       error: ""
     };
   },
 
   methods: {
     async handleRegister() {
-        this.error="";
+        this.error = "";
 
         if (!this.email || !this.username || !this.name || !this.surname) {
-        this.error = 'Required fields are missing';
+        this.error = "Mancano campi richiesti.";
         return;
         }
 
         if(!this.checkIfEmailInString(this.email)){
-            this.error = 'Email must be in a valid format';
+            this.error = "L'email deve essere in formato valido.";
             return;
         }
 
         if(!this.checkPassword(this.password)){
-            this.error ='Password must be 8+ chars with uppercase, lowercase, number, special char' ;
+            this.error = "La password deve avere almeno 8 caratteri, almeno un alettera maiuscola, una minuscula, un numero e un simbolo." ;
             return;
         }
 
         if(!this.checkUsername(this.username)){
-           this.error ='"username" must be 3-20 chars, and unique';
+           this.error = "'Username' ha meno di tre caratteri o potrebbe già essere utilizzato.";
            return; 
         }
 
@@ -111,13 +118,14 @@ export default {
         email: this.email,
         password: this.password,
         name: this.name,
-        surname: this.surnname,
-        userType: this.userType 
+        surname: this.surname,
+        usertype: this.userType 
       };
 
         // this.$router.push('/');
         try {
         let response;
+        console.log(authData);
         response = await axios.post(API_URL+`/users`, authData);
         
         console.log(response);
@@ -135,6 +143,7 @@ export default {
         this.$router.push('/');
         
       } catch (error) {
+        console.log(error)
         // Gestione 
         // e: aggiorna il messaggio da mostrare
         this.error =
@@ -148,7 +157,7 @@ export default {
     // Username check
     checkUsername(username) {
         if (!username || username.length < 3 || username.length > 20) return false;
-         return existing.length === 0;
+         return true;
     },
     // Email check
     checkIfEmailInString(email) {

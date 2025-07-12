@@ -7,7 +7,7 @@ module.exports = mongoose.model('Review', new Schema({
         ref: 'User',
         required: true
     },
-    reviewee: {
+    reviewed: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true

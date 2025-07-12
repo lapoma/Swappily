@@ -24,12 +24,20 @@ const router = createRouter({
         {
             path: '/mock-listing',
             name: 'MockListing',
-            component: () => import('../views/ListingTableMockView.vue')
-      },
+            component: () => import('../components/ListingTable.vue'),
+            props: { mockData: { id: 1, title: 'Mock Listing', description: 'This is a mock listing.', status: 'ok', user_id: 1, available: true }, mockUser: { id: 1, name: 'John Doe', favoriteList: [1] } } // Passa i dati di esempio come props
+        },
         {
           path: '/UserProfile/:id',
           name: 'UserProfile',
           component: () => import('../views/UserProfile.vue'),
+          props: true
+        },
+        {
+            path: '/mock-user-profile',
+            name: 'MockUserProfile',
+            component: () => import('../views/UserProfile.vue'),
+            props: { mockUser: {id: 1, username: 'john_doe', name: 'John', surname: 'Doe', favoriteList: [1],email: 'johndoe@email.com' } } // Passa i dati di esempio come props
         },
          {
           path: '/MessagePage/', //per ora non c'è :id perchè sono in testing

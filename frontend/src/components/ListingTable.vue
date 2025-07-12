@@ -1,18 +1,3 @@
-export default {
-  props: {
-    mockData: Object,
-    mockUser: Object
-  },
-  mounted() {
-    if (this.mockData) {
-      this.listing = this.mockData
-      if (this.mockUser?.favoriteList.includes(this.mockData.id)) {
-        this.isFavorite = true
-      }
-    } else {
-      this.fetchListingData()
-    }
-  },
 <template>
   <div class="min-h-screen bg-gray-50">
     <!-- HEADER (rimane invariato) -->
@@ -163,18 +148,25 @@ export default{
     },
     methods:{
         async fetchListingData(){
-            try{
-                const response = await axios.get(API_URL+`/listings/${this.$route.params.id}`);
-                this.listing = response.data;
+                this._id = '0',
+                this.title= 'cat',
+                this.description= 'a good cat',
+                this.status= 'very good',
+                this.user_id='john',
+                this.available= true
 
-                if(this.listing.user_id === JSON.parse(localStorage.getItem('user')).id){
-                    const user = JSON.parse(localStorage.getItem('user'));
-                    const userGet = await axios.get(API_URL+`/users/${user.id}`);
-                    this.isFavorite= userGet.data.favoriteList.includes(this.listing.id);
-                }
-            }catch(error){
-                console.error('Falied to fetch listing data: ',error);
-            }
+            // try{
+            //     const response = await axios.get(API_URL+`/listings/${this.$route.params.id}`);
+            //     this.listing = response.data;
+
+            //     if(this.listing.user_id === JSON.parse(localStorage.getItem('user')).id){
+            //         const user = JSON.parse(localStorage.getItem('user'));
+            //         const userGet = await axios.get(API_URL+`/users/${user.id}`);
+            //         this.isFavorite= userGet.data.favoriteList.includes(this.listing.id);
+            //     }
+            // }catch(error){
+            //     console.error('Falied to fetch listing data: ',error);
+            // }
         },
         async toggleFavorite(){
             if(!this.listing.user_id === JSON.parse(localStorage.getItem('userId'))) {
@@ -253,7 +245,20 @@ export default{
                 return; 
             } 
         }
+    },
+    props: {
+    mockData: Object,
+    mockUser: Object
+  },
+  mounted() {
+    if (this.mockData) {
+      this.listing = this.mockData
+      if (this.mockUser?.favoriteList.includes(this.mockData.id)) {
+        this.isFavorite = true
+      }
+    } else {
+      this.fetchListingData()
     }
+  }
 }
 </script>
-}

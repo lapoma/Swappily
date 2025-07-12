@@ -159,4 +159,4 @@ function checkDescription(description){
     return true;
 }
 
-export {fetchListings, modifyDescription,modifyStatus,modifyTitle,deleteListing}
+export {fetchListings, modifyDescription,modifyStatus,modifyTitle,deleteListing,getUserListings}
