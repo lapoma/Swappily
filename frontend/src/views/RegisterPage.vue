@@ -117,8 +117,8 @@
             class="w-full px-4 py-3 border rounded-lg focus:outline-none"
             style="border-color: rgb(255, 244, 234); background-color: rgba(255, 244, 234, 0.9); color: #7eacb5"
           >
-            <option value="utente">Utente</option>
-            <option value="operatore">Operatore</option>
+            <option value="user">Utente</option>
+            <option value="operator">Operatore</option>
           </select>
         </div>
 
@@ -182,23 +182,24 @@ export default {
            return; 
         }
 
-        const authData = {
+        const authData={
         username: this.username,
         email: this.email,
         password: this.password,
         name: this.name,
         surname: this.surname,
         usertype: this.userType,
-        phone: this.phone || ""
-      };
+        description: "Utente swappily"
+        //phone: this.phone || ""
+      }
+      console.log(authData)
 
         // this.$router.push('/');
         try {
         let response;
-        console.log(authData);
         response = await axios.post(API_URL+`/users`, authData);
         
-        console.log(response);
+        console.log("RESPONSE: "+ response);
         // Se la richiesta ha successo, resetta gli errori e continua
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('userId', response.data._id);
