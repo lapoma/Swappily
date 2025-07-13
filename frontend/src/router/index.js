@@ -38,6 +38,11 @@ const router = createRouter({
           component: () => import('../views/UserProfile1.vue'),
         },
         {
+          path: '/UserProfile2',
+          name: 'UserProfile2',
+          component: () => import('../views/UserProfile2.vue'),
+        },
+        {
             path: '/mock-user-profile',
             name: 'MockUserProfile',
             component: () => import('../views/UserProfile.vue'),

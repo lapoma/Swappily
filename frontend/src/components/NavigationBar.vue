@@ -48,6 +48,9 @@
 </template>
 
 <script setup>
+// export default {
+//   name: 'Navbar'
+// }
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
