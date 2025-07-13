@@ -9,78 +9,70 @@
       <!-- Menu -->
       <div class="menu-container">
         <div class="menu">
-         
-          <router-link 
-            to="/" 
-            class="nav-link"
-            exact-active-class="active"
-          >
+          <router-link to="/" class="nav-link" exact-active-class="active">
             Home
           </router-link>
-        <!-- Per ora non serve essere loggati perchè è in testing -->
-          <router-link 
-            :to="isLoggedIn ? '/NotificationPage' : '/LoginPage'" 
+
+          <router-link
+            :to="isLoggedIn ? '/NotificationPage' : '/LoginPage'"
             class="nav-link"
             :class="{ active: isLoggedIn && $route.path.startsWith('/NotificationPage') }"
-            >
+          >
             Notifiche
-            </router-link>
+          </router-link>
 
-            <router-link 
-            :to="isLoggedIn ? '/MessagePage' : '/LoginPage'" 
+          <router-link
+            :to="isLoggedIn ? '/MessagePage' : '/LoginPage'"
             class="nav-link"
             :class="{ active: isLoggedIn && $route.path.startsWith('/MessagePage') }"
-            >
-            Messaggi
-            </router-link>
-
-          <router-link 
-            to="/LoginPage" 
-            class="nav-link"
-            exact-active-class="active"
           >
+            Messaggi
+          </router-link>
+
+          <router-link to="/LoginPage" class="nav-link" exact-active-class="active">
             Login
           </router-link>
 
-          <router-link 
-            :to="isLoggedIn ? pathToUserPage() : '/LoginPage'" 
+          <router-link
+            :to="isLoggedIn ? userProfilePath() : '/LoginPage'"
             class="nav-link"
-            :class="{ active: isLoggedIn && $route.path.startsWith('/profilo') }"
-         >
+            :class="{ active: isLoggedIn && $route.path.startsWith('/UserProfile') }"
+          >
             Profilo
-</router-link>
+          </router-link>
+          
         </div>
       </div>
     </div>
   </nav>
 </template>
 
-<script>
-export default {
-  name: 'Navbar'
-}
+<script setup>
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
+import { isLoggedIn, logout } from '@/authState'
 
-const store = useStore();
 const router = useRouter();
+const store = useStore();
+function handleLogout() {
+  logout()
+  router.push('/')
+}
+// Controlla se l'utente è loggato
+// const isLoggedIn = computed(() => {
+//   // Se usi Vuex:
+//   return store.state.isLoggedIn;
+//   // Oppure, se usi solo localStorage:
+//   // return !!localStorage.getItem('token');
+// });
 
-const isLoggedIn = computed(() => store.state.isLoggedIn);
-
-const handleProtectedClick = (routeName) => {
-  if (!isLoggedIn.value) {
-    router.push('/LoginPage');
-  } else {
-    router.push({ name: routeName });
-  }
-};
-
-function pathToUserPage(){
-  const userId= localStorage.getItem('userId');
-  router.push(`/UserProfile/${userId}`)  
+function userProfilePath() {
+  const userId = localStorage.getItem('userId');
+  return `/UserProfile/${userId}`;
 }
 </script>
+
 
 <style scoped>
 .navbar {

@@ -173,7 +173,7 @@ export default {
         }
 
         if(!this.checkPassword(this.password)){
-            this.error = "La password deve avere almeno 8 caratteri, almeno un alettera maiuscola, una minuscula, un numero e un simbolo." ;
+            this.error = "La password deve avere almeno 8 caratteri, almeno una lettera maiuscola, una minuscola, un numero e un simbolo." ;
             return;
         }
 
@@ -189,8 +189,11 @@ export default {
         name: this.name,
         surname: this.surname,
         usertype: this.userType,
-        description: "Utente swappily"
+        description: "Utente swappily",
         //phone: this.phone || ""
+        n_followed: 0,
+        n_followers: 0,
+        n_exchanges: 0,
       }
       console.log(authData)
 
@@ -213,7 +216,8 @@ export default {
         this.$router.push(`/`);
         
       } catch (error) {
-        console.log(error)
+        console.error("Errore nella registrazione:", error.response?.data || error.message);
+
         // Gestione 
         // e: aggiorna il messaggio da mostrare
         this.error =

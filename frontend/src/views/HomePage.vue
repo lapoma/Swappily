@@ -15,37 +15,57 @@
         </p>
 
         <div class="mt-8 flex flex-wrap justify-center gap-4">
-          <button 
-            class="mt-4 px-4 py-2 bg-button_2 text-text_1 rounded-md hover:bg-button_2_hover text-lg font-medium shadow-md"
-            @click="regist">
-            Registrati
-          </button>
-          <button 
-            class="mt-4 px-4 py-2 bg-button_2 text-text_1 rounded-md hover:bg-button_2_hover text-lg font-medium shadow-md"
-            @click="login">
-            Accedi
+          <!-- Mostra registrati e accedi solo se NON loggato -->
+          <template v-if="!isLoggedIn">
+            <button 
+              class="mt-4 px-4 py-2 bg-button_2 text-text_1 rounded-md hover:bg-button_2_hover text-lg font-medium shadow-md"
+              @click="regist">
+              Registrati
+            </button>
+            <button 
+              class="mt-4 px-4 py-2 bg-button_2 text-text_1 rounded-md hover:bg-button_2_hover text-lg font-medium shadow-md"
+              @click="login">
+              Accedi
+            </button>
+          </template>
+
+          <!-- Mostra logout solo se loggato -->
+          <button
+            v-else
+            class="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 text-lg font-medium shadow-md"
+            @click="logout"
+          >
+            Logout
           </button>
         </div>
       </div>
     </div>
   </div>
 </template>
-
 <script>
-import { useRouter } from 'vue-router';
-import SearchBar from '@/components/SearchBar.vue'; 
+import SearchBar from '@/components/SearchBar.vue';
+import { isLoggedIn, logout } from '@/authState';
+
 export default {
-    name: "HomePage",
-    components: { 
-        SearchBar
-    },
-    methods: {
-        regist() {
-            this.$router.push('/RegisterPage');
-        },
-        login() {
-          this.$router.push('/LoginPage')
-        }
+  name: "HomePage",
+  components: { SearchBar },
+  computed: {
+    isLoggedIn() {
+      return isLoggedIn.value;
     }
+  },
+  methods: {
+    regist() {
+      this.$router.push('/RegisterPage');
+    },
+    login() {
+      this.$router.push('/LoginPage');
+    },
+    logout() {
+      logout();
+      this.$router.push('/');
+    }
+  }
 };
 </script>
+
