@@ -33,6 +33,11 @@ const router = createRouter({
           props: true
         },
         {
+          path: '/UserProfile1',
+          name: 'UserProfile1',
+          component: () => import('../views/UserProfile1.vue'),
+        },
+        {
             path: '/mock-user-profile',
             name: 'MockUserProfile',
             component: () => import('../views/UserProfile.vue'),
@@ -47,7 +52,8 @@ const router = createRouter({
         {
             path: '/NotificationPage', //per ora non c'è :id perchè sono in testing
             name:'NotificationPage',
-            component: () => import('../views/NotificationPage.vue')
+            component: () => import('../views/NotificationPage.vue'),
+            meta: { requiresAuth: true } 
         },
         {
             path: '/HomePage1', 

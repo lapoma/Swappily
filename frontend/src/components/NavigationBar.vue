@@ -19,10 +19,10 @@
           </router-link>
         <!-- Per ora non serve essere loggati perchè è in testing -->
           <router-link 
-            to="/NotificationPage"
+            :to="isLoggedIn ? '/NotificationPage' : '/LoginPage'" 
             class="nav-link"
-            exact-active-class="active"
-          >
+            :class="{ active: isLoggedIn && $route.path.startsWith('/NotificationPage') }"
+            >
             Notifiche
             </router-link>
 
@@ -111,8 +111,8 @@ function pathToUserPage(){
 }
 
 .logo img {
-  height: 80px;
-  width: 80px;
+  height: 90px;
+  width: 110px;
 }
 
 .menu-container {

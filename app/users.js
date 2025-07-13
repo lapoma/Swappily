@@ -85,15 +85,11 @@ router.get('', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (!user){
-      console.log(user);
-      return res.status(404).json({ error: 'User not found' });
-
-    }
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
     res.status(200).json({
         self: '/api/v1/users/' + user._id,
-        userId: user._id,
+        userId: user.userId,
         username: user.username,
         email: user.email,
         name: user.name,
@@ -119,13 +115,23 @@ router.get('/:id', async (req, res) => {
 // POST new user
 router.post('', async (req, res) => {
     const { 
+        userId,
         username,
         email,
         name,
         surname,
         password,
         usertype,
-        phone
+        phone,
+        favorite,
+        followed,
+        n_followed,
+        followers,
+        n_followers,
+        blocklist,
+        n_exchanges,
+        description,
+        profile_url
     } = req.body;
 
     
@@ -151,17 +157,30 @@ router.post('', async (req, res) => {
     
     if (!usertype || !['user', 'operator'].includes(usertype))
         return res.status(400).json({ error: '"usertype" must be either "user" or "operator"' });
+    
+    if (typeof n_followed !== 'number' || typeof n_followers !== 'number' || typeof n_exchanges !== 'number')
+        return res.status(400).json({ error: '"n_followed", "n_followers", "n_exchanges" must be numbers' });
   
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({
-            username: username,
-            email: email,
-            name: name,
-            surname: surname,
+            userId,
+            username,
+            email,
+            name,
+            surname,
             password: hashedPassword,
-            usertype: usertype,
-            phone: phone
+            usertype,
+            phone,
+            favorite: favorite || [],
+            followed: followed || [], 
+            n_followed,
+            followers: followers || [], 
+            n_followers,
+            blocklist: blocklist || [], 
+            n_exchanges,
+            description: description || '',
+            profile_url: profile_url || ''
         });
 
         const savedUser = await user.save();

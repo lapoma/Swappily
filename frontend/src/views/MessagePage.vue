@@ -49,17 +49,17 @@ export default {
 
 .empty-messages {
   text-align: center;
-  color: #666;
+  color: rgb(255, 244, 234);
   max-width: 500px;
   padding: 40px;
-  background-color: white;
+  background-color: #7eacb5;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .empty-messages svg {
   margin: 0 auto 20px;
-  color: #ccc;
+  color: rgb(255, 244, 234);
 }
 
 .empty-messages h2 {
@@ -69,6 +69,6 @@ export default {
 
 .empty-messages p {
   font-size: 1rem;
-  color: #999;
+  color: rgb(255, 244, 234);
 }
 </style>
