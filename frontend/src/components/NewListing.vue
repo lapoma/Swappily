@@ -20,11 +20,25 @@
         <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
           type="text" id="description" v-model="description" name="description" placeholder=""/>
       </div>
-      <div class="mb-4">
+      <form @submit.prevent="addImage">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="listing_url">Immagine ({{ n_photos }}/10)</label>
+          <div class="flex gap-4">
+          <!-- Input: Designation [h-12] & min-w-[12rem] -->
+          
+          <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+          type="text" id="listing_url" v-model="url" name="listing_url" placeholder="" />
+          <!-- Button: Submit [h-12] -->
+          <button class="h-12 min-w-[8rem] rounded-lg  hover:bg-[#7eacb5] bg-[#7eacb5] text-white shadow-lg  focus:outline-none focus:ring focus:ring-[#7eacb5]">Aggiungi immagine
+          </button>
+          </div>
+        
+        </form>
+
+      <!-- <div class="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="listing_url">Immagine</label>
         <input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
-          type="text" id="listing_url" v-model="listing_url" name="listing_url" placeholder="" />
-      </div>
+          type="text" id="listing_url" v-model="url" name="listing_url" placeholder="" />
+      </div> -->
       <div class="flex flex-col">
             <label for="role" class="block text-gray-700 text-sm font-bold mb-2"
               >Seleziona Stato</label
@@ -32,7 +46,7 @@
             <select
               id="role"
               v-model="status"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#7eacb5]"
             >
               <option value="As new">As new</option>
               <option value="Good">Good</option>
@@ -41,7 +55,7 @@
             </select>
           </div>
       <button
-        class="w-full bg-indigo-500 text-white text-sm font-bold py-2 px-4 rounded-md hover:bg-indigo-600 transition duration-300"
+        class="w-full bg-[#7eacb5] text-white text-sm font-bold py-2 px-4 rounded-md hover:bg-[#7eacb5] transition duration-300"
         type="submit">Crea</button>
     </form>
   </div>
@@ -67,7 +81,9 @@ export default {
       userId: "",
       status: "",
       available: "true",
-      listing_url: "",
+      listing_url: [],
+      url:"",
+      n_photos: ref(0),
       error: ""
     };
   },
@@ -101,7 +117,6 @@ export default {
             status: this.status,
             available: "true",
             listing_url: this.listing_url || "",
-            error: ""
         }
 
         const auth = {
@@ -111,8 +126,6 @@ export default {
         try{
             console.log(listingData)
             let response = await axios.post(API_URL+`/listings`, listingData, auth);
-
-
             console.log(response)
 
             this.$router.push('/UserProfile/'+userId);
@@ -135,6 +148,19 @@ export default {
             return false;
         }
         return true;
+    },
+    async addImage(){
+      if(!this.url){
+        this.error = "Aggiungi un url"
+        return
+      }else if(this.n_photos === 10){
+        this.error = "Puoi aggiungere un massimo di 10 foto"
+      }else {
+        this.listing_url.push(this.url)
+        console.log(this.listing_url)
+        this.url = ""
+        this.n_photos ++
+      }
     }
     }
 };

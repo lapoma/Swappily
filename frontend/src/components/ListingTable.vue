@@ -19,7 +19,7 @@
       <div class="w-full md:w-1/2 relative">
         <!-- Immagine principale -->
         <img 
-          :src="listing.images[currentImageIndex]" 
+          :src="listing.listing_url[currentImageIndex]" 
           :alt="listing.title"
           class="w-full h-64 md:h-full object-cover rounded-l-xl"
         >
@@ -65,7 +65,7 @@
         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
           <div class="flex space-x-2 overflow-x-auto py-2">
             <button 
-              v-for="(img, index) in listing.images"
+              v-for="(img, index) in listing.listing_url"
               :key="index"
               @click="currentImageIndex = index"
               class="flex-shrink-0 w-12 h-12 rounded border-2"
@@ -143,7 +143,7 @@ export default {
       type: Object,
       required: true,
       default: () => ({
-        images: [],
+        listing_url: [],
         title: '',
         description: '',
         condition: ''
@@ -179,34 +179,43 @@ export default {
                 alert('You should log in first');
                 return;
             }
-
-            const user = JSON.parse(localStorage.getItem('user'));
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem("token");
             const userId = localStorage.getItem('userId');
+
+            console.log(token)
 
             try{
                 const userGet = await axios.get(API_URL+`/users/${userId}`);
 
-                console.log(userGet)
+                console.log("USER"+JSON.stringify(userGet))
 
                 const newFavList = userGet.data.favorite.includes(this.listing.id);
 
+                console.log(newFavList)
 
                 if(newFavList){
                     await axios.put(API_URL+`/users/${userId}`, {
-                        favoriteList: userGet.data.favoriteList.filter(id => id !== this.listing.id)
+                      username: userGet.data.username,
+                      name: userGet.data.name,
+                      surname: userGet.data.surname,
+                      email: userGet.data.email,
+                      favorite: userGet.data.favorite.filter(id => id !== this.listing.id)
                     }, {
                         headers: {
-                            Authorization: `Bearer ${token}`
+                            Authorization: ` ${token}`
                         }
                     });
                     this.isFavorite = false;
                 } else {
-                    await axios.put(API_URL+`/users/${user.id}`, {
-                        favoriteList: [...userGet.data.favoriteList, this.listing.id]
+                    await axios.put(API_URL+`/users/${userId}`, {
+                      username: userGet.data.username,
+                      name: userGet.data.name,
+                      surname: userGet.data.surname,
+                      email: userGet.data.email,
+                      favorite: [...userGet.data.favorite, this.listing.id]
                     }, {
                         headers: {
-                            Authorization: `Bearer ${token}`
+                            Authorization: ` ${token}`
                         }
                     });
                     this.isFavorite = true;
@@ -214,7 +223,7 @@ export default {
 
                 localStorage.setItem('user', JSON.stringify({
                     ...userGet.data,
-                    favoriteList: newFavList
+                    favorite: newFavList
                 }));
             }catch(error){
                 console.error('Failed to toggle favorite: ', error);
@@ -228,10 +237,32 @@ export default {
       alert(`Avvia scambio per: ${this.listing.title}`)
     },
     prevImage() {
-      this.currentImageIndex = (this.currentImageIndex - 1 + this.listing.images.length) % this.listing.images.length
+      this.currentImageIndex = (this.currentImageIndex - 1 + this.listing.listing_url.length) % this.listing.listing_url.length
     },
     nextImage() {
-      this.currentImageIndex = (this.currentImageIndex + 1) % this.listing.images.length
+      this.currentImageIndex = (this.currentImageIndex + 1) % this.listing.listing_url.length
+    },
+    async checkFavorite(){
+      if(!this.isLoggedIn) {
+                this.isFavorite = false
+      }
+      const userId = localStorage.getItem('userId');
+
+      try{
+            const userGet = await axios.get(API_URL+`/users/${userId}`);
+
+            const isFav = userGet.data.favorite.includes(this.listing.id);
+
+                console.log(isFav)
+
+                if(isFav){
+                  this.isFavorite = true;
+                } else {
+                  this.isFavorite = false;
+                }
+            }catch(error){
+                console.error('Errore con il caricamento: ', error);
+            }
     }
   },
   mounted() {
@@ -240,6 +271,7 @@ export default {
     link.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap'
     link.rel = 'stylesheet'
     document.head.appendChild(link)
+    this.checkFavorite()
   }
 }
 </script>
