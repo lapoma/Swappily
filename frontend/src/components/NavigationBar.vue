@@ -111,8 +111,8 @@ function pathToUserPage(){
 }
 
 .logo img {
-  height: 80px;
-  width: 80px;
+  height: 90px;
+  width: 110px;
 }
 
 .menu-container {
