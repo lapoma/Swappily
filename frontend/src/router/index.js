@@ -33,9 +33,10 @@ const router = createRouter({
           props: true
         },
         {
-          path: '/UserProfile1',
+          path: '/UserProfile1/:userId',
           name: 'UserProfile1',
           component: () => import('../views/UserProfile1.vue'),
+          props: true
         },
         {
             path: '/mock-user-profile',

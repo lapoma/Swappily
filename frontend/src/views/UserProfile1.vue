@@ -87,7 +87,7 @@
       <!-- Vetrina -->
       <div v-if="activeTab === 'showcase'" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
         <div v-for="listing in listings" :key="listing._id" class="w-full max-w-xs rounded-lg shadow-md overflow-hidden transition-transform hover:transform hover:-translate-y-1" style="background-color: #7eacb5">
-          <img :src="listing.images[0]" class="w-full h-48 object-cover" />
+          <img :src="listing.listing_url[0]" class="w-full h-48 object-cover" />
           <div class="p-4">
             <h3 class="font-bold text-center" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">{{ listing.title }}</h3>
             <p class="text-sm text-center" style="color: rgba(255, 244, 234, 0.8); font-family: 'Poppins', sans-serif;">{{ listing.description }}</p>
@@ -144,8 +144,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import axios from "axios"
 
 const route = useRoute()
+
+const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
+const API_URL = HOST + '/api/v1'
+const USERS_URL = API_URL + '/users'
 
 // Aggiunge il font Poppins al documento
 const link = document.createElement('link')
@@ -158,7 +163,9 @@ const username = ref('Username')
 const name = ref('Nome')
 const surname = ref('Cognome')
 const userId = ref('')
+const description = ref('')
 const profilePhoto = ref('https://preview.redd.it/the-tiger-from-kpop-demon-hunter-v0-g0nozaxp258f1.jpg?width=640&crop=smart&auto=webp&s=2f60188b633d591fb9baac139d10ffb679351525') 
+const error = ref('')
 
 // Tab attiva
 const tabs = [
@@ -170,10 +177,10 @@ const activeTab = ref('showcase')
 
 // Dati mock (sostituire con chiamate API)
 const listings = ref([
-  { _id: '1', title: 'Prodotto 1', description: 'Descrizione prodotto 1', images: ['https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg'] },
-  { _id: '2', title: 'Prodotto 2', description: 'Descrizione prodotto 2', images: ['https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'] },
-  { _id: '3', title: 'Prodotto 3', description: 'Descrizione prodotto 3', images: ['https://www.artelegnoshop.it/wp-content/uploads/2020/10/CL32.11-ciotola1-in-legno-di-ulivo.jpg'] },
-  { _id: '4', title: 'Prodotto 4', description: 'Descrizione prodotto 4', images: ['https://via.placeholder.com/300'] }
+//   { _id: '1', title: 'Prodotto 1', description: 'Descrizione prodotto 1', images: ['https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg'] },
+//   { _id: '2', title: 'Prodotto 2', description: 'Descrizione prodotto 2', images: ['https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'] },
+//   { _id: '3', title: 'Prodotto 3', description: 'Descrizione prodotto 3', images: ['https://www.artelegnoshop.it/wp-content/uploads/2020/10/CL32.11-ciotola1-in-legno-di-ulivo.jpg'] },
+//   { _id: '4', title: 'Prodotto 4', description: 'Descrizione prodotto 4', images: ['https://via.placeholder.com/300'] }
 ])
 
 const reviews = ref([
@@ -198,8 +205,23 @@ function openReview(review) {
   // Puoi aggiungere qui la logica per aprire una modal o navigare
 }
 
-function openFavorite(favorite) {
-  console.log('Apri preferito:', favorite)
+function openFavorite(favorite){
+
+}
+
+async function fetchFavorites(userId) {
+  try{
+    const id = route.params.userId
+    console.log(id)
+
+    const listingsGet = await axios.get(API_URL+`/users/${userId}/favorites`)
+    console.log(listingsGet)
+    
+    favorites.value = listingsGet.data
+    console.log("favorites: "+ favorites.value)
+  }catch(error){
+    error.value = ("Errore con il caricamento degli annunci prefriti")
+  }
   // Puoi aggiungere qui la logica per aprire il dettaglio
 }
 
@@ -208,9 +230,51 @@ function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString('it-IT', options)
 }
 
+async function fetchUserData(userId){
+    try{
+        console.log(userId)
+        const user = await axios.get(USERS_URL+`/${userId}`);
+        console.log(user)
+        if(!user){
+            console.error("User ID not found");
+            return;
+        }else{
+            //const response = await axios.get(USERS_URL+`/${userId}`);
+            username.value = user.data.username;
+            name.value = user.data.name;
+            surname.value = user.data.surname;
+            description.value = user.data.description;
+            profilePhoto.value = user.data.profile_url
+        }
+    }catch(error){
+        console.error("Error fetching user data:", error);
+        return;
+    }
+}
+
+async function fetchUserListings(userId){
+  try{
+    const id = route.params.userId
+    console.log(id)
+    const listingsGet = await axios.get(API_URL+`/listings/user/${userId}`)
+    console.log(JSON.stringify(listingsGet.data))
+    listings.value = JSON.stringify(listingsGet.data)
+
+    console.log("listings: "+ listings.value)
+
+
+  
+  }catch(error){
+    error.value = ("Errore con il caricamento degli annunci")
+  }
+}
+
 onMounted(() => {
-  userId.value = route.params.id
-  fetchUserData() // Chiamata per ottenere i dati dell'utente
+  console.log(route.params.userId)
+  userId.value = route.params.userId;
+  fetchUserData(userId.value) // Chiamata per ottenere i dati dell'utente
+  fetchUserListings(userId.value)
+  fetchFavorites(userId.value)
 })
 </script>
 

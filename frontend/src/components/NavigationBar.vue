@@ -43,7 +43,7 @@
           </router-link>
 
           <router-link 
-            :to="isLoggedIn ? pathToUserPage() : '/LoginPage'" 
+            :to="isLoggedIn ? '': '/LoginPage'" 
             class="nav-link"
             :class="{ active: isLoggedIn && $route.path.startsWith('/profilo') }"
          >
