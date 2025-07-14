@@ -3,7 +3,7 @@
 <!-- <script src="https://cdn.tailwindcss.com"></script> -->
 <body class="bg-gray-100">
   <div class="container mx-auto py-8">
-    <h1 class="text-2xl font-bold mb-6 text-center">Registration Form</h1>
+    <h1 class="text-2xl font-bold mb-6 text-center">Crea un annuncio</h1>
     
     <!-- Messaggio di errore -->
       <div v-if="error"  class="mb-4 p-4 text-red-700 bg-red-100 border border-red-300 rounded-lg">
