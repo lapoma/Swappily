@@ -266,7 +266,7 @@ router.put('/:id', async (req, res) => {
   
         res.location(`/api/v1/users/${updatedUser._id}`).status(200).json({
             self: `/api/v1/users/${updatedUser._id}`,
-            userId: updatedUser.userId,
+            userId: updatedUser._id,
             username: updatedUser.username,
             email: updatedUser.email,
             name: updatedUser.name,
@@ -312,13 +312,13 @@ router.post('/:userId/favorites/:listingId', async (req, res) => {
         if (!listing) return res.status(404).json({ error: 'Listing not found' });
     
         // Controlla se il listing è già nei preferiti
-        if (!user.favorites.includes(req.params.listingId)) {
-            user.favorites.push(req.params.listingId);
+        if (!user.favorite.includes(req.params.listingId)) {
+            user.favorite.push(req.params.listingId);
             await user.save();
         }
     
         // Restituisci la lista aggiornata dei preferiti
-        res.status(200).json(user.favorites);
+        res.status(200).json(user.favorite);
     } catch (error) {
         console.error('Error adding favorite:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -332,12 +332,12 @@ router.post('/:userId/favorites/:listingId', async (req, res) => {
         if (!user) return res.status(404).json({ error: 'User not found' });
     
         // Filtra l'ID da rimuovere
-        user.favorites = user.favorites.filter(
+        user.favorite = user.favorite.filter(
             fav => fav.toString() !== req.params.listingId
         );
         
         await user.save();
-        res.status(200).json(user.favorites);
+        res.status(200).json(user.favorite);
     } catch (error) {
         console.error('Error removing favorite:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -348,11 +348,11 @@ router.post('/:userId/favorites/:listingId', async (req, res) => {
   router.get('/:userId/favorites', async (req, res) => {
     try {
         const user = await User.findById(req.params.userId)
-            .populate('favorites', 'title price images');
+            .populate('favorite', 'title price images');
     
         if (!user) return res.status(404).json({ error: 'User not found' });
     
-        res.status(200).json(user.favorites || []);
+        res.status(200).json(user.favorite || []);
     } catch (error) {
         console.error('Error getting favorites:', error);
         res.status(500).json({ error: 'Internal server error' });

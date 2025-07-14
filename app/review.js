@@ -60,9 +60,9 @@ router.get('/:userid', async (req, res) => {
     }
 
     const reviews = await Review.find({ reviewed: userId });
-    if (reviews.length === 0) {
-      return res.status(404).json({ error: 'No reviews found for this user' });
-    }
+    // if (reviews.length === 0) {
+    //   return res.status(404).json({ error: 'No reviews found for this user' });
+    // }
 
     return res.status(200).json(
       reviews.map(r => ({

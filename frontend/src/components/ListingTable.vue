@@ -87,7 +87,13 @@
   <!-- Parte superiore: Titolo, descrizione, condizione -->
   <div class="flex flex-col gap-10 overflow-y-auto">
     <h2 class="text-3xl font-bold" style="font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: bold;">{{ listing.title }}</h2>
-
+    <!-- Proprietario -->
+    <router-link
+      :to="`/UserProfile1/${listing.userId}`"
+      class="text-red-300 hover:underline font-bold"
+    >
+      {{ listing.username || 'Proprietario' }}
+    </router-link>
     <!-- Descrizione -->
     <div>
       <h3 class="text-xl font-semibold mb-3" style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 500;">Descrizione:</h3>
