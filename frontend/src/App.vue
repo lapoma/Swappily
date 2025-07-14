@@ -1,10 +1,21 @@
 <script setup>
 import NavigationBar from './components/NavigationBar.vue';
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+// Controlla se la rotta corrente è quella dell'operatore
+const hideNavbar = computed(() => {
+  // Puoi controllare per nome oppure per path
+  // oppure
+  return route.path.startsWith('/OperatorPage')
+})
 </script>
 
 <template>
   <div class="app-container">
-    <NavigationBar />
+    <NavigationBar v-if="!hideNavbar" />
     <main class="main-content">
       <router-view />
     </main>
