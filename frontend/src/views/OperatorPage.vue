@@ -78,19 +78,24 @@
 
 
 <script>
+import { logout } from '@/authState';
 import { ref, onMounted } from 'vue';
+
+
 
 export default {
   name: 'OperatorPage',
   setup() {
+
     // Aggiunge il font Poppins al documento
     const link = document.createElement('link');
     link.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap';
     link.rel = 'stylesheet';
     document.head.appendChild(link);
-
+    
     const supportRequests = ref([]);
-
+    
+    
     // Funzione per mockare il fetching delle richieste
     const fetchSupportRequests = async () => {
       // Simula una chiamata API con un ritardo
@@ -118,22 +123,8 @@ export default {
           description: "L'utente non ha rispettato i termini dello scambio.",
           reportedUser: 'marco_rossi',
           reportedListing: '54321'
-        },
-        // Puoi aggiungere altre richieste qui
+        }
       ];
-
-      // In una vera applicazione useresti qualcosa come:
-      // try {
-      //   const response = await fetch('/api/support-requests');
-      //   if (!response.ok) {
-      //     throw new Error(`HTTP error! status: ${response.status}`);
-      //   }
-      //   const data = await response.json();
-      //   supportRequests.value = data;
-      // } catch (error) {
-      //   console.error("Errore nel recupero delle richieste di supporto:", error);
-      //   // Gestisci l'errore, magari mostrando un messaggio all'utente
-      // }
 
       supportRequests.value = mockData;
     };
@@ -143,10 +134,9 @@ export default {
     });
 
     const handleLogout = () => {
+      logout()
       alert('Logout effettuato con successo!');
-      // TODO: Implementa la vera logica di logout
-      // ad esempio: localStorage.removeItem('token');
-      // this.$router.push('/login');
+      this.$router.push('/LoginPage');
     };
 
     const confirmDeleteAccount = () => {

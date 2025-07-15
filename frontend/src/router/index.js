@@ -7,9 +7,9 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-            path: '/',
+            path: '/HomePageOld',
             name: 'HomePage',
-            component: () => import('../views/HomePage.vue')
+            component: () => import('../views/HomePageOld.vue')
         },
         {
             path: '/LoginPage',
@@ -39,9 +39,10 @@ const router = createRouter({
           props: true
         },
         {
-          path: '/UserProfile2',
+          path: '/UserProfile2/:userId',
           name: 'UserProfile2',
           component: () => import('../views/UserProfile2.vue'),
+          props:true
         },
         {
             path: '/mock-user-profile',
@@ -62,9 +63,9 @@ const router = createRouter({
             meta: { requiresAuth: true } 
         },
         {
-            path: '/HomePage1', 
+            path: '/', 
             name:'HomePage1',
-            component: () => import('../views/HomePage1.vue')
+            component: () => import('../views/HomePage.vue')
         },
         {
           path: '/EditProfile',

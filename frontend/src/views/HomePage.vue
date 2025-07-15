@@ -1,71 +1,141 @@
 <template>
-  <div class="w-full min-h-screen bg-white">
-    <div class="w-full px-4 py-16 mx-auto">
-      <div class="w-full px-4 mb-12">
-        <SearchBar />
+  <div class="w-full min-h-screen bg-light_bg px-4 py-2">
+    <!-- Barra superiore con SearchBar e hamburger settings -->
+    <div class="flex justify-center mb-8">
+      <div class="flex items-center gap-0 w-full max-w-3xl">
+        <div class="flex-1">
+          <SearchBar />
+        </div>
+        <button
+          class="p-3 rounded-md hover:bg-primary/20 transition flex flex-col justify-center items-center gap-1.5 border border-primary shadow-sm"
+          @click="goToSettings"
+        >
+          <span class="block w-5 h-0.5 bg-primary"></span>
+          <span class="block w-5 h-0.5 bg-primary"></span>
+          <span class="block w-5 h-0.5 bg-primary"></span>
+        </button>
       </div>
+    </div>
 
-      <div class="w-full text-center">
-        <h1 class="text-4xl font-extrabold text-dark_gray sm:text-6xl">
-          SWAPPILY
-        </h1>
-
-        <p class="mt-4 sm:text-xl/relaxed">
-          trova ciò che ti serve e scambialo con ciò che non usi più
-        </p>
-
-        <div class="mt-8 flex flex-wrap justify-center gap-4">
-          <!-- Mostra registrati e accedi solo se NON loggato -->
-          <template v-if="!isLoggedIn">
-            <button 
-              class="mt-4 px-4 py-2 bg-button_2 text-text_1 rounded-md hover:bg-button_2_hover text-lg font-medium shadow-md"
-              @click="regist">
-              Registrati
-            </button>
-            <button 
-              class="mt-4 px-4 py-2 bg-button_2 text-text_1 rounded-md hover:bg-button_2_hover text-lg font-medium shadow-md"
-              @click="login">
-              Accedi
-            </button>
-          </template>
-
-          <!-- Mostra logout solo se loggato -->
-          <button
-            v-else
-            class="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 text-lg font-medium shadow-md"
-            @click="logout"
+     <!-- Visualizzazione principale -->
+    <div v-if="!selectedListing" class="flex justify-center">
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 px-4 w-full max-w-6xl">
+        <div
+          v-for="(listing, index) in listings"
+          :key="index"
+          @click="selectListing(listing)"
+          class="relative overflow-hidden rounded-lg shadow-md hover:shadow-lg transition duration-300 aspect-square cursor-pointer"
+        >
+          <img 
+            :src="listing.listing_url" 
+            :alt="'Listing ' + (index + 1)"
+            class="w-full h-full object-cover hover:scale-105 transition duration-300"
           >
-            Logout
-          </button>
         </div>
       </div>
     </div>
+
+    <!-- Visualizzazione dettaglio listing -->
+    <ListingTable 
+    v-if="selectedListing"
+    :listing="selectedListing"
+    @close="selectedListing = null"
+    />
   </div>
 </template>
+
 <script>
-import SearchBar from '@/components/SearchBar.vue';
-import { isLoggedIn, logout } from '@/authState';
+import axios from 'axios';
+import SearchBar from '@/components/SearchBar.vue'
+import ListingTable from '@/components/ListingTable.vue'
+//import { fetchListings } from '@/services/listings';
+
+const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
+const API_URL = HOST + '/api/v1'
+const LISTINGS_URL = API_URL + '/listings'
 
 export default {
-  name: "HomePage",
-  components: { SearchBar },
-  computed: {
-    isLoggedIn() {
-      return isLoggedIn.value;
-    }
+  name: "HomePage1",
+  components: {
+    SearchBar,
+    ListingTable
+  },
+  data() {
+    return {
+      selectedListing: null,
+      // listings: [
+      //   { 
+      //     id: 1,
+      //     images: ["url1", "url2"], // Array di immagini
+      //     title: "Titolo",
+      //     description: "Descrizione",
+      //     condition: "as_new" // o 'good', 'ok', 'not_good'
+      //   },
+      //   { 
+      //     id: 2,
+      //     imageUrl: "https://www.campodicanapa.it/wp-content/uploads/2021/03/32449_2.jpg", // URL dell'immagine
+      //     images: ["https://www.campodicanapa.it/wp-content/uploads/2021/03/32449_2.jpg", "https://www.bricofer.it/media/catalog/product/cache/b3640ebe2da949b4692b50d3b9ef91ce/8/0/8055719465055.jpg"], // Array di immagini
+      //     title: "Ventilatori",
+      //     description: "2 ventilatori in ottime condizioni, uno con telecomando",
+      //     condition: "not_good"
+      //   },
+        
+      // ]
+      listings: []
+    };
   },
   methods: {
-    regist() {
-      this.$router.push('/RegisterPage');
+    goToSettings() {
+      this.$router.push('/settings');
     },
-    login() {
-      this.$router.push('/LoginPage');
+    selectListing(listing) {
+      this.selectedListing = listing;
     },
-    logout() {
-      logout();
-      this.$router.push('/');
+    deselectListing() {
+      this.selectedListing = null;
+    },
+    async fetchListings() {
+      try {
+        const listings = await axios.get(LISTINGS_URL)
+
+        
+        console.log("Fetched listings:", listings.data);
+
+
+        this.listings = listings.data;
+    } catch (error) {
+        console.error("Errore durante il recupero degli annunci", error);
+        throw error; 
     }
+    }
+  },
+  async mounted() {
+    // Carica le listings quando il componente è montato
+    this.fetchListings();
+    console.log("Listings fetched:", this.listings);
   }
-};
+}
 </script>
 
+<style scoped>
+.bg-light_bg {
+  background-color: #fff7f0;
+}
+
+.border-primary {
+  border-color: #7eacb5;
+}
+
+.bg-primary {
+  background-color: #7eacb5;
+}
+
+.hover\:bg-primary\/20:hover {
+  background-color: rgba(126, 172, 181, 0.2);
+}
+
+/* Effetto hover per le immagini */
+.relative:hover img {
+  transform: scale(1.05);
+}
+</style>

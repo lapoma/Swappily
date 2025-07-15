@@ -14,7 +14,7 @@
       </div>
       
       <!-- Tasti a destra (Edit Profile e Settings) -->
-      <div v-if="isAuthor()" class="absolute right-4 flex flex-col gap-2">
+      <div class="absolute right-4 flex flex-col gap-2">
         <!-- Tasto Settings (3 puntini verticali) -->
         <router-link to="/Settings">
           <button class="p-2 rounded-full" style="background-color: #7eacb5">
@@ -110,7 +110,7 @@
 <div v-if="activeTab === 'showcase'" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-5 justify-items-center">
   <!-- Pulsante Aggiungi -->
   <router-link to="/NewListing" class="w-full aspect-square max-w-[200px] sm:max-w-[240px]">
-    <div v-if="isAuthor()" class="h-full flex items-center justify-center rounded-lg shadow-md transition-transform hover:transform hover:-translate-y-1 cursor-pointer" 
+    <div class="h-full flex items-center justify-center rounded-lg shadow-md transition-transform hover:transform hover:-translate-y-1 cursor-pointer" 
          style="background-color: #7eacb5">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="rgb(255, 244, 234)">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />

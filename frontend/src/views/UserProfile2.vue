@@ -106,11 +106,18 @@
         </div>
         <div v-for="listing in listings" 
     :key="listing._id" 
+    @click="selectListing(listing)"
     class="w-full aspect-square max-w-[200px] sm:max-w-[240px] rounded-lg shadow-md overflow-hidden transition-transform hover:transform hover:-translate-y-1" 
     style="background-color: #7eacb5">
-          <img :src="listing.images[0]" class="w-full h-full object-cover" />
+          <img :src="listing.listing_url[0]" class="w-full h-full object-cover" />
         </div>
       </div>
+
+      <ListingTable 
+    v-if="selectedListing"
+    :listing="selectedListing"
+    @close="selectedListing = null"
+    />
 
       <div v-if="activeTab === 'reviews'" class="flex flex-col gap-y-4">
         <div v-if="reviews.length === 0" class="text-center py-8">
@@ -136,6 +143,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import axios from "axios"
+import ListingTable from '@/components/ListingTable.vue'
+
+const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
+const API_URL = HOST + '/api/v1'
+const USERS_URL = API_URL + '/users'
 
 const route = useRoute()
 
@@ -150,6 +163,8 @@ const username = ref('NomeUtenteAltro')
 const profilePhoto = ref('https://gadgetforentertainment.com/cdn/shop/collections/bloom1.png?v=1738755382&width=1500')
 const userNotes = ref('Ciao! Sono un utente che ama scambiare oggetti unici e rari. Contattami per qualsiasi proposta!') // Note dell'altro utente
 const isFollowing = ref(false) // Stato per il tasto "Segui"
+const isBlocked = ref(false)
+const selectedListing = ref(null)
 
 // Tab attiva
 const tabs = [
@@ -161,21 +176,74 @@ const activeTab = ref('showcase')
 // Dati mock (questi dovrebbero essere caricati dinamicamente per l'altro utente)
 //se le vuoi togliere metti ref([]) non togliere tutto 
 const listings = ref([
-  { _id: '1', images: ['https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg'] },
-  { _id: '2', images: ['https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'] },
-  { _id: '3', images: ['https://www.artelegnoshop.it/wp-content/uploads/2020/10/CL32.11-ciotola1-in-legno-di-ulivo.jpg'] }
+  // { _id: '1', images: ['https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg'] },
+  // { _id: '2', images: ['https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'] },
+  // { _id: '3', images: ['https://www.artelegnoshop.it/wp-content/uploads/2020/10/CL32.11-ciotola1-in-legno-di-ulivo.jpg'] }
 ])
 
 //se le vuoi togliere metti ref([]) non togliere tutto 
 const reviews = ref([
-  { _id: '1', author: 'Tu', comment: 'Ottimo scambio con questo utente! Veloce e affidabile.' },
-  { _id: '2', author: 'Un Altro Utente', comment: 'Prodotto come descritto, transazione liscia.' },
-  { _id: '3', author: 'Terzo Utente', comment: 'Disponibile e preciso, lo consiglio.' }
+  // { _id: '1', author: 'Tu', comment: 'Ottimo scambio con questo utente! Veloce e affidabile.' },
+  // { _id: '2', author: 'Un Altro Utente', comment: 'Prodotto come descritto, transazione liscia.' },
+  // { _id: '3', author: 'Terzo Utente', comment: 'Disponibile e preciso, lo consiglio.' }
 ])
 
 // Funzioni per i nuovi pulsanti
-function blockUser() {
-  alert('Utente bloccato!')
+async function blockUser() {
+  if(!localStorage.getItem("token")) {
+                alert('You should log in first');
+                return;
+            }
+            const token = localStorage.getItem("token");
+            const userId = localStorage.getItem('userId');
+
+            console.log(token)
+
+            try{
+                const userGet = await axios.get(API_URL+`/users/${userId}`);
+
+                console.log("USER"+JSON.stringify(userGet))
+
+                const newBlockList = userGet.data.blocklist.includes(route.params.userId);
+
+                console.log(newBlockList)
+
+                if(newBlockList){
+                    await axios.put(API_URL+`/users/${userId}`, {
+                      username: userGet.data.username,
+                      name: userGet.data.name,
+                      surname: userGet.data.surname,
+                      email: userGet.data.email,
+                      blocklist: userGet.data.blocklist.filter(id => id !== route.params.userId)
+                    }, {
+                        headers: {
+                            Authorization: ` ${token}`
+                        }
+                    });
+                    isBlocked.value = false;
+                } else {
+                    await axios.put(API_URL+`/users/${userId}`, {
+                      username: userGet.data.username,
+                      name: userGet.data.name,
+                      surname: userGet.data.surname,
+                      email: userGet.data.email,
+                      blocklist: [...userGet.data.blocklist, route.params.userId]
+                    }, {
+                        headers: {
+                            Authorization: ` ${token}`
+                        }
+                    });
+                    isBlocked.value = true;
+                }
+
+                localStorage.setItem('user', JSON.stringify({
+                    ...userGet.data,
+                    blocklist: newBlockList
+                }));
+            }catch(error){
+                console.error('Failed to block user: ', error);
+                alert('An error occurred while updating blocked users.');
+            }
 }
 
 function reportUser() {
@@ -196,21 +264,181 @@ function shareProfile() {
   }
 }
 
-function toggleFollow() {
-  isFollowing.value = !isFollowing.value
-  if (isFollowing.value) {
-    alert('Hai iniziato a seguire questo profilo!')
-  } else {
-    alert('Hai smesso di seguire questo profilo!')
-  }
+async function toggleFollow() {
+  if(!localStorage.getItem("token")) {
+                alert('You should log in first');
+                return;
+            }
+            const token = localStorage.getItem("token");
+            const userId = localStorage.getItem('userId');
+
+            console.log(token)
+
+            try{
+                const userGet = await axios.get(API_URL+`/users/${userId}`);
+
+                console.log("USER"+JSON.stringify(userGet))
+
+                const newFollowList = userGet.data.followed.includes(route.params.userId);
+
+                console.log(newFollowList)
+
+                if(newFollowList){
+                    await axios.put(API_URL+`/users/${userId}`, {
+                      username: userGet.data.username,
+                      name: userGet.data.name,
+                      surname: userGet.data.surname,
+                      email: userGet.data.email,
+                      followed: userGet.data.followed.filter(id => id !== route.params.userId)
+                    }, {
+                        headers: {
+                            Authorization: ` ${token}`
+                        }
+                    });
+                    isFollowing.value = false;
+                } else {
+                    await axios.put(API_URL+`/users/${userId}`, {
+                      username: userGet.data.username,
+                      name: userGet.data.name,
+                      surname: userGet.data.surname,
+                      email: userGet.data.email,
+                      followed: [...userGet.data.followed, route.params.userId],
+                      n_followed: userGet.data.n_followed+1
+                    }, {
+                        headers: {
+                            Authorization: ` ${token}`
+                        }
+                    });
+                    isFollowing.value = true;
+                }
+
+                localStorage.setItem('user', JSON.stringify({
+                    ...userGet.data,
+                    followed: newFollowList
+                }));
+            }catch(error){
+                console.error('Failed to toggle favorite: ', error);
+                alert('An error occurred while updating favorites.');
+            }
 }
+
+async function checkFollow(){
+      if(!localStorage.getItem("token")) {
+                this.isFollowing = false
+      }
+      const userId = localStorage.getItem('userId');
+
+      try{
+            const userGet = await axios.get(API_URL+`/users/${userId}`);
+
+            const isFollowing = userGet.data.followed.includes(route.params.userId);
+
+                console.log(isFollowing)
+
+                if(isFollowing){
+                  isFollowing = true;
+                } else {
+                  isFollowing = false;
+                }
+            }catch(error){
+                console.error('Errore con il caricamento: ', error);
+            }
+    }
+
+  async function checkBlocked(){
+      if(!localStorage.getItem("token")) {
+                this.isBlocked = false
+      }
+      const userId = localStorage.getItem('userId');
+
+      try{
+            const userGet = await axios.get(API_URL+`/users/${userId}`);
+
+            const check = userGet.data.blocklist.includes(route.params.userId);
+
+                console.log(check)
+
+                if(check){
+                  isBlocked = true;
+                } else {
+                  isBlocked= false;
+                }
+            }catch(error){
+                console.error('Errore con il caricamento: ', error);
+            }
+    }
 
 function openReview(review) {
   console.log('Apri recensione:', review)
 }
 
+function selectListing(listing){
+  selectedListing.value = listing
+}
+
+function deselectListing() {
+      selectedListing.value = null;
+    }
+
+async function fetchUserData(userId){
+    try{
+        console.log(userId)
+        const user = await axios.get(USERS_URL+`/${userId}`);
+        console.log(user)
+        if(!user){
+            console.error("User ID not found");
+            return;
+        }else{
+            username.value = user.data.username;
+            userNotes.value = user.data.description;
+            profilePhoto.value = user.data.profile_url
+        }
+    }catch(error){
+        console.error("Error fetching user data:", error);
+        return;
+    }
+}
+
+async function fetchUserListings(userId){
+  try{
+    const id = route.params.userId
+    console.log(id)
+    const listingsGet = await axios.get(API_URL+`/listings/user/${userId}`)
+      console.log(JSON.stringify(listingsGet.data))
+      listings.value = listingsGet.data
+      console.log("listings: "+ listings.value)
+  }catch(error){
+    console.error("Error fetching user listings:", error);
+    return;
+  }
+}
+
+async function fetchUserReviews(userId){
+  try{
+    const id = route.params.userId
+    console.log(id)
+    const response = await axios.get(API_URL+`/reviews/${userId}`)
+    if(response.data){
+      console.log(JSON.stringify(response.data))
+      reviews.value = response.data
+
+      console.log("reviews: "+ reviews.value)
+    }else{
+      console.log("No Reviews")
+    }
+  }catch(error){
+    console.error("Error fetching user reviews:", error);
+    return;
+  }
+}
+
 onMounted(() => {
-  console.log('ID utente dalla route:', route.params.id)
+  console.log('ID utente dalla route:', route.params.userId)
+  checkFollow()
+  checkBlocked()
+  fetchUserData(route.params.userId)
+  fetchUserListings(route.params.userId)
+  fetchUserReviews(route.params.userId)
 })
 </script>
 

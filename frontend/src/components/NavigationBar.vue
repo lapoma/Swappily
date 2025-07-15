@@ -34,7 +34,7 @@
           </router-link>
 
           <router-link 
-            :to="isLoggedIn ? '': '/LoginPage'" 
+            :to="isLoggedIn ? `/UserProfile1/${userId}`: '/LoginPage'" 
             class="nav-link"
             :class="{ active: isLoggedIn && $route.path.startsWith('/UserProfile') }"
           >
@@ -51,13 +51,14 @@
 // export default {
 //   name: 'Navbar'
 // }
-import { computed } from 'vue';
+import { computed, onMounted,ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { isLoggedIn, logout } from '@/authState'
 
 const router = useRouter();
 const store = useStore();
+const userId = ref()
 function handleLogout() {
   logout()
   router.push('/')
@@ -74,6 +75,12 @@ function userProfilePath() {
   const userId = localStorage.getItem('userId');
   return `/UserProfile/${userId}`;
 }
+
+onMounted(()=>{
+  if(isLoggedIn){
+    userId.value = localStorage.getItem("userId")
+  }
+})
 </script>
 
 
