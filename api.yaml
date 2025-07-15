@@ -13,8 +13,7 @@ servers:
 paths:
   /authentications:
     post:
-      description: Authenticate a user
-      summary: Authenticate a user and return a token.
+      description: Authenticate a user.
       responses:
         '200':
           description: Token created
@@ -30,7 +29,7 @@ paths:
                     type: string
                     description: JWT token
         '401':
-          description: Unauthorized. Invalid credential
+          description: Unauthorized. Invalid credential.
       requestBody:
         description: The username and password must be passed in the Body
         required: true
@@ -68,8 +67,7 @@ paths:
         '400':
           description: Bad request. The input is not correct
     get:
-      description: Get all the users. It is possible to show users by their username.
-      summary: View all users or filtered by username.
+      description: Get all the users by username.
       parameters:
         - in: query
           name: username
@@ -92,7 +90,6 @@ paths:
   '/users/{userId}':
     get:
       description: Gets a user by ID.
-      summary: View a user
       parameters:
         - in: path
           name: userId
@@ -112,7 +109,6 @@ paths:
           description: Server error
     delete:
       description: Delete a user
-      summary: Delete a user.
       security:
         - TokenQueryAuth: []
         - accessTokenHeader: []
@@ -131,7 +127,6 @@ paths:
           description: Server error
     put:
       description: Updates an existing user.
-      summary: Update an existing user
       security:
         - TokenQueryAuth: []
         - accessTokenHeader: []
@@ -154,7 +149,6 @@ paths:
   '/users/{userId}/favorites/{listingId}':
     post:
       description: Add a listing to user's favorites
-      summary: Add to favorites
       parameters:
         - in: path
           name: userId
@@ -184,7 +178,6 @@ paths:
           description: Internal server error
     delete:
       description: Remove a listing from user's favorites
-      summary: Remove from favorites
       parameters:
         - in: path
           name: userId
@@ -215,7 +208,6 @@ paths:
   '/users/{userId}/favorites':
     get:
       description: Get user's favorite listings
-      summary: Get favorites
       parameters:
         - in: path
           name: userId
@@ -250,7 +242,6 @@ paths:
   '/users/{userId}/block/{blockedUserId}':
     post:
       description: Block a user
-      summary: Block user
       parameters:
         - in: path
           name: userId
@@ -278,14 +269,13 @@ paths:
                       type: string
                       format: objectId
         '400':
-          description: Cannot block yourself or user already blocked
+          description: Bad Request. Cannot block yourself or user already blocked
         '404':
           description: User not found
         '500':
           description: Internal server error
     delete:
       description: Unblock a user
-      summary: Unblock user
       parameters:
         - in: path
           name: userId
@@ -313,7 +303,7 @@ paths:
                       type: string
                       format: objectId
         '400':
-          description: User not blocked
+          description: Bad Request. User not blocked.
         '404':
           description: User not found
         '500':
@@ -321,7 +311,6 @@ paths:
   '/users/{userId}/blocked':
     get:
       description: Get list of blocked users
-      summary: Get blocked users
       parameters:
         - in: path
           name: userId
@@ -351,7 +340,6 @@ paths:
   '/users/{userId}/follow/{targetUserId}':
     post:
       description: Follow another user
-      summary: Follow a user
       security:
         - TokenQueryAuth: []
         - accessTokenHeader: []
@@ -384,16 +372,15 @@ paths:
                     type: integer
                     description: Number of followers of target user
         '400':
-          description: Bad request (self-follow or already following)
+          description: Bad request
         '403':
-          description: Forbidden (not authorized or blocked by target user)
+          description: Forbidden
         '404':
           description: User not found
         '500':
           description: Internal server error
     delete:
       description: Unfollow another user
-      summary: Unfollow a user
       security:
         - TokenQueryAuth: []
         - accessTokenHeader: []
@@ -426,9 +413,9 @@ paths:
                     type: integer
                     description: Number of followers of target user
         '400':
-          description: Bad request (not following the user)
+          description: Bad request
         '403':
-          description: Forbidden (not authorized)
+          description: Forbidden
         '404':
           description: User not found
         '500':
@@ -437,7 +424,6 @@ paths:
   '/users/{userId}/following':
     get:
       description: Get list of followed users
-      summary: Get following list
       parameters:
         - in: path
           name: userId
@@ -472,7 +458,6 @@ paths:
   '/users/{userId}/followers':
     get:
       description: Get list of followers
-      summary: Get followers list
       parameters:
         - in: path
           name: userId
@@ -506,7 +491,6 @@ paths:
   '/users/{userId}/isFollowing/{targetUserId}':
     get:
       description: Check if a user is following another user
-      summary: Check following status
       parameters:
         - in: path
           name: userId
@@ -535,7 +519,6 @@ paths:
   /listings:
     post:
       description: Creates a new listing.
-      summary: Create a new listing
       security:
         - TokenQueryAuth: []
         - accessTokenHeader: []
@@ -560,7 +543,6 @@ paths:
           description: Internal server error.
     get:
       description: 'Gets the list of listings. It is possible to show the listing by their title or filtered by status.'
-      summary: View all listings or filtered listings.
       parameters:
         - in: query
           name: title
@@ -593,7 +575,6 @@ paths:
   '/listings/{listingId}':
     get:
       description: Gets a listing by ID.
-      summary: View a listing
       parameters:
         - in: path
           name: listingId
@@ -611,7 +592,6 @@ paths:
           description: Listing not found
     delete:
       description: Deletes a listing by ID.
-      summary: Delete a listing
       security:
         - TokenQueryAuth: []
         - accessTokenHeader: []
@@ -632,7 +612,6 @@ paths:
           description: Internal server error
     put:
       description: Updates an existing listing.
-      summary: Update an existing listing
       security:
         - TokenQueryAuth: []
         - accessTokenHeader: []
@@ -680,8 +659,7 @@ paths:
           description: Internal server error
   /exchange:
     get:
-      description: Gets the list of exchanges. It is possible to show the exchanges by their status.
-      summary: View all exchanges or filtered exchanges.
+      description: Gets the list of exchanges. 
       parameters:
         - in: query
           name: status
@@ -707,7 +685,6 @@ paths:
   '/exchange/listing/{listingId}':
     post:
       description: Creates a new exchange.
-      summary: Exchange an object
       security:
         - TokenQueryAuth: []
         - accessTokenHeader: []
@@ -733,7 +710,6 @@ paths:
   '/exchange/{exchangeId}':
     get:
       description: Gets an exchange by ID.
-      summary: View an exchange
       parameters:
         - in: path
           name: exchangeId
@@ -751,7 +727,6 @@ paths:
           description: Exchange not found
     put:
       description: Modify an exchange
-      summary: Modify an exchange
       security:
         - TokenQueryAuth: []
         - accessTokenHeader: []
@@ -773,7 +748,6 @@ paths:
           description: Exchange not found
     delete:
       description: Deleting an existing exchange
-      summary: Deleting an exchange
       parameters:
         - in: path
           name: exchangeId
@@ -791,7 +765,6 @@ paths:
   /review:
     post:
       description: Create a new review
-      summary: Write a review
       requestBody:
         content:
           application/json:
@@ -812,7 +785,6 @@ paths:
   '/review/{reviewId}':
     delete:
       description: The user deletes one of his reviews
-      summary: Deleting a review
       security:
         - TokenQueryAuth: []
         - accessTokenHeader: []
@@ -832,7 +804,6 @@ paths:
   '/review/reviewee/{revieweeId}':
     get:
       description: Get all the reviews of one user
-      summary: Reviews of a user
       parameters:
         - in: header
           name: authenticate
@@ -859,7 +830,6 @@ paths:
   /report:
     post:
       description: Creating a new report
-      summary: Create a report
       security:
         - TokenQueryAuth: []
         - accessTokenHeader: []
