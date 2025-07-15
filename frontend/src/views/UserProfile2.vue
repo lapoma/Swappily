@@ -17,11 +17,13 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
           </svg>
         </button>
+        <router-link to="/NewReport">
         <button @click="reportUser" class="p-2 rounded-full" style="background-color: #7eacb5">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="rgb(255, 244, 234)">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5h.01" />
           </svg>
         </button>
+        </router-link>
         <button @click="shareProfile" class="p-2 rounded-full" style="background-color: #7eacb5">
   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="rgb(255, 244, 234)">
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
@@ -38,7 +40,7 @@
               :src="profilePhoto"
               class="w-32 h-32 rounded-full border-4 shadow-lg"
               style="border-color: rgb(255, 244, 234);"
-              alt="Foto profilo"
+              alt=""
             />
           </div>
           <h2 class="mt-4 text-2xl font-bold text-center md:text-left"
@@ -250,7 +252,7 @@ async function blockUser() {
 }
 
 function reportUser() {
-  alert('Utente segnalato!')
+ 
 }
 //questa funziona fr
 function shareProfile() {

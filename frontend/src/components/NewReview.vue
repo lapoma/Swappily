@@ -62,95 +62,95 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import axios from 'axios';
+// import { ref, onMounted } from 'vue';
+// import { useRouter, useRoute } from 'vue-router';
+// import axios from 'axios';
 
-const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080';
-const API_URL = HOST + '/api/v1';
-const REVIEWS_URL = API_URL + '/reviews';
-const USERS_URL = API_URL + '/users';
+// const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080';
+// const API_URL = HOST + '/api/v1';
+// const REVIEWS_URL = API_URL + '/reviews';
+// const USERS_URL = API_URL + '/users';
 
-const router = useRouter();
-const route = useRoute();
+// const router = useRouter();
+// const route = useRoute();
 
-// Mock data 
-const reviewedUser = ref({
-  name: 'Mario Rossi',
-  id: route.params.userId
-});
+// // Mock data 
+// const reviewedUser = ref({
+//   name: 'Mario Rossi',
+//   id: route.params.userId
+// });
 
-const comment = ref('');
-const isSubmitting = ref(false);
-const error = ref('');
-const success = ref('');
+// const comment = ref('');
+// const isSubmitting = ref(false);
+// const error = ref('');
+// const success = ref('');
 
-const goBack = () => {
-  router.go(-1);
-};
+// const goBack = () => {
+//   router.go(-1);
+// };
 
-// 
-/*
-onMounted(async () => {
-  try {
-    const response = await axios.get(`${USERS_URL}/${route.params.userId}`);
-    reviewedUser.value = response.data;
-  } catch (err) {
-    console.error('Error fetching user data:', err);
-  }
-});
-*/
+// // 
+// /*
+// onMounted(async () => {
+//   try {
+//     const response = await axios.get(`${USERS_URL}/${route.params.userId}`);
+//     reviewedUser.value = response.data;
+//   } catch (err) {
+//     console.error('Error fetching user data:', err);
+//   }
+// });
+// */
 
-const submitReview = async () => {
-  if (!comment.value.trim()) {
-    error.value = 'Scrivi una recensione';
-    return;
-  }
+// const submitReview = async () => {
+//   if (!comment.value.trim()) {
+//     error.value = 'Scrivi una recensione';
+//     return;
+//   }
 
-  isSubmitting.value = true;
-  error.value = '';
-  success.value = '';
+//   isSubmitting.value = true;
+//   error.value = '';
+//   success.value = '';
 
-  try {
-    const token = localStorage.getItem('token');
-    const userId = localStorage.getItem('userId');
+//   try {
+//     const token = localStorage.getItem('token');
+//     const userId = localStorage.getItem('userId');
     
-    // Mock della chiamata API 
-    console.log('Review data:', {
-      targetUserId: route.params.userId,
-      comment: comment.value,
-      authorId: userId
-    });
+//     // Mock della chiamata API 
+//     console.log('Review data:', {
+//       targetUserId: route.params.userId,
+//       comment: comment.value,
+//       authorId: userId
+//     });
 
-    // Simulazione successo
-    success.value = 'Recensione pubblicata con successo!';
-    setTimeout(() => {
-      router.push(`/user/${route.params.userId}`);
-    }, 1500);
+//     // Simulazione successo
+//     success.value = 'Recensione pubblicata con successo!';
+//     setTimeout(() => {
+//       router.push(`/user/${route.params.userId}`);
+//     }, 1500);
     
-    /* 
-    const response = await axios.post(
-      REVIEWS_URL,
-      {
-        targetUserId: route.params.userId,
-        comment: comment.value,
-        authorId: userId
-      },
-      {
-        headers: {
-          Authorization: ` ${token}`
-        }
-      }
-    );
-    */
+//     /* 
+//     const response = await axios.post(
+//       REVIEWS_URL,
+//       {
+//         targetUserId: route.params.userId,
+//         comment: comment.value,
+//         authorId: userId
+//       },
+//       {
+//         headers: {
+//           Authorization: ` ${token}`
+//         }
+//       }
+//     );
+//     */
     
-  } catch (err) {
-    console.error('Error submitting review:', err);
-    error.value = err.response?.data?.message || 'Errore durante la pubblicazione';
-  } finally {
-    isSubmitting.value = false;
-  }
-};
+//   } catch (err) {
+//     console.error('Error submitting review:', err);
+//     error.value = err.response?.data?.message || 'Errore durante la pubblicazione';
+//   } finally {
+//     isSubmitting.value = false;
+//   }
+// };
 </script>
 
 <style>
