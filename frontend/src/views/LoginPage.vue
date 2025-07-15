@@ -133,6 +133,8 @@ export default {
                 response = await axios.post(API_URL+`/authentications`, authData);
                 const user = await axios.get(API_URL+`/users/${response.data.id}`);
 
+                console.log(response)
+
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('userId', user.data._id);
                 localStorage.setItem('username', user.data.username);
@@ -141,14 +143,15 @@ export default {
 
                 //this.$store.dispatch("login",{username: this.username, usertype: this.usertype});
                 if(user.data.usertype === "user"){
-                  this.$router.push(`/UserProfile1/${response.data.id}`)
+                  const id = localStorage.getItem("userId")
+                  this.$router.push(`/UserProfile1/${id}`)
                 }else{
-                  this.$router.push('OperatorPage')
+                  this.$router.push('/OperatorPage')
                 }
                 
             }catch(error){
               console.log(error)
-                this.error = error.response?.data?.message || "Errore nel Login. Riprova.";
+              this.error = error.response?.data?.message || "Errore nel Login. Riprova.";
             }
         }
     }

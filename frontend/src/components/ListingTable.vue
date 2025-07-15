@@ -105,8 +105,8 @@
       <h3 class="text-xl font-semibold mb-3" style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 500;">Condizione:</h3>
       <div class="flex items-center">
         <span class="inline-block px-4 py-2 rounded-full text-sm font-medium" 
-              :class="conditionClasses[listing.condition]">
-          {{ conditionLabels[listing.condition] }}
+              :class="conditionClasses[listing.status]">
+          {{ conditionLabels[listing.status] }}
         </span>
       </div>
     </div>
@@ -152,7 +152,7 @@ export default {
         listing_url: [],
         title: '',
         description: '',
-        condition: ''
+        status: ''
       })
     } 
   },
@@ -237,7 +237,7 @@ export default {
             }
         },
     contactSeller() {
-      alert(`Contatta il venditore per: ${this.listing.title}`)
+      this.$router.push('/MessagePage')
     },
     startExchange() {
       alert(`Avvia scambio per: ${this.listing.title}`)

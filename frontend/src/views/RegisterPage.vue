@@ -207,7 +207,7 @@ export default {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('userId', response.data._id);
         localStorage.setItem('username',response.data.username);
-        localStorage.setItem('userType', response.data.userType);
+        localStorage.setItem('usertype', response.data.userType);
                 
         console.log(JSON.parse(localStorage.getItem('user')));
 

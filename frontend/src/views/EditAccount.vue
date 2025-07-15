@@ -98,6 +98,7 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import { profile } from 'console';
 
 const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080';
 const API_URL = HOST + '/api/v1';
@@ -142,7 +143,18 @@ const updateAccount = async () => {
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
     
-    const updateData = {};
+    const user = await axios.get(API_URL+`/users/${userId}`)
+
+    console.log(JSON.stringify(user.data))
+
+    const updateData = {
+      username: user.data.username,
+      name: user.data.name,
+      surname: user.data.name,
+      email: user.data.email,
+      description: user.data.description,
+      profile_url: user.data.profile_url
+    };
     if (username.value) updateData.username = username.value;
     if (email.value) updateData.email = email.value;
     if (showPasswordFields.value) {
@@ -162,7 +174,7 @@ const updateAccount = async () => {
 
     success.value = 'Account aggiornato con successo!';
     setTimeout(() => {
-      router.push('/settings');
+      router.push('/Settings');
     }, 1500);
 
   } catch (err) {

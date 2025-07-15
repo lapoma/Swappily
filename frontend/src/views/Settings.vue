@@ -110,17 +110,26 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios'; // Assuming you have axios installed for API calls
+import { useStore } from 'vuex';
+import axios from 'axios'; 
+
+const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080';
+const API_URL = HOST + '/api/v1';
+const USERS_URL = API_URL + '/users';
+
 
 const router = useRouter();
+const store = useStore();
+
+
 const blockedUsers = ref([]);
 
 // Mock data - replace with actual API call
 blockedUsers.value = [
-  { id: 1, username: 'user123' },
-  { id: 2, username: 'spammer456' }
+//   { id: 1, username: 'user123' },
+//   { id: 2, username: 'spammer456' }
 ];
 
 const goBack = () => {
@@ -128,26 +137,33 @@ const goBack = () => {
 };
 
 const handleLogout = () => {
-  // Clear local storage
-  localStorage.removeItem('token');
-  localStorage.removeItem('userId');
+  store.dispatch("logout")
 
-  // Redirect to login
-  router.push('/login');
-
-  // Optional: trigger API logout
-  // axios.post('/api/logout');
+  router.push('/LoginPage');
 };
 
-const confirmDeleteAccount = () => {
+async function confirmDeleteAccount(){
   if (confirm('Sei sicuro di voler eliminare il tuo account? Questa azione è irreversibile.')) {
-    // Implement your account deletion logic here
-    // For example, make an API call to delete the user's account
+    const response = await axios.delete(API_URL+`/users/${userId}`)
+
+    console.log(response.data)
+
     alert('Richiesta di eliminazione account inviata (azione simulata)');
     // If successful, you might want to log out the user and redirect to login
     handleLogout(); // Log out after simulated deletion
   }
 };
+
+async function  fetchBlockedUsers(){
+  const userId = localStorage.getItem("userId")
+  const response = await axios.get(API_URL+`/users/${userId}/blocked`)
+  blockedUsers.value = response.data
+};
+
+onMounted(async()=>{
+  fetchBlockedUsers()
+})
+
 </script>
 
 <style>

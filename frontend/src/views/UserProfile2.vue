@@ -240,9 +240,12 @@ async function blockUser() {
                     ...userGet.data,
                     blocklist: newBlockList
                 }));
+
+                alert('Utente bloccato')
+
             }catch(error){
                 console.error('Failed to block user: ', error);
-                alert('An error occurred while updating blocked users.');
+                alert("Errore nell'aggiornamento degli utenti bloccati.");
             }
 }
 

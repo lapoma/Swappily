@@ -5,7 +5,7 @@
         <div class="flex flex-col items-center gap-4 mb-4">
           <div class="relative -mt-16">
             <img
-              :src="user.profile_url || 'https://via.placeholder.com/150'"
+              :src="user.profile_url"
               class="w-32 h-32 rounded-full border-4 shadow-lg object-cover"
               style="border-color: rgb(255, 244, 234);"
               alt=""
@@ -33,7 +33,7 @@
         <div class="flex flex-col gap-2"> <div>
             <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">Cambia descrizione</label>
             <textarea
-              v-model="user.bio"
+              v-model="user.description"
               type="textarea"
               class="w-full p-5 border rounded-lg focus:outline-none"              style="background-color: rgba(255, 244, 234, 0.8); color: #7eacb5; font-family: 'Poppins', sans-serif;"
               placeholder="Scrivi qualcosa su di te..."
@@ -56,7 +56,7 @@
 
 <script setup>
 import axios from 'axios';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
 const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
@@ -65,7 +65,7 @@ const USERS_URL = API_URL + '/users'
 
 const router = useRouter();
 
-const user = ref({
+const user = reactive({
     username: '',
     userId: '',
     name: '',
@@ -76,7 +76,7 @@ const user = ref({
     n_listings: 0,
     profile_url:"",
     error: "",
-    bio:""
+    description:""
 });
 const error = ref('');
 
@@ -85,7 +85,7 @@ function handleImageUpload(event) {
   if (file) {
     const reader = new FileReader();
     reader.onload = (e) => {
-      user.value.profile_url = e.target.result;
+      user.profile_url = e.target.result;
     };
     reader.readAsDataURL(file);
   }
@@ -107,6 +107,7 @@ async function fetchUserData() {
             user.name = response.data.name;
             user.surname = response.data.surname;
             user.email = response.data.email;
+            user.profile_url = response.data.profile_url;
 
             console.log(user)
         }
@@ -138,12 +139,16 @@ async function handleEdit() {
     const token = localStorage.getItem("token")
     const userId = localStorage.getItem("userId")
     const userGet = await axios.get(API_URL+`/users/${userId}`);
+
+console.log
+
     try{
       const response = await axios.put(API_URL+`/users/${userId}`, {
         username: userGet.data.username,
         name: userGet.data.name,
         surname: userGet.data.surname,
-        email: userGet.data.email
+        email: userGet.data.email,
+        description: user.description
       }, {
         headers: {
         Authorization: ` ${token}`
@@ -151,6 +156,7 @@ async function handleEdit() {
     })
         console.log(response)  
         alert("Utente aggiornato con successo")
+        router.push(`/UserProfile1/${userId}`)
     }catch(error){
         alert("Impossibile aggiornare l'utente")
         this.error=("Impossibile aggiornare l'utente")
@@ -158,31 +164,31 @@ async function handleEdit() {
     
 }
 
-async function addImage(){
-    if(!this.profile_url){
-        alert("Nessuna immagine inserita")
-        this.error=("Nessuna immagine inserita")
-    }else{
-        try{
-            const token = localStorage.getItem("token")
-            const userId = localStorage.getItem("userId")
-            const userGet = await axios.get(API_URL+`/users/${userId}`);
-                const response = await axios.put(API_URL+`/users/${userId}`, {
-                    username: userGet.data.username,
-                    name: userGet.data.name,
-                    surname: userGet.data.surname,
-                    email: userGet.data.email,
-                    profile_url: this.profile_url
-                }, {
-                    headers: {
-                    Authorization: ` ${token}`
+async function addImage() {
+    if (!user.profile_url) {
+        alert("Nessuna immagine inserita");
+        error.value = "Nessuna immagine inserita";
+    } else {
+        try {
+            const token = localStorage.getItem("token");
+            const userId = localStorage.getItem("userId");
+            const userGet = await axios.get(API_URL + `/users/${userId}`);
+            const response = await axios.put(API_URL + `/users/${userId}`, {
+                username: userGet.data.username,
+                name: userGet.data.name,
+                surname: userGet.data.surname,
+                email: userGet.data.email,
+                profile_url: user.profile_url
+            }, {
+                headers: {
+                    Authorization: `${token}`
                 }
-    })
-        console.log(response)  
-    }catch(error){
-        alert("Impossibile aggiornare l'utente")
-        this.error=("Impossibile aggiornare l'utente")
-    }
+            });
+            console.log(response);
+        } catch (err) {
+            alert("Impossibile aggiornare l'utente");
+            error.value = "Impossibile aggiornare l'utente";
+        }
     }
 }
 
