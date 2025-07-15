@@ -31,44 +31,16 @@
         </div>
 
         <div class="flex flex-col gap-2"> <div>
-            <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">Username</label>
-            <input
-              v-model="user.username"
-              type="text"
-              class="w-full p-3 rounded-lg focus:outline-none"
-              style="background-color: rgba(255, 244, 234, 0.8); color: #7eacb5; font-family: 'Poppins', sans-serif;"
-            >
+            <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">Cambia descrizione</label>
+            <textarea
+              v-model="user.bio"
+              type="textarea"
+              class="w-full p-5 border rounded-lg focus:outline-none"              style="background-color: rgba(255, 244, 234, 0.8); color: #7eacb5; font-family: 'Poppins', sans-serif;"
+              placeholder="Scrivi qualcosa su di te..."
+            ></textarea>
           </div>
 
-          <div>
-            <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">Nome</label>
-            <input
-              v-model="user.name"
-              type="text"
-              class="w-full p-3 rounded-lg focus:outline-none"
-              style="background-color: rgba(255, 244, 234, 0.8); color: #7eacb5; font-family: 'Poppins', sans-serif;"
-            >
-          </div>
-
-          <div>
-            <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">Cognome</label>
-            <input
-              v-model="user.surname"
-              type="text"
-              class="w-full p-3 rounded-lg focus:outline-none"
-              style="background-color: rgba(255, 244, 234, 0.8); color: #7eacb5; font-family: 'Poppins', sans-serif;"
-            >
-          </div>
-
-          <div>
-            <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">Email</label>
-            <input
-              v-model="user.email"
-              type="email"
-              class="w-full p-3 rounded-lg focus:outline-none"
-              style="background-color: rgba(255, 244, 234, 0.8); color: #7eacb5; font-family: 'Poppins', sans-serif;"
-            >
-          </div>
+          
 
           <button
             @click="handleEdit"
@@ -103,7 +75,8 @@ const user = ref({
     listings: [],
     n_listings: 0,
     profile_url:"",
-    error: ""
+    error: "",
+    bio:""
 });
 const error = ref('');
 
