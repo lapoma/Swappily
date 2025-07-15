@@ -144,6 +144,7 @@ export default {
                 //this.$store.dispatch("login",{username: this.username, usertype: this.usertype});
                 if(user.data.usertype === "user"){
                   const id = localStorage.getItem("userId")
+                  console.log(id)
                   this.$router.push(`/UserProfile1/${id}`)
                 }else{
                   this.$router.push('/OperatorPage')

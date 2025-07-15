@@ -103,7 +103,7 @@ const router = createRouter({
           }
         },
         {
-          path: '/NewReview',
+          path: '/NewReview/:userId',
           name: 'NewReview',
           component: () => import('../components/NewReview.vue')
         },
@@ -111,7 +111,8 @@ const router = createRouter({
           path: '/NewReport',
           name: 'NewReport',
           component: () => import('../components/NewReport.vue')
-        },
+        }
+
     ]
 })
 

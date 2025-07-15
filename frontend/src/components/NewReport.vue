@@ -73,8 +73,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { onMounted, ref } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 
 const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080';
@@ -82,6 +82,7 @@ const API_URL = HOST + '/api/v1';
 const REPORTS_URL = API_URL + '/reports';
 
 const router = useRouter();
+const route = useRoute();
 
 const reportedUsername = ref('');
 const reportedListing = ref('');
@@ -89,12 +90,19 @@ const description = ref('');
 const isSubmitting = ref(false);
 const error = ref('');
 
+onMounted(async()=>{
+
+})
+
 const submitReport = async () => {
   if (!description.value.trim()) {
     error.value = 'La descrizione è obbligatoria';
     return;
   }
-
+  if(reportedListing && reportedUsername){
+    error.value = "Impossibile segnalare un utente e un annuncio."
+    return;
+  }
   isSubmitting.value = true;
   error.value = '';
 

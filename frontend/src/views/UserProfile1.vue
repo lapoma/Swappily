@@ -122,6 +122,7 @@
   <div 
     v-for="listing in listings" 
     :key="listing._id" 
+    @click="selectListing(listing)"
     class="w-full aspect-square max-w-[200px] sm:max-w-[240px] rounded-lg shadow-md overflow-hidden transition-transform hover:transform hover:-translate-y-1" 
     style="background-color: #7eacb5"
   >
@@ -132,6 +133,12 @@
     />
   </div>
 </div>
+
+  <ListingTable2 
+    v-if="selectedListing"
+    :listing="selectedListing"
+    @close="selectedListing = null"
+    />
 
       <!-- Recensioni -->
       <div v-if="activeTab === 'reviews'" class="flex flex-col gap-y-4">
@@ -146,9 +153,9 @@
           style="background-color: #7eacb5"
         >
           <div class="flex items-center mb-2">
-            <span class="font-bold" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-weight: 600;">{{ review.author }}</span>
+            <span class="font-bold" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-weight: 600;">{{ review.reviewer }}</span>
           </div>
-          <p style="color: rgba(255, 244, 234, 0.8); font-family: 'Poppins', sans-serif; font-weight: 300;">{{ review.comment }}</p>
+          <p style="color: rgba(255, 244, 234, 0.8); font-family: 'Poppins', sans-serif; font-weight: 300;">{{ review.text }}</p>
         </div>
       </div>
 
@@ -177,6 +184,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from "axios"
+import ListingTable2 from '@/components/ListingTable2.vue'
 
 const route = useRoute()
 
@@ -200,6 +208,8 @@ const profilePhoto = ref('https://preview.redd.it/the-tiger-from-kpop-demon-hunt
 const n_exchange =ref(0)
 const n_following = ref()
 const n_follower = ref()
+
+const selectedListing = ref(null)
 
 // Tab attiva
 const tabs = [
@@ -291,22 +301,37 @@ async function fetchUserListings(userId){
   }
 }
 
-async function fetchUserReviews(userId){
-  try{
+async function fetchUserReviews(userId) {
+  try {
     const id = route.params.userId
     console.log(id)
-    const response = await axios.get(API_URL+`/reviews/${userId}`)
-    if(response.data){
-      console.log(JSON.stringify(response.data))
-      reviews.value = response.data
-
-      console.log("reviews: "+ reviews.value)
-    }else{
+    const response = await axios.get(API_URL + `/reviews/${userId}`)
+    if (response.data) {
+      // Per ogni recensione, recupera l'username dell'autore
+      const reviewsWithAuthors = await Promise.all(
+        response.data.map(async (review) => {
+          let reviewerUsername = ''
+          try {
+            // Supponendo che review.reviewer contenga l'id dell'autore
+            const userRes = await axios.get(USERS_URL + `/${review.reviewer}`)
+            reviewerUsername = userRes.data.username
+          } catch (e) {
+            reviewerUsername = 'Utente sconosciuto'
+          }
+          return {
+            ...review,
+            reviewer: reviewerUsername
+          }
+        })
+      )
+      reviews.value = reviewsWithAuthors
+      console.log("RECENSIONI: " + JSON.stringify(reviews.value))
+    } else {
       console.log("No Reviews")
     }
-  }catch(error){
-    console.error("Error fetching user reviews:", error);
-    return;
+  } catch (error) {
+    console.error("Error fetching user reviews:", error)
+    return
   }
 }
 
@@ -325,6 +350,14 @@ async function fetchFavorites(userId) {
     this.error.value = ("Errore con il caricamento degli annunci preferiti")
   }
 }
+
+function selectListing(listing){
+  selectedListing.value = listing
+}
+
+function deselectListing() {
+      selectedListing.value = null;
+    }
 
 
 onMounted(async () => {
