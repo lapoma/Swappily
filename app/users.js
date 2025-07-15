@@ -56,7 +56,7 @@ router.get('', async (req, res) => {
 
     users = users.map(user => ({
         self: '/api/v1/users/' + user._id,
-        userId: user.userId,
+        _id: user._id,
         username: user.username,
         email: user.email,
         name: user.name,
@@ -89,7 +89,7 @@ router.get('/:id', async (req, res) => {
 
     res.status(200).json({
         self: '/api/v1/users/' + user._id,
-        userId: user.userId,
+        _id: user._id,
         username: user.username,
         email: user.email,
         name: user.name,
@@ -348,7 +348,7 @@ router.post('/:userId/favorites/:listingId', async (req, res) => {
   router.get('/:userId/favorites', async (req, res) => {
     try {
         const user = await User.findById(req.params.userId)
-            .populate('favorite', 'title price images');
+            .populate('favorite', 'title description listing_url');
     
         if (!user) return res.status(404).json({ error: 'User not found' });
     

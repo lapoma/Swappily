@@ -36,7 +36,9 @@ const router = createRouter({
           path: '/UserProfile1/:userId',
           name: 'UserProfile1',
           component: () => import('../views/UserProfile1.vue'),
-          props: true
+          meta: {
+            requiresAuth: true
+          }
         },
         {
           path: '/UserProfile2/:userId',
@@ -90,7 +92,10 @@ const router = createRouter({
         {
           path: '/OperatorPage',
           name: 'OperatorPage',
-          component: () => import('../views/OperatorPage.vue')
+          component: () => import('../views/OperatorPage.vue'),
+          meta: {
+            requiresAuth: true
+          }
         },
         {
           path: '/NewReview',

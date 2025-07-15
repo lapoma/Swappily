@@ -142,7 +142,7 @@ export default {
 
       try {
         let response = await axios.post(API_URL+`/listings`, listingData, auth)
-        this.$router.push('/UserProfile/'+userId)
+        this.$router.push('/UserProfile1/'+userId)
       } catch(error) {
         this.error = error.response?.data?.message || "Errore durante la creazione. Riprova."
       }

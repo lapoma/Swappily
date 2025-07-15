@@ -252,7 +252,7 @@ async function fetchUserData(userId){
     try{
         console.log(userId)
         const user = await axios.get(USERS_URL+`/${userId}`);
-        console.log(user)
+        console.log(user.data)
         if(!user){
             console.error("User ID not found");
             return;
