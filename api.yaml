@@ -85,8 +85,6 @@ paths:
                   $ref: '#/components/schemas/User'
         '404':
           description: User not found
-        '500':
-          description: Server error
   '/users/{userId}':
     get:
       description: Gets a user by ID.
@@ -105,8 +103,6 @@ paths:
                 $ref: '#/components/schemas/User'
         '404':
           description: User not found
-        '500':
-          description: Server error
     delete:
       description: Delete a user
       security:
@@ -123,8 +119,6 @@ paths:
           description: User deleted
         '404':
           description: User not found
-        '500':
-          description: Server error
     put:
       description: Updates an existing user.
       security:
@@ -174,8 +168,6 @@ paths:
           description: Listing already in favorites
         '404':
           description: User or listing not found
-        '500':
-          description: Internal server error
     delete:
       description: Remove a listing from user's favorites
       parameters:
@@ -203,8 +195,6 @@ paths:
           description: Listing not in favorites
         '404':
           description: User or listing not found
-        '500':
-          description: Internal server error
   '/users/{userId}/favorites':
     get:
       description: Get user's favorite listings
@@ -237,8 +227,6 @@ paths:
                       description: Listing images
         '404':
           description: User not found
-        '500':
-          description: Internal server error
   '/users/{userId}/block/{blockedUserId}':
     post:
       description: Block a user
@@ -272,8 +260,6 @@ paths:
           description: Bad Request. Cannot block yourself or user already blocked
         '404':
           description: User not found
-        '500':
-          description: Internal server error
     delete:
       description: Unblock a user
       parameters:
@@ -306,8 +292,6 @@ paths:
           description: Bad Request. User not blocked.
         '404':
           description: User not found
-        '500':
-          description: Internal server error
   '/users/{userId}/blocked':
     get:
       description: Get list of blocked users
@@ -335,8 +319,6 @@ paths:
                       description: User's username
         '404':
           description: User not found
-        '500':
-          description: Internal server error
   '/users/{userId}/follow/{targetUserId}':
     post:
       description: Follow another user
@@ -377,8 +359,6 @@ paths:
           description: Forbidden
         '404':
           description: User not found
-        '500':
-          description: Internal server error
     delete:
       description: Unfollow another user
       security:
@@ -418,8 +398,6 @@ paths:
           description: Forbidden
         '404':
           description: User not found
-        '500':
-          description: Internal server error
 
   '/users/{userId}/following':
     get:
@@ -452,8 +430,6 @@ paths:
                     type: integer
         '404':
           description: User not found
-        '500':
-          description: Internal server error
 
   '/users/{userId}/followers':
     get:
@@ -486,8 +462,6 @@ paths:
                     type: integer
         '404':
           description: User not found
-        '500':
-          description: Internal server error
   '/users/{userId}/isFollowing/{targetUserId}':
     get:
       description: Check if a user is following another user
@@ -514,8 +488,6 @@ paths:
                     type: boolean
         '404':
           description: User not found
-        '500':
-          description: Internal server error
   /listings:
     post:
       description: Creates a new listing.
@@ -539,8 +511,6 @@ paths:
           description: Bad request.
         '403':
           description: Not authorized.
-        '500':
-          description: Internal server error.
     get:
       description: 'Gets the list of listings. It is possible to show the listing by their title or filtered by status.'
       parameters:
@@ -570,8 +540,6 @@ paths:
                   $ref: '#/components/schemas/Listing'
         '404':
           description: Not found
-        '500':
-          description: Server error
   '/listings/{listingId}':
     get:
       description: Gets a listing by ID.
@@ -608,8 +576,6 @@ paths:
           description: The user does not have the authorization
         '404':
           description: Listing not found
-        '500':
-          description: Internal server error
     put:
       description: Updates an existing listing.
       security:
@@ -655,8 +621,6 @@ paths:
           description: Invalid userId
         '404':
           description: No listings found for this user
-        '500':
-          description: Internal server error
   /exchange:
     get:
       description: Gets the list of exchanges. 
@@ -780,8 +744,6 @@ paths:
               description: Link to the newly created review.
         '400':
           description: Bad request. The input is not correct
-        '500':
-          description: Server error
   '/review/{reviewId}':
     delete:
       description: The user deletes one of his reviews
@@ -825,8 +787,6 @@ paths:
                   $ref: '#/components/schemas/Review'
         '404':
           description: Not found
-        '500':
-          description: Server error
   /report:
     post:
       description: Creating a new report
@@ -850,8 +810,6 @@ paths:
           description: Bad request. Missing required fields
         '404':
           description: User or listing not found
-        '500':
-          description: Server error
 components:
   securitySchemes:
     accessTokenHeader:
