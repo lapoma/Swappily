@@ -268,9 +268,9 @@ router.get('/user/:userId', async (req, res) => {
         // Trova tutte i listing associate a questo userId
         const listings = await Listing.find({ userId: userId });
         
-        // if (listings.length === 0) {
-        //     return res.status(404).json({ error: 'No listings found for this user' });
-        // }
+        if (listings.length === 0) {
+            return res.status(404).json({ error: 'No listings found for this user' });
+        }
 
         const formattedListings = listings.map(listing => {
             return {

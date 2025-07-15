@@ -77,15 +77,15 @@
 </template>
 
 
-<script>
+<script setup>
 import { logout } from '@/authState';
 import { ref, onMounted } from 'vue';
+import axios from "axios"
+import { useRouter } from 'vue-router';
 
-
-
-export default {
-  name: 'OperatorPage',
-  setup() {
+const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
+const API_URL = HOST + '/api/v1'
+const USERS_URL = API_URL + '/users'
 
     // Aggiunge il font Poppins al documento
     const link = document.createElement('link');
@@ -93,50 +93,56 @@ export default {
     link.rel = 'stylesheet';
     document.head.appendChild(link);
     
+    const router = useRouter();
     const supportRequests = ref([]);
+
     
     
     // Funzione per mockare il fetching delle richieste
     const fetchSupportRequests = async () => {
-      // Simula una chiamata API con un ritardo
-      await new Promise(resolve => setTimeout(resolve, 500)); // Simula un caricamento di 0.5 secondi
+      const response = await axios.get(API_URL+`/reports`)
+      console.log(response)
 
-      // Dati mock delle richieste di supporto
-      const mockData = [
-        {
-          id: 'req1',
-          username: 'mario_rossi',
-          description: "L'utente ha pubblicato contenuti inappropriati e non rispetta le regole della community.",
-          reportedUser: 'luca_bianchi',
-          reportedListing: '12345'
-        },
-        {
-          id: 'req2',
-          username: 'anna_verdi',
-          description: "Il listing contiene informazioni false sul prodotto.",
-          reportedUser: 'paolo_neri',
-          reportedListing: '67890'
-        },
-        {
-          id: 'req3',
-          username: 'giulia_bianchi',
-          description: "L'utente non ha rispettato i termini dello scambio.",
-          reportedUser: 'marco_rossi',
-          reportedListing: '54321'
-        }
-      ];
 
-      supportRequests.value = mockData;
+      // // Simula una chiamata API con un ritardo
+      // await new Promise(resolve => setTimeout(resolve, 500)); // Simula un caricamento di 0.5 secondi
+
+      // // Dati mock delle richieste di supporto
+      // const mockData = [
+      //   {
+      //     id: 'req1',
+      //     username: 'mario_rossi',
+      //     description: "L'utente ha pubblicato contenuti inappropriati e non rispetta le regole della community.",
+      //     reportedUser: 'luca_bianchi',
+      //     reportedListing: '12345'
+      //   },
+      //   {
+      //     id: 'req2',
+      //     username: 'anna_verdi',
+      //     description: "Il listing contiene informazioni false sul prodotto.",
+      //     reportedUser: 'paolo_neri',
+      //     reportedListing: '67890'
+      //   },
+      //   {
+      //     id: 'req3',
+      //     username: 'giulia_bianchi',
+      //     description: "L'utente non ha rispettato i termini dello scambio.",
+      //     reportedUser: 'marco_rossi',
+      //     reportedListing: '54321'
+      //   }
+      // ];
+
+      // supportRequests.value = mockData;
     };
 
     onMounted(() => {
       fetchSupportRequests(); // Carica le richieste al montaggio del componente
     });
 
-    const handleLogout = () => {
+    function handleLogout(){
       logout()
       alert('Logout effettuato con successo!');
-      this.$router.push('/LoginPage');
+      router.push('/LoginPage');
     };
 
     const confirmDeleteAccount = () => {
@@ -157,16 +163,6 @@ export default {
       // TODO: Implementa la logica reale per rimuovere il listing tramite API
       // Potresti anche voler aggiornare l'elenco delle richieste dopo la rimozione
     };
-
-    return {
-      supportRequests,
-      handleLogout,
-      confirmDeleteAccount,
-      removeUser,
-      removeListing
-    };
-  }
-};
 </script>
 
 <style scoped>

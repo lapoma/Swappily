@@ -130,35 +130,22 @@ export default {
             
             try{
                 let response;
-
-
-                //CONSOLE LOG AUTHDATA
-                console.log(authData);
-
-
-
-
-
                 response = await axios.post(API_URL+`/authentications`, authData);
-
-                console.log(response);
-
-                const user = await axios.get(API_URL+`/users/${response.data.id}`,);
-
-
-                console.log("UTENTE: "+response.data.id);
-
+                const user = await axios.get(API_URL+`/users/${response.data.id}`);
 
                 localStorage.setItem('token', response.data.token);
-                localStorage.setItem('userId', response.data.id);
-                localStorage.setItem('username',response.data.username);
-                localStorage.setItem('usertype', JSON.stringify(user.data.usertype));
+                localStorage.setItem('userId', user.data._id);
+                localStorage.setItem('username', user.data.username);
+                localStorage.setItem('usertype', user.data.usertype);
                 
-                console.log(localStorage.getItem("token"));
 
-                //this.$store.dispatch("login",{username: this.username, userType: this.userType});
-
-                this.$router.push(`/UserProfile/${response.data.id}`)
+                //this.$store.dispatch("login",{username: this.username, usertype: this.usertype});
+                if(user.data.usertype === "user"){
+                  this.$router.push(`/UserProfile1/${response.data.id}`)
+                }else{
+                  this.$router.push('OperatorPage')
+                }
+                
             }catch(error){
               console.log(error)
                 this.error = error.response?.data?.message || "Errore nel Login. Riprova.";
