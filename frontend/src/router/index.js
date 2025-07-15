@@ -73,6 +73,16 @@ const router = createRouter({
           component: () => import('../views/EditProfile.vue')
         },
         {
+          path: '/EditAccount',
+          name: 'EditAccount',
+          component: () => import('../views/EditAccount.vue')
+        },
+        {
+          path: '/Settings',
+          name: 'Settings',
+          component: () => import('../views/Settings.vue')
+        },
+        {
           path: '/NewListing',
           name: 'NewListing',
           component: () => import('../components/NewListing.vue')
@@ -81,6 +91,11 @@ const router = createRouter({
           path: '/OperatorPage',
           name: 'OperatorPage',
           component: () => import('../views/OperatorPage.vue')
+        },
+        {
+          path: '/NewReview',
+          name: 'NewReview',
+          component: () => import('../components/NewReview.vue')
         },
     ]
 })

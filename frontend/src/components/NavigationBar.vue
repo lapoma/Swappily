@@ -59,10 +59,7 @@ import { isLoggedIn, logout } from '@/authState'
 const router = useRouter();
 const store = useStore();
 const userId = ref()
-function handleLogout() {
-  logout()
-  router.push('/')
-}
+
 // Controlla se l'utente è loggato
 // const isLoggedIn = computed(() => {
 //   // Se usi Vuex:
@@ -109,7 +106,7 @@ onMounted(()=>{
 
 .logo {
   position: absolute;
-  left: -30px;
+  left: -20px;
 }
 
 .logo img {

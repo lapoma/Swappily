@@ -45,7 +45,7 @@
               :src="profilePhoto"
               class="w-32 h-32 rounded-full border-4 shadow-lg"
               style="border-color: rgb(255, 244, 234);"
-              alt="Foto profilo"
+              alt=""
             />
           </div>
           <h2 class="mt-4 text-2xl font-bold text-center md:text-left" 
@@ -322,7 +322,7 @@ async function fetchFavorites(userId) {
     console.log("favorites: "+ favorites.value)
   }catch(e){
     console.error("Failed to fetchFavorites", e)
-    this.error.value = ("Errore con il caricamento degli annunci prefriti")
+    this.error.value = ("Errore con il caricamento degli annunci preferiti")
   }
 }
 

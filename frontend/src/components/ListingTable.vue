@@ -89,7 +89,7 @@
     <h2 class="text-3xl font-bold" style="font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: bold;">{{ listing.title }}</h2>
     <!-- Proprietario -->
     <router-link
-      :to="`/UserProfile1/${listing.userId}`"
+      :to="`/UserProfile2/${listing.userId}`"
       class="text-red-300 hover:underline font-bold"
     >
       {{ listing.username || 'Proprietario' }}
