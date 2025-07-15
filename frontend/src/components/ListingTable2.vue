@@ -1,3 +1,4 @@
+
 <template>
   <!-- Overlay con nuovo colore di sfondo -->
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background-color: rgba(0, 0, 0, 0.4); backdrop-filter: blur(0px);">
@@ -25,7 +26,7 @@
         >
 
         <!-- Pulsante preferiti spostato a destra -->
-        <button 
+        <!-- <button 
           @click="toggleFavorite"
           class="absolute top-4 right-4 rounded-full p-2 shadow-md hover:bg-gray-100"
           style="background-color: rgb(126, 172, 181)"
@@ -38,7 +39,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                   d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
           </svg>
-        </button>
+        </button> -->
 
         <!-- Pulsanti navigazione immagini -->
         <button 
@@ -91,6 +92,7 @@
     <router-link
       :to="`/UserProfile2/${listing.userId}`"
       class="text-red-300 hover:underline font-bold"
+      style="font-size: 130%;"
     >
       {{ 'User: ' + listing.username }}
     </router-link>
@@ -114,22 +116,21 @@
 
   <!-- Parte inferiore: Bottoni in basso -->
       <div class="mt-8 flex justify-between gap-6 pt-6">
-        <button 
-          @click="contactSeller"
-          class="flex-1 py-3 px-6 rounded-lg font-bold transition"
-            style="background-color: rgb(255, 244, 234); color: #7eacb5; font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 1000;"
-        >
-          CONTATTA
-        </button>
+  <button
+    @click="goToEditListing"  class="flex-1 py-3 px-6 rounded-lg font-bold transition"
+    style="background-color: rgb(255, 244, 234); color: #7eacb5; font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 1000;"
+  >
+    Modifica
+  </button>
 
-        <button 
-          @click="startExchange"
-          class="flex-1 py-3 px-6 rounded-lg font-bold transition"
-          style="background-color: rgb(201, 104, 104); color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 700;"
-        >
-          SCAMBIA
-        </button>
-      </div>
+  <button
+    @click="DeleteListing"
+    class="flex-1 py-3 px-6 rounded-lg font-bold transition"
+    style="background-color: rgb(201, 104, 104); color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 700;"
+  >
+    Elimina
+  </button>
+</div>
     </div>
 
     </div>
@@ -137,8 +138,11 @@
 </template>
 
 <script>
+import { deleteListing } from "@/services/listings"
 import axios from "axios"
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const HOST = import.meta.env.VITE_API_HOST || `http://localhost:8080`
 const API_URL = HOST+`/api/v1`
 
@@ -257,6 +261,14 @@ export default {
     nextImage() {
       this.currentImageIndex = (this.currentImageIndex + 1) % this.listing.listing_url.length
     },
+    goToEditListing() {
+      this.$router.push('/EditListing');
+    },
+    DeleteListing() {
+
+        alert('eliminazione in corso');
+      
+    },
     async checkFavorite(){
       if(!this.isLoggedIn) {
                 this.isFavorite = false
@@ -292,6 +304,7 @@ export default {
   console.log('DEBUG - Condizione ricevuta:', this.listing.status)
   }
 }
+
 </script>
 
 <style scoped>
