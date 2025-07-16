@@ -181,7 +181,7 @@ export default {
   methods: {
     async toggleFavorite(){
             if(!this.isLoggedIn) {
-                alert('You should log in first');
+                this.$push('/LoginPage');
                 return;
             }
             const token = localStorage.getItem("token");

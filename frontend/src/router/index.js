@@ -7,9 +7,9 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-            path: '/HomePageOld',
-            name: 'HomePage',
-            component: () => import('../views/HomePageOld.vue')
+            path: '/', 
+            name:'HomePage1',
+            component: () => import('../views/HomePage.vue')
         },
         {
             path: '/LoginPage',
@@ -21,17 +21,12 @@ const router = createRouter({
             name:'RegisterPage',
             component: RegisterPage
         },
-      //   {
-      //       path: '/mock-listing',
-      //       name: 'MockListing',
-      //       component: () => import('../views/ListingTableMockView.vue')
-      // },
-        {
-          path: '/UserProfile/:id',
-          name: 'UserProfile',
-          component: () => import('../views/UserProfile.vue'),
-          props: true
-        },
+        // {
+        //   path: '/UserProfile/:id',
+        //   name: 'UserProfile',
+        //   component: () => import('../views/UserProfile.vue'),
+        //   props: true
+        // },
         {
           path: '/UserProfile1/:userId',
           name: 'UserProfile1',
@@ -46,29 +41,19 @@ const router = createRouter({
           component: () => import('../views/UserProfile2.vue'),
           props:true
         },
-        {
-            path: '/mock-user-profile',
-            name: 'MockUserProfile',
-            component: () => import('../views/UserProfile.vue'),
-            props: { mockUser: {id: 1, username: 'john_doe', name: 'John', surname: 'Doe', favoriteList: [1],email: 'johndoe@email.com' } } // Passa i dati di esempio come props
-        },
          {
-          path: '/MessagePage/', //per ora non c'è :id perchè sono in testing
+          path: '/MessagePage/', 
           name: 'MessagePage',
           component: () => import('../views/MessagePage.vue'),
               meta: { requiresAuth: true } 
         },
         {
-            path: '/NotificationPage', //per ora non c'è :id perchè sono in testing
+            path: '/NotificationPage',
             name:'NotificationPage',
             component: () => import('../views/NotificationPage.vue'),
             meta: { requiresAuth: true } 
         },
-        {
-            path: '/', 
-            name:'HomePage1',
-            component: () => import('../views/HomePage.vue')
-        },
+
         {
           path: '/EditProfile',
           name: 'EditProfile',
@@ -82,7 +67,10 @@ const router = createRouter({
         {
           path: '/ExchangePage/:listingId',
           name: 'ExchangePage',
-          component: () => import('../views/ExchangePage.vue')
+          component: () => import('../views/ExchangePage.vue'),
+          meta:{
+            requiresAuth: true
+          }
         },
         {
           path: '/SearchPage',
@@ -115,12 +103,18 @@ const router = createRouter({
         {
           path: '/NewReview/:userId',
           name: 'NewReview',
-          component: () => import('../components/NewReview.vue')
+          component: () => import('../components/NewReview.vue'),
+          meta:{
+            requiresAuth: true
+          }
         },
         {
           path: '/NewReport',
           name: 'NewReport',
-          component: () => import('../components/NewReport.vue')
+          component: () => import('../components/NewReport.vue'),
+          meta:{
+            requiresAuth: true
+          }
         }
 
     ]

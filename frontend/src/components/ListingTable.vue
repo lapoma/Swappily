@@ -257,10 +257,7 @@ export default {
       this.$router.push('/MessagePage')
     },
     startExchange() {
-      if (!this.isLoggedIn) {
-        alert('You should log in first');
-        return;
-      }else if(this.listing.userId === localStorage.getItem("userId")) {
+      if(this.listing.userId === localStorage.getItem("userId")) {
         alert('You cannot exchange your own listing');
         return;
       }

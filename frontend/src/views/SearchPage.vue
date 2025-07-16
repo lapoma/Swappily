@@ -90,7 +90,7 @@
           style="border: 2px solid #7eacb5; background-color: #7eacb5;"
         >
           <img 
-            :src="item.listing_url" 
+            :src="getFirstImage(item)" 
             class="w-full h-48 object-cover hover:scale-105 transition duration-300"
             alt=""
           >
@@ -185,10 +185,7 @@ const performSearch = async () => {
           return; // Non procedere se l'ID utente non è disponibile
       }
       endpoint = `${API_URL}/users/${userId}/favorites`;
-      // Quando si cercano i preferiti, non passare il titolo o lo stato
-      // perché l'API dei preferiti probabilmente restituisce solo i listing associati all'utente.
-      // Se la tua API di preferiti supporta filtri aggiuntivi (es. per titolo/stato),
-      // puoi includerli qui, altrimenti è meglio rimuoverli.
+
       params = {}; // Reset params per endpoint dei preferiti
       if (query) {
          params.title = query; // Aggiungi il filtro per titolo se l'API lo supporta
@@ -218,6 +215,14 @@ const selectListing = (listing) => {
 const deselectListing = () => {
   selectedListing.value = null;
 };
+function getFirstImage(listing) {
+      if (Array.isArray(listing.listing_url) && listing.listing_url.length > 0) {
+        return listing.listing_url[0];
+      } else if (typeof listing.listing_url === 'string') {
+        return listing.listing_url;
+      }
+      return ''; // Immagine di fallback
+    };
 
 // Watchers per resetare i filtri esclusivi
 watch(onlyFavorites, (newValue) => {
@@ -232,7 +237,7 @@ watch(selectedStatus, (newValue) => {
   }
 });
 
-// Aggiungi un'immagine di fallback se listing.images[0] non esiste
+
 
 
 </script>
