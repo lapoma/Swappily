@@ -81,7 +81,7 @@
             <textarea
               class="w-full p-3 border rounded-lg focus:outline-none"
               style="border-color: rgb(255, 244, 234); min-height: 100px; background-color: rgba(255, 244, 234, 0.2); color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;"
-              placeholder="Nessuna nota disponibile..."
+              placeholder=""
               readonly
               v-model="userNotes"
             ></textarea>
@@ -168,9 +168,9 @@ link.rel = 'stylesheet'
 document.head.appendChild(link)
 
 // Dati utente (questi potrebbero provenire da un'API per il profilo dell'altro utente)
-const username = ref('NomeUtenteAltro')
+const username = ref('')
 const profilePhoto = ref('https://gadgetforentertainment.com/cdn/shop/collections/bloom1.png?v=1738755382&width=1500')
-const userNotes = ref('Ciao! Sono un utente che ama scambiare oggetti unici e rari. Contattami per qualsiasi proposta!') // Note dell'altro utente
+const userNotes = ref('') // Note dell'altro utente
 const isFollowing = ref(false) // Stato per il tasto "Segui"
 const isBlocked = ref(false)
 const selectedListing = ref(null)
