@@ -20,6 +20,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get('/', (req, res) => {
+  res.send('Backend online');
+});
+
 // Routes
 app.use('/api/v1/authentications', authentication);
 app.use('/api/v1/users', users);
