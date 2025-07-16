@@ -41,7 +41,7 @@ router.get('/me',tokenChecker, async (req, res) => {
     }
 });
 
-// GET utenti (all or by username)
+// GET utenti 
 router.get('', async (req, res) => {
   try {
     let users;
@@ -81,7 +81,7 @@ router.get('', async (req, res) => {
   }
 });
 
-// GET user by ID
+// GET user per ID
 router.get('/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -112,7 +112,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST new user
+// POST nuovo user
 router.post('', async (req, res) => {
     const { 
         username,
@@ -308,14 +308,12 @@ router.post('/:userId/favorites/:listingId', async (req, res) => {
     
         const listing = await Listing.findById(req.params.listingId);
         if (!listing) return res.status(404).json({ error: 'Listing not found' });
-    
-        // Controlla se il listing è già nei preferiti
+  
         if (!user.favorite.includes(req.params.listingId)) {
             user.favorite.push(req.params.listingId);
             await user.save();
         }
-    
-        // Restituisci la lista aggiornata dei preferiti
+
         res.status(200).json(user.favorite);
     } catch (error) {
         console.error('Error adding favorite:', error);
@@ -323,13 +321,12 @@ router.post('/:userId/favorites/:listingId', async (req, res) => {
     }
 });
 
-  //rimuovi dai preferiti
+  // Rimuovi dai preferiti
   router.delete('/:userId/favorites/:listingId', async (req, res) => {
     try {
         const user = await User.findById(req.params.userId);
         if (!user) return res.status(404).json({ error: 'User not found' });
     
-        // Filtra l'ID da rimuovere
         user.favorite = user.favorite.filter(
             fav => fav.toString() !== req.params.listingId
         );
@@ -342,7 +339,7 @@ router.post('/:userId/favorites/:listingId', async (req, res) => {
     }
 });
 
-  //ottieni preferiti
+  // Ottieni preferiti
   router.get('/:userId/favorites', async (req, res) => {
     try {
         const user = await User.findById(req.params.userId)

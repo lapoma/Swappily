@@ -6,7 +6,6 @@ const bcrypt = require('bcrypt');
 
 
 router.post('', async function (req, res) {
-    //  Controllo input
     if (!req.body.username || !req.body.password) {
         return res.status(400).json({
             success: false,
@@ -16,7 +15,6 @@ router.post('', async function (req, res) {
 
     let user;
 
-    //  Trova l'utente nel database tramite username
     try {
         user = await User.findOne({ username: req.body.username }).exec();
     } catch (err) {
@@ -27,7 +25,6 @@ router.post('', async function (req, res) {
         });
     }
 
-    // Utente non trovato
     if (!user) {
         return res.status(404).json({
             success: false,
@@ -35,7 +32,6 @@ router.post('', async function (req, res) {
         });
     }
 
-    // Verifica della password con bcrypt
     const passwordMatch = await bcrypt.compare(req.body.password, user.password);
     if (!passwordMatch) {
         return res.status(401).json({
@@ -48,7 +44,6 @@ router.post('', async function (req, res) {
         return res.status(401).json({ success: false, message: 'Authentication failed: Invalid credentials' });
     }
 
-    // crea token
     var payload = {
         id: user._id,
         username: user.username,
@@ -56,12 +51,11 @@ router.post('', async function (req, res) {
     };
 
     var options = {
-        expiresIn: 86400 // 24 ore
+        expiresIn: 86400 
     };
 
     const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
 
-    // Risposta al client
     res.json({
         success: true,
         message: 'Ecco il tuo token!',
