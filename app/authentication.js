@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const User = require('./models/user');       // Modello mongoose corretto
-const jwt = require('jsonwebtoken');         // Per creare i token
-const bcrypt = require('bcrypt');            // Per confrontare password criptate
+const User = require('./models/user');      
+const jwt = require('jsonwebtoken');        
+const bcrypt = require('bcrypt');            
 
 
 router.post('', async function (req, res) {
@@ -35,7 +35,7 @@ router.post('', async function (req, res) {
         });
     }
 
-    //Verifica della password con bcrypt
+    // Verifica della password con bcrypt
     const passwordMatch = await bcrypt.compare(req.body.password, user.password);
     if (!passwordMatch) {
         return res.status(401).json({
@@ -44,7 +44,7 @@ router.post('', async function (req, res) {
         });
     }
 
-    //Tutto ok → crea token
+    // Crea token
     const payload = {
         id: user._id,
         username: user.username,
@@ -54,12 +54,12 @@ router.post('', async function (req, res) {
     console.log("Payload:" +payload);
 
     const options = {
-        expiresIn: 86400 // 24 ore
+        expiresIn: 86400 
     };
 
     const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
 
-    // Risposta al client
+    // Risposta 
     res.json({
         success: true,
         message: 'Ecco il tuo token!',

@@ -4,7 +4,7 @@ const Report = require('./models/report');
 const User = require('./models/user');
 const Listing = require('./models/listing');
 
-//estrae ID dall'URL
+// Estrae ID dall'URL
 function extractIdFromUrl(url) {
   const parts = url.split('/');
   return parts[parts.length - 1];
@@ -42,7 +42,7 @@ router.post('/', async (req, res) => {
       reportData.reporteeId = reporteeId;
     }
 
-    // Caso 2: segnalazione contro un listing
+    // Segnalazione di un listing
     if (hasListing) {
       const listingId = extractIdFromUrl(listing);
       const listingExists = await Listing.findById(listingId);
@@ -50,9 +50,8 @@ router.post('/', async (req, res) => {
       reportData.listingId = listingId;
     }
 
-    // Caso 3: segnalazione generica
+    // Segnalazione generica
     if (!hasReportee && !hasListing) {
-      // Nessun ulteriore controllo necessario
     }
 
     const report = new Report(reportData);

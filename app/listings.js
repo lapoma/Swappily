@@ -39,7 +39,7 @@ router.post('',tokenChecker, async (req, res) => {
             userId, 
             description,
             status,
-            available: typeof available === 'boolean' ? available : true, // Default to true if not provided
+            available: typeof available === 'boolean' ? available : true, // Default true se non fornito
             listing_url: listing_url || []
         });
 
@@ -181,7 +181,7 @@ router.put('/:id',tokenChecker, async(req,res) => {
         return res.status(403).json({ error: 'Forbidden' });
         }
 
-        // Update the listing with the new data
+        // Aggiorna il listing
         if(req.body.title){
             if(!req.body.title || typeof req.body.title !== 'string' || req.body.title.trim() === '' || !checkTitle(req.body.title)) {
                 res.status(400).json({ error: '"Title" must be a non-empty string between 3 and 50 characters' });
@@ -265,7 +265,7 @@ router.get('/user/:userId', async (req, res) => {
             return res.status(400).json({ error: '"userId" must be a valid ObjectId' });
         }
 
-        // Trova tutte i listing associate a questo userId
+        // Trova tutte i listing associati a questo userId
         const listings = await Listing.find({ userId: userId });
         
         if (listings.length === 0) {
