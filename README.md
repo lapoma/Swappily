@@ -36,7 +36,7 @@ A seguire la documentazione del progetto:
 ### Build & Deployment
 
 ### Testing
-Nella cartela /app eseguire:
+Nella cartela `/app` eseguire:
 
 ```
 npm test
