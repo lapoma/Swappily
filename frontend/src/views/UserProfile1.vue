@@ -261,14 +261,8 @@ const reviews = ref([
 //   { _id: '4', author: 'Utente 4', rating: 2, comment: 'Non sono soddisfatto dello scambio, prodotto diverso dalle aspettative', date: '2023-08-05' }
 ])
 
-const favorites = ref([
-//   { _id: '1', title: 'Sedia design', description: 'Sedia in legno con tessuto elegante', listing_url: ['https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg'] },
-//   { _id: '2', title: 'Tavolo moderno', description: 'Tavolo in legno massello con finitura lucida', listing_url: ['https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'] }
-])
-const archivedListings = ref([
-//   { _id: 'a1', title: 'Vecchia sedia', listing_url: ['https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg'] },
-//   { _id: 'a2', title: 'Tavolo antico', listing_url: ['https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'] }
-]);
+const favorites = ref([])
+const archivedListings = ref([]);
 // Verifica se l'utente è il proprietario del profilo
 function isAuthor() {
   return localStorage.getItem('userId') === route.params.id

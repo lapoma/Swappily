@@ -29,7 +29,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
           </svg>
         </button>
-        <router-link :to="'/NewReview/' + userId">
+        <router-link :to="`/NewReview/${route.params.userId}`">
           <button class="p-2 rounded-full hover:cursor-pointer" style="background-color: #7eacb5">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="rgb(255, 244, 234)">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -59,7 +59,7 @@
         <div class="w-full md:w-2/3 flex flex-col justify-between">
           <div class="flex justify-center mb-3 items-center gap-6">
             <div class="text-center">
-              <p class="text-3xl font-bold" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-weight: 700;">42</p>
+              <p class="text-3xl font-bold" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-weight: 700;">{{ n_exchange }}</p>
               <p class="text-sm" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-weight: 400;">Scambi</p>
             </div>
             <button @click="toggleFollow" class="p-2 rounded-full" :style="{ backgroundColor: '#7eacb5', border: '2px solid rgb(255, 244, 234)', color: isFollowing ? 'red' : 'rgb(255, 244, 234)' }">
@@ -140,9 +140,9 @@
           style="background-color: #7eacb5"
         >
           <div class="flex items-center mb-2">
-            <span class="font-bold" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-weight: 600;">{{ review.author }}</span>
+            <span class="font-bold" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-weight: 600;">{{ review.reviewer }}</span>
           </div>
-          <p style="color: rgba(255, 244, 234, 0.8); font-family: 'Poppins', sans-serif; font-weight: 300;">{{ review.comment }}</p>
+          <p style="color: rgba(255, 244, 234, 0.8); font-family: 'Poppins', sans-serif; font-weight: 300;">{{ review.text }}</p>
         </div>
       </div>
     </div>
@@ -174,6 +174,7 @@ const userNotes = ref('') // Note dell'altro utente
 const isFollowing = ref(false) // Stato per il tasto "Segui"
 const isBlocked = ref(false)
 const selectedListing = ref(null)
+const n_exchange = ref(0)
 
 // Tab attiva
 const tabs = [
@@ -182,20 +183,9 @@ const tabs = [
 ]
 const activeTab = ref('showcase')
 
-// Dati mock (questi dovrebbero essere caricati dinamicamente per l'altro utente)
-//se le vuoi togliere metti ref([]) non togliere tutto 
-const listings = ref([
-  // { _id: '1', images: ['https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg'] },
-  // { _id: '2', images: ['https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'] },
-  // { _id: '3', images: ['https://www.artelegnoshop.it/wp-content/uploads/2020/10/CL32.11-ciotola1-in-legno-di-ulivo.jpg'] }
-])
+const listings = ref([])
 
-//se le vuoi togliere metti ref([]) non togliere tutto 
-const reviews = ref([
-  // { _id: '1', author: 'Tu', comment: 'Ottimo scambio con questo utente! Veloce e affidabile.' },
-  // { _id: '2', author: 'Un Altro Utente', comment: 'Prodotto come descritto, transazione liscia.' },
-  // { _id: '3', author: 'Terzo Utente', comment: 'Disponibile e preciso, lo consiglio.' }
-])
+const reviews = ref([])
 
 // Funzioni per i nuovi pulsanti
 async function blockUser() {
@@ -204,7 +194,7 @@ async function blockUser() {
                 return;
             }
             const token = localStorage.getItem("token");
-            const userId = localStorage.getItem('userId');
+            const userId = localStorage.getItem("userId");
 
             console.log(token)
 
@@ -226,7 +216,7 @@ async function blockUser() {
                       blocklist: userGet.data.blocklist.filter(id => id !== route.params.userId)
                     }, {
                         headers: {
-                            Authorization: ` ${token}`
+                            Authorization: `${token}`
                         }
                     });
                     isBlocked.value = false;
@@ -395,7 +385,7 @@ async function fetchUserData(userId){
         }else{
             username.value = user.data.username;
             userNotes.value = user.data.description;
-            profilePhoto.value = user.data.profile_url
+            profilePhoto.value = user.data.profile_url;
         }
     }catch(error){
         console.error("Error fetching user data:", error);
@@ -418,21 +408,36 @@ async function fetchUserListings(userId){
 }
 
 async function fetchUserReviews(userId){
-  try{
+  try {
     const id = route.params.userId
     console.log(id)
-    const response = await axios.get(API_URL+`/reviews/${userId}`)
-    if(response.data){
-      console.log(JSON.stringify(response.data))
-      reviews.value = response.data
-
-      console.log("reviews: "+ reviews.value)
-    }else{
+    const response = await axios.get(API_URL + `/reviews/${userId}`)
+    if (response.data) {
+      // Per ogni recensione, recupera l'username dell'autore
+      const reviewsWithAuthors = await Promise.all(
+        response.data.map(async (review) => {
+          let reviewerUsername = ''
+          try {
+            // Supponendo che review.reviewer contenga l'id dell'autore
+            const userRes = await axios.get(USERS_URL + `/${review.reviewer}`)
+            reviewerUsername = userRes.data.username
+          } catch (e) {
+            reviewerUsername = 'Utente sconosciuto'
+          }
+          return {
+            ...review,
+            reviewer: reviewerUsername
+          }
+        })
+      )
+      reviews.value = reviewsWithAuthors
+      console.log("RECENSIONI: " + JSON.stringify(reviews.value))
+    } else {
       console.log("No Reviews")
     }
-  }catch(error){
-    console.error("Error fetching user reviews:", error);
-    return;
+  } catch (error) {
+    console.error("Error fetching user reviews:", error)
+    return
   }
 }
 

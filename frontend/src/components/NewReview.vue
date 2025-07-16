@@ -14,7 +14,7 @@
         
         <!-- User being reviewed -->
         <p class="text-center mb-6" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
-          Per: {{ reviewedUser.name  }} <!-- Mock data -->
+          Per: {{ reviewedUser.username  }} 
         </p>
 
         <!-- Error message -->
@@ -68,11 +68,8 @@ const USERS_URL = API_URL + '/users';
 const router = useRouter();
 const route = useRoute();
 
-// Mock data 
-const reviewedUser = ref({
-  // name: 'Mario Rossi',
-  // id: route.params.userId
-});
+
+const reviewedUser = ref({});
 
 const comment = ref('');
 const isSubmitting = ref(false);
@@ -89,6 +86,7 @@ onMounted(async () => {
   try {
     const response = await axios.get(`${USERS_URL}/${route.params.userId}`);
     reviewedUser.value = response.data;
+    console.log('Reviewed User:', reviewedUser.value);
   } catch (err) {
     console.error('Error fetching user data:', err);
   }

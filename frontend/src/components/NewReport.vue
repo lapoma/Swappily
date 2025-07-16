@@ -148,8 +148,9 @@ const submitReport = async () => {
         }
       }
     );
-      alert('Segnalazione inviata con successo!');
-    router.push('/settings');
+    alert('Segnalazione inviata con successo!');
+    console.log(localStorage.getItem("userId"));
+    router.push('/UserProfile1/' +`${localStorage.getItem("userId")}` );
     
   } catch (err) {
     console.log(err);
