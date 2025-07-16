@@ -31,6 +31,9 @@ app.use('/api/v1/reports', reports);
 // 404
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 
+app.use('/', express.static(process.env.FRONTEND||'static'));
+app.use('/', express.static('static'));
+
 // Global error
 app.use((err, req, res, next) => {
   console.error(err.stack);
