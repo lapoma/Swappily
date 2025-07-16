@@ -6,7 +6,6 @@ const Listing = require('../app/models/listing');
 const User = require('../app/models/user'); 
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
-//const { afterEach, describe, default: test } = require('node:test');
 
 jest.mock('bcrypt');
 jest.mock('../app/models/listing');

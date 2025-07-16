@@ -24,7 +24,7 @@ var reportSchema = new Schema({
   }
 
 });
-  module.exports = mongoose.model('Report', reportSchema);//da non spostare
+  module.exports = mongoose.model('Report', reportSchema);
 
 
 

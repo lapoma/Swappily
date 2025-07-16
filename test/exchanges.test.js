@@ -151,7 +151,7 @@ describe('Exchange API', () => {
 });
 });
 
-// 
+
 
     describe('GET /:exchangeId', () => {
       
@@ -474,7 +474,7 @@ it('should return 500 on database error', async () => {
         Exchange.findById.mockResolvedValue({
             _id: 'ex1',
             sender: 'user2',
-            receiver: 'user1' // Matches token user
+            receiver: 'user1' 
         });
 
         Exchange.findByIdAndDelete.mockResolvedValue(true);
