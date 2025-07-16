@@ -250,7 +250,7 @@ export default {
     },
     startExchange() {
       // alert(`Avvia scambio per: ${this.listing.title}`)
-      this.$router.push(`/ExchangePage`)
+      this.$router.push(`/ExchangePage/${this.listing.id}`)
     },
     prevImage() {
       this.currentImageIndex = (this.currentImageIndex - 1 + this.listing.listing_url.length) % this.listing.listing_url.length

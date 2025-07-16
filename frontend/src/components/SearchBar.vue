@@ -3,6 +3,7 @@
     <div class="search-bar">
       <input
         type="text"
+        v-model="text"
         class="search-input"
         placeholder="Cerca..."
         @focus="hidePlaceholder"
@@ -20,7 +21,13 @@
 <script setup>
 import { ref } from 'vue';
 
+const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
+const API_URL = HOST + '/api/v1'
+const LISTINGS_URL = API_URL + '/listings'
+
 const showPlaceholderText = ref(true);
+const selectedStatus = ref();
+const text = ref();
 
 const hidePlaceholder = () => {
   showPlaceholderText.value = false;
@@ -31,6 +38,17 @@ const showPlaceholder = (e) => {
     showPlaceholderText.value = true;
   }
 };
+
+async function handleSearch(){
+  if(!selectedStatus){
+    const response = await axios.get(LISTINGS_URL,{
+      title: text.value
+    })
+
+    console.log(response.data)
+
+  }
+}
 </script>
 
 <style scoped>

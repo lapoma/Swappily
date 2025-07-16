@@ -4,25 +4,52 @@ const Exchange = require('./models/exchange');
 const User = require('./models/user');
 const Listing = require('./models/listing');
 const jwt = require('jsonwebtoken');
+//const tokenChecker = require('./tokenChecker');
 
-const authenticateJWT = (req, res, next) => {
-    const authHeader = req.headers['x-access-token'] || req.query.token;
+// const authenticateJWT = (req, res, next) => {
+//     const authHeader = req.headers['token'] || req.query.token;
     
-    if (!authHeader) {
-        return res.status(403).json({ error: 'Token mancante' });
-    }
+//     if (!authHeader) {
+//         return res.status(403).json({ error: 'Token mancante' });
+//     }
 
-    jwt.verify(authHeader, process.env.JWT_SECRET, (err, user) => {
-        if (err) {
-            return res.status(401).json({ error: 'Token non valido' });
-        }
-        req.userId = user.userId;
-        next();
-    });
-};
+//     jwt.verify(authHeader, process.env.SUPER_SECRET, (err, user) => {
+//         if (err) {
+//             return res.status(401).json({ error: 'Token non valido' });
+//         }
+//         req.userId = user._id;
+//         next();
+//     });
+// };
+
+function tokenChecker(req, res, next) {
+  // Leggi prima dall'header 'token', poi da query.token
+  const token = req.headers['token'] || req.query.token;
+  console.log('[tokenChecker] token:', token);
+
+  if (!token) {
+    console.log('[tokenChecker] no token provided');
+    return res.status(401).json({ message: 'No token provided.' });
+  }
+
+  jwt.verify(token, process.env.SUPER_SECRET, (err, decoded) => {
+    if (err) {
+        return res.status(403).json({
+            success: false,
+            message: 'Failed to authenticate token.'
+        });
+    }
+    // Attach the decoded user id to the request object
+    req.loggedUser = decoded;
+    console.log(loggedUser)
+    req.userId = decoded._id;
+    console.log(req.userId)
+    next();
+});
+}
 
 // POST /exchange/listing/{listingId}
-router.post('/listing/:listingId', authenticateJWT, async (req, res) => {
+router.post('/listing/:listingId', async (req, res) => {
     try {
         const { listingId } = req.params;
         const { offeredListing, receiver } = req.body;
@@ -50,7 +77,7 @@ router.post('/listing/:listingId', authenticateJWT, async (req, res) => {
             receiver: receiver,
             offeredListing: offeredListing,
             requestedListing: listingId,
-            status: 'pending',
+            status: 'Pending',
             date: new Date()
         });
 
@@ -171,7 +198,7 @@ router.get('/:exchangeId', async (req, res) => {
 });
 
 // PUT /exchange/{exchangeId}
-router.put('/:exchangeId', authenticateJWT, async (req, res) => {
+router.put('/:exchangeId', async (req, res) => {
     try {
         const { status } = req.body;
         const { exchangeId } = req.params;
@@ -204,7 +231,7 @@ router.put('/:exchangeId', authenticateJWT, async (req, res) => {
 });
 
 // DELETE /exchange/{exchangeId}
-router.delete('/:exchangeId', authenticateJWT, async (req, res) => {
+router.delete('/:exchangeId', async (req, res) => {
     try {
         const exchange = await Exchange.findById(req.params.exchangeId);
         if (!exchange) {

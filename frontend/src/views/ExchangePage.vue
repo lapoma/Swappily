@@ -48,50 +48,56 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import axios from "axios";
+
+const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
+const API_URL = HOST + '/api/v1'
+const LISTINGS_URL = API_URL + '/listings'
 
 const router = useRouter();
+const route = useRoute();
 
 // Mock data - lista dei propri listing
 const myListings = ref([
-  { 
-    id: 1,
-    title: 'Sedia vintage 1', 
-    image: 'https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg',
-    description: 'Sedia in legno con tessuto originale anni 60' 
-  },
-  { 
-    id: 2,
-    title: 'Lampada industriale 1', 
-    image: 'https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg',
-    description: 'Lampada stile industriale in metallo' 
-  },
-  { 
-    id: 3,
-    title: 'Vaso in ceramica 1', 
-    image: 'https://www.artelegnoshop.it/wp-content/uploads/2020/10/CL32.11-ciotola1-in-legno-di-ulivo.jpg',
-    description: 'Vaso artigianale dipinto a mano' 
-  },
+  // { 
+  //   id: 1,
+  //   title: 'Sedia vintage 1', 
+  //   image: 'https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg',
+  //   description: 'Sedia in legno con tessuto originale anni 60' 
+  // },
+  // { 
+  //   id: 2,
+  //   title: 'Lampada industriale 1', 
+  //   image: 'https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg',
+  //   description: 'Lampada stile industriale in metallo' 
+  // },
+  // { 
+  //   id: 3,
+  //   title: 'Vaso in ceramica 1', 
+  //   image: 'https://www.artelegnoshop.it/wp-content/uploads/2020/10/CL32.11-ciotola1-in-legno-di-ulivo.jpg',
+  //   description: 'Vaso artigianale dipinto a mano' 
+  // },
 
-  { 
-    id: 5,
-    title: 'Sedia vintage 2', 
-    image: 'https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg',
-    description: 'Sedia in legno con tessuto originale anni 60' 
-  },
-  { 
-    id: 6,
-    title: 'Lampada industriale', 
-    image: 'https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg',
-    description: 'Lampada stile industriale in metallo' 
-  },
-  { 
-    id: 7,
-    title: 'Vaso in ceramica', 
-    image: 'https://www.artelegnoshop.it/wp-content/uploads/2020/10/CL32.11-ciotola1-in-legno-di-ulivo.jpg',
-    description: 'Vaso artigianale dipinto a mano' 
-  },
+  // { 
+  //   id: 5,
+  //   title: 'Sedia vintage 2', 
+  //   image: 'https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg',
+  //   description: 'Sedia in legno con tessuto originale anni 60' 
+  // },
+  // { 
+  //   id: 6,
+  //   title: 'Lampada industriale', 
+  //   image: 'https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg',
+  //   description: 'Lampada stile industriale in metallo' 
+  // },
+  // { 
+  //   id: 7,
+  //   title: 'Vaso in ceramica', 
+  //   image: 'https://www.artelegnoshop.it/wp-content/uploads/2020/10/CL32.11-ciotola1-in-legno-di-ulivo.jpg',
+  //   description: 'Vaso artigianale dipinto a mano' 
+  // },
  
   
 ]);
@@ -102,13 +108,54 @@ const selectListing = (index) => {
   selectedIndex.value = index;
 };
 
-const proposeExchange = () => {
+async function proposeExchange() {
   if (selectedIndex.value !== null) {
     const selectedListing = myListings.value[selectedIndex.value];
+    const token = localStorage.getItem("token")
+
+    console.log(token)
+
+    const listing = await axios.get(API_URL+`/listings/${route.params.listingId}`)
+
+    
+    console.log(selectedListing.id)
+    console.log(listing.data.userId)
+    console.log(localStorage.getItem("userId"))
+
+    await axios.post(
+      API_URL + `/exchanges/listing/${route.params.listingId}`,
+      {
+        offeredListing: selectedListing.id,
+        receiver: listing.data.userId,
+        //sender: localStorage.getItem("userId")
+      },
+      {
+        headers: {
+          token: `${token}`
+        }
+      }
+    );
     // console.log('Proposta di scambio con:', selectedListing);
     
   }
 };
+
+async function fetchUserListings(){
+  try{
+    const id =  localStorage.getItem("userId")
+    console.log(id)
+    const listingsGet = await axios.get(API_URL+`/listings/user/${id}`)
+      console.log(JSON.stringify(listingsGet.data))
+      myListings.value = listingsGet.data
+      console.log("listings: "+ myListings.value)
+  }catch(error){
+    console.error("Error fetching user listings:", error);
+    return;
+  }
+}
+onMounted(async()=>{
+  fetchUserListings();
+})
 
 
 </script>

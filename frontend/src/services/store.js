@@ -27,7 +27,7 @@ export default createStore({
       localStorage.removeItem("username");
       localStorage.removeItem('userId');
       localStorage.removeItem("usertype");
-      localStorage.removeItem("accessToken");
+      localStorage.removeItem("token");
       commit("setLoginState", { isLoggedIn: false, username: "",userId: '', usertype: "user" });
     },
   },

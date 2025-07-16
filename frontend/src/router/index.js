@@ -80,7 +80,7 @@ const router = createRouter({
           component: () => import('../views/EditAccount.vue')
         },
         {
-          path: '/ExchangePage',
+          path: '/ExchangePage/:listingId',
           name: 'ExchangePage',
           component: () => import('../views/ExchangePage.vue')
         },
