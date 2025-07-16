@@ -49,7 +49,8 @@ router.post('', async function (req, res) {
     // 5. Tutto ok → crea token
     const payload = {
         id: user._id,
-        username: user.username
+        username: user.username,
+        usertype: user.usertype,
     };
 
     const options = {
@@ -65,6 +66,7 @@ router.post('', async function (req, res) {
         token: token,
         id: user._id,
         username: user.username,
+        usertype: user.usertype,
         self: "api/v1/" + user._id
     });
 });
