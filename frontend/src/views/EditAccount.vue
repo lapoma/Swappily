@@ -129,9 +129,17 @@ const updateAccount = async () => {
     return;
   }
 
-  if (showPasswordFields.value && (!newPassword.value || !confirmPassword.value)) {
-    error.value = 'Inserisci e conferma la nuova password';
-    return;
+  if (showPasswordFields.value) {
+    if (!newPassword.value || !confirmPassword.value) {
+      error.value = 'Inserisci e conferma la nuova password';
+      return;
+    }
+    
+    // Aggiungi questo controllo
+    if (newPassword.value === currentPassword.value) {
+      error.value = 'La nuova password non può essere uguale a quella attuale';
+      return;
+    }
   }
 
   isSubmitting.value = true;
@@ -144,8 +152,6 @@ const updateAccount = async () => {
     
     const user = await axios.get(API_URL+`/users/${userId}`)
 
-    console.log(JSON.stringify(user.data))
-
     const updateData = {
       username: user.data.username,
       name: user.data.name,
@@ -154,8 +160,10 @@ const updateAccount = async () => {
       description: user.data.description,
       profile_url: user.data.profile_url
     };
+    
     if (username.value) updateData.username = username.value;
     if (email.value) updateData.email = email.value;
+    
     if (showPasswordFields.value) {
       updateData.currentPassword = currentPassword.value;
       updateData.newPassword = newPassword.value;

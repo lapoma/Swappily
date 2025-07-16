@@ -93,6 +93,7 @@
           <router-link
             :to="`/UserProfile2/${listing.userId}`"
             class="text-red-300 hover:underline font-bold"
+            style="font-size: 130%;"
           >
             {{ 'User: ' + listing.username }}
           </router-link>
@@ -105,8 +106,8 @@
             <h3 class="text-xl font-semibold mb-3" style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 500;">Condizione:</h3>
             <div class="flex items-center">
               <span class="inline-block px-4 py-2 rounded-full text-sm font-medium" 
-                    :class="statusClasses[normalizedStatus]">
-                {{ statusLabels[normalizedStatus] }}
+                    :class="statusClasses[listing.status]">
+                {{ statusLabels[listing.status] }}
               </span>
             </div>
           </div>
@@ -176,15 +177,6 @@ export default {
     isLoggedIn(){
       return !!localStorage.getItem("token") 
     }  
-  },
-  normalizedStatus() {
-    const raw = this.listing.status;
-    if (!raw) return null;
-
-    const normalized = raw
-      .toLowerCase()
-      .replace(/\s+/g, '_'); // es: "As new" → "as_new"
-    return normalized;
   },
   methods: {
     async toggleFavorite(){
