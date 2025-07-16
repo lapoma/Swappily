@@ -126,6 +126,11 @@ export default {
         return
       }
 
+      if(this.listing_url.length === 0) {
+        this.error = "Aggiungi almeno un'immagine"
+        return
+      }
+
       const listingData = {
         title: this.title,
         description: this.description,

@@ -101,6 +101,11 @@
 
 <script setup>
 import { ref } from 'vue';
+import axios from 'axios';
+
+const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
+const API_URL = HOST + '/api/v1'
+const LISTINGS_URL = API_URL + '/listings'
 
 // Search state
 const searchQuery = ref('');
@@ -114,64 +119,153 @@ const selectedStatuses = ref([]);
 const onlyFavorites = ref(false);
 const onlyFollowing = ref(false);
 
-// Mock search results
+
 const searchResults = ref([]);
 
 const toggleFilters = () => {
   showFilters.value = !showFilters.value;
 };
 
+
 const performSearch = () => {
-  if (!searchQuery.value.trim()) return;
+  if (!searchQuery.value.trim() && selectedStatuses.value.length === 0 && !onlyFavorites.value) return;
 
   isLoading.value = true;
   searchPerformed.value = true;
 
-  // Simulate API call
-  setTimeout(() => {
-    // Mock data - in a real app, this would come from an API
-    if (searchQuery.value.toLowerCase().includes('nessun')) {
-      searchResults.value = [];
-    } else {
-      searchResults.value = [
-        {
-          id: 1,
-          title: 'Sedia vintage',
-          status: 'Buono',
-          image: 'https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg'
-        },
-        {
-          id: 2,
-          title: 'Tavolo moderno',
-          status: 'Come nuovo',
-          image: 'https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'
-        },
-        {
-          id: 4,
-          title: 'Tavolo moderno',
-          status: 'Come nuovo',
-          image: 'https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'
-        },
-        {
-          id: 3,
-          title: 'Lampada retro',
-          status: 'Discreto',
-          image: 'https://www.artelegnoshop.it/wp-content/uploads/2020/10/CL32.11-ciotola1-in-legno-di-ulivo.jpg'
-        }
-      ].filter(item => {
-        // Apply filters
-        if (selectedStatuses.value.length > 0 && !selectedStatuses.value.includes(item.status)) {
-          return false;
-        }
-        return true;
-      });
-    }
-    
-    isLoading.value = false;
-  }, 800);
+  if (searchQuery.value.trim() && selectedStatuses.value.length === 0 && !onlyFavorites.value) {
+    setTimeout(async () => {
+      try {
+        const response = await axios.get(LISTINGS_URL, {
+          params: {
+            title: searchQuery.value
+          }
+        });
+
+        console.log(response.data);
+        searchResults.value = response.data;
+      } catch (error) {
+        console.error(error);
+        searchResults.value = [];
+      } finally {
+        isLoading.value = false;
+      }
+    }, 800);
+  }
+  else if (searchQuery.value.trim() && selectedStatuses.value.length > 0 && !onlyFavorites.value) {
+    setTimeout(async () => {
+      try {
+        const response = await axios.get(LISTINGS_URL, {
+          params: {
+            title: searchQuery.value,
+            status: selectedStatuses.value
+          }
+        });
+
+        console.log(response.data);
+        searchResults.value = response.data;
+      } catch (error) {
+        console.error(error);
+        searchResults.value = [];
+      } finally {
+        isLoading.value = false;
+      }
+    }, 800);
+  }
+  else if (!searchQuery.value.trim() && selectedStatuses.value.length > 0 && !onlyFavorites.value) {
+    setTimeout(async () => {
+      try {
+        const response = await axios.get(LISTINGS_URL, {
+          params: {
+            status: selectedStatuses.value
+          }
+        });
+
+        console.log(response.data);
+        searchResults.value = response.data;
+      } catch (error) {
+        console.error(error);
+        searchResults.value = [];
+      } finally {
+        isLoading.value = false;
+      }
+    }, 800);
+  }
+  else if (onlyFavorites.value) {
+    setTimeout(async () => {
+      try {
+        const userId = localStorage.getItem("userId")
+        const response = await axios.get(API_URL + `/users/${userId}/favorites`);
+
+        console.log(response.data);
+        searchResults.value = response.data;
+      } catch (error) {
+        console.error(error);
+        searchResults.value = [];
+      } finally {
+        isLoading.value = false;
+      }
+    }, 800);
+  }else if(onlyFollowing.value) {
+    setTimeout(async () => {
+      try {
+        const userId = localStorage.getItem("userId")
+        const response = await axios.get(API_URL + `/users/${userId}/following`);
+
+        console.log(response.data);
+        searchResults.value = response.data;
+      } catch (error) {
+        console.error(error);
+        searchResults.value = [];
+      } finally {
+        isLoading.value = false;
+      }
+    }, 800);
+  }
 };
 </script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 </style>
+
+
+<!-- // Mock data - in a real app, this would come from an API
+    // if (searchQuery.value.toLowerCase().includes('nessun')) {
+    //   searchResults.value = [];
+    // } else {
+    //   searchResults.value = [
+    //     {
+    //       id: 1,
+    //       title: 'Sedia vintage',
+    //       status: 'Buono',
+    //       image: 'https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg'
+    //     },
+    //     {
+    //       id: 2,
+    //       title: 'Tavolo moderno',
+    //       status: 'Come nuovo',
+    //       image: 'https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'
+    //     },
+    //     {
+    //       id: 4,
+    //       title: 'Tavolo moderno',
+    //       status: 'Come nuovo',
+    //       image: 'https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'
+    //     },
+    //     {
+    //       id: 3,
+    //       title: 'Lampada retro',
+    //       status: 'Discreto',
+    //       image: 'https://www.artelegnoshop.it/wp-content/uploads/2020/10/CL32.11-ciotola1-in-legno-di-ulivo.jpg'
+    //     }
+    //   ].filter(item => {
+    //     // Apply filters
+    //     if (selectedStatuses.value.length > 0 && !selectedStatuses.value.includes(item.status)) {
+    //       return false;
+    //     }
+    //     return true;
+    //   });
+    // }
+    
+    // isLoading.value = false; -->
