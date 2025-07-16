@@ -5,7 +5,7 @@
       <!-- Tasto Home a sinistra -->
       <div class="absolute left-4">
         <router-link to="/">
-          <button class="p-2 rounded-full" style="background-color: #7eacb5">
+          <button class="p-2 rounded-full hover:cursor-pointer" style="background-color: #7eacb5">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="rgb(255, 244, 234)">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
@@ -17,7 +17,7 @@
       <div class="absolute right-4 flex flex-col gap-2">
         <!-- Tasto Settings (3 puntini verticali) -->
         <router-link to="/Settings">
-          <button class="p-2 rounded-full" style="background-color: #7eacb5">
+          <button class="p-2 rounded-full hover:cursor-pointer" style="background-color: #7eacb5">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="rgb(255, 244, 234)">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
             </svg>
@@ -25,7 +25,7 @@
         </router-link>
         <!-- Tasto Edit Profile -->
         <router-link to="/EditProfile">
-          <button class="p-2 rounded-full" style="background-color: #7eacb5">
+          <button class="p-2 rounded-full hover:cursor-pointer" style="background-color: #7eacb5">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="rgb(255, 244, 234)">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
             </svg>
@@ -106,39 +106,39 @@
 
     <!-- Sezione inferiore -->
     <div class="w-full max-w-4xl px-6 py-8">
-     <!-- Vetrina -->
-<div v-if="activeTab === 'showcase'" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-5 justify-items-center">
-  <!-- Pulsante Aggiungi -->
-  <router-link to="/NewListing" class="w-full aspect-square max-w-[200px] sm:max-w-[240px]">
-    <div class="h-full flex items-center justify-center rounded-lg shadow-md transition-transform hover:transform hover:-translate-y-1 cursor-pointer" 
-         style="background-color: #7eacb5">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="rgb(255, 244, 234)">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-      </svg>
-    </div>
-  </router-link>
+      <!-- Vetrina -->
+      <div v-if="activeTab === 'showcase'" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-5 justify-items-center">
+        <!-- Pulsante Aggiungi -->
+        <router-link to="/NewListing" class="w-full aspect-square max-w-[200px] sm:max-w-[240px]">
+          <div class="h-full flex items-center justify-center rounded-lg shadow-md transition-transform hover:transform hover:-translate-y-1 cursor-pointer" 
+              style="background-color: #7eacb5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="rgb(255, 244, 234)">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+        </router-link>
 
-  <!-- Listings esistenti -->
-  <div 
-    v-for="listing in listings" 
-    :key="listing._id" 
-    @click="selectListing(listing)"
-    class="w-full aspect-square max-w-[200px] sm:max-w-[240px] rounded-lg shadow-md overflow-hidden transition-transform hover:transform hover:-translate-y-1" 
-    style="background-color: #7eacb5"
-  >
-    <img 
-      :src="listing.listing_url[0]" 
-      class="w-full h-full object-cover" 
-      :alt="listing.title"
-    />
-  </div>
-</div>
+        <!-- Listings esistenti -->
+        <div 
+          v-for="listing in listings" 
+          :key="listing._id" 
+          @click="selectListing(listing)"
+          class="w-full aspect-square max-w-[200px] sm:max-w-[240px] rounded-lg shadow-md overflow-hidden transition-transform hover:transform hover:-translate-y-1" 
+          style="background-color: #7eacb5"
+        >
+          <img 
+            :src="listing.listing_url[0]" 
+            class="w-full h-full object-cover" 
+            :alt="listing.title"
+          />
+        </div>
+      </div>
 
-  <ListingTable2 
-    v-if="selectedListing"
-    :listing="selectedListing"
-    @close="selectedListing = null"
-    />
+      <ListingTable2 
+        v-if="selectedListing"
+        :listing="selectedListing"
+        @close="selectedListing = null"
+      />
 
       <!-- Recensioni -->
       <div v-if="activeTab === 'reviews'" class="flex flex-col gap-y-4">
@@ -168,11 +168,28 @@
           v-for="fav in favorites"
           :key="fav._id"
           @click="openFavorite(fav)"
-    class="w-full aspect-square max-w-[240px] sm:max-w-[240px] rounded-lg shadow-md overflow-hidden transition-transform hover:transform hover:-translate-y-1" 
+          class="w-full aspect-square max-w-[240px] sm:max-w-[240px] rounded-lg shadow-md overflow-hidden transition-transform hover:transform hover:-translate-y-1" 
           style="background-color: #7eacb5"
         >
           <img :src="fav.listing_url[0]" class="w-full h-full object-cover" />
-          <div >
+        </div>
+      </div>
+
+      <!-- Archivio -->
+      <div v-if="activeTab === 'archive'" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
+        <div v-if="archivedListings.length === 0" class="col-span-full text-center py-8">
+          <p style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">Nessun elemento in archivio</p>
+        </div>
+        <div
+          v-for="item in archivedListings"
+          :key="item._id"
+          @click="openArchived(item)"
+          class="w-full aspect-square max-w-[240px] sm:max-w-[240px] rounded-lg shadow-md overflow-hidden transition-transform hover:transform hover:-translate-y-1 relative"
+          style="background-color: #7eacb5"
+        >
+          <img :src="item.listing_url[0]" class="w-full h-full object-cover" />
+          <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2">
+            <p class=" text-sm" style="font-family: 'Poppins', sans-serif; color:#fff4ea;">Archiviato</p>
           </div>
         </div>
       </div>
@@ -215,7 +232,8 @@ const selectedListing = ref(null)
 const tabs = [
   { id: 'showcase', label: 'Vetrina' },
   { id: 'reviews', label: 'Recensioni' },
-  { id: 'favorites', label: 'Preferiti' }
+  { id: 'favorites', label: 'Preferiti' },
+  { id: 'archive', label: 'Archivio' } // Aggiunto Archivio
 ]
 const activeTab = ref('showcase')
 
@@ -238,7 +256,10 @@ const favorites = ref([
 //   { _id: '1', title: 'Sedia design', description: 'Sedia in legno con tessuto elegante', listing_url: ['https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg'] },
 //   { _id: '2', title: 'Tavolo moderno', description: 'Tavolo in legno massello con finitura lucida', listing_url: ['https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'] }
 ])
-
+const archivedListings = ref([
+  { _id: 'a1', title: 'Vecchia sedia', listing_url: ['https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg'] },
+  { _id: 'a2', title: 'Tavolo antico', listing_url: ['https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'] }
+]);
 // Verifica se l'utente è il proprietario del profilo
 function isAuthor() {
   return localStorage.getItem('userId') === route.params.id

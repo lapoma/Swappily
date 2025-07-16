@@ -1,30 +1,25 @@
 <template>
-  <!-- Overlay con nuovo colore di sfondo -->
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background-color: rgba(0, 0, 0, 0.4); backdrop-filter: blur(0px);">
 
-    <!-- Container principale -->
-    <div class="rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row" style="background-color: #7eacb5">
-      <!-- Tasto chiusura in alto a destra -->
-      <button 
-        @click="$emit('close')" 
-        class="absolute top-4 right-4 z-10 rounded-full p-2 shadow-md hover:bg-gray-100"
-        style="background-color: rgb(255, 244, 234)"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
+    <button 
+      @click="$emit('close')" 
+      class="absolute top-4 right-4 z-50 rounded-full p-2 shadow-md hover:bg-gray-100"
+      style="background-color: rgb(255, 244, 234)"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
 
-      <!-- Colonna sinistra - Galleria immagini -->
+    <div class="rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row relative" style="background-color: #7eacb5">
+      
       <div class="w-full md:w-1/2 relative">
-        <!-- Immagine principale -->
         <img 
           :src="listing.listing_url[currentImageIndex]" 
           :alt="listing.title"
           class="w-full h-64 md:h-full object-cover rounded-l-xl"
         >
 
-        <!-- Pulsante preferiti spostato a destra -->
         <button 
           @click="toggleFavorite"
           class="absolute top-4 right-4 rounded-full p-2 shadow-md hover:bg-gray-100"
@@ -40,7 +35,6 @@
           </svg>
         </button>
 
-        <!-- Pulsanti navigazione immagini -->
         <button 
           @click="prevImage"
           class="absolute left-4 top-1/2 transform -translate-y-1/2 rounded-full p-2 shadow-md hover:bg-gray-100"
@@ -61,7 +55,6 @@
           </svg>
         </button>
 
-        <!-- Miniature immagini -->
         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
           <div class="flex space-x-2 overflow-x-auto py-2">
             <button 
@@ -81,57 +74,62 @@
         </div>
       </div>
 
-      <!-- Colonna destra - Dettagli -->
-<div class="w-full md:w-1/2 p-8 flex flex-col justify-between" style="color: rgb(255, 244, 234); max-height: 90vh;">
-  
-  <!-- Parte superiore: Titolo, descrizione, condizione -->
-  <div class="flex flex-col gap-10 overflow-y-auto">
-    <h2 class="text-3xl font-bold" style="font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: bold;">{{ listing.title }}</h2>
-    <!-- Proprietario -->
-    <router-link
-      :to="`/UserProfile2/${listing.userId}`"
-      class="text-red-300 hover:underline font-bold"
-    >
-      {{ 'User: ' + listing.username }}
-    </router-link>
-    <!-- Descrizione -->
-    <div>
-      <h3 class="text-xl font-semibold mb-3" style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 500;">Descrizione:</h3>
-      <p class="whitespace-pre-line" style="font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 250;">{{ listing.description }}</p>
-    </div>
+      <div class="w-full md:w-1/2 p-8 flex flex-col justify-between" style="color: rgb(255, 244, 234); max-height: 90vh;">
+        
+        <div class="flex items-center justify-between mb-4"> 
+          <h2 class="text-3xl font-bold flex-grow" style="font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: bold;">{{ listing.title }}</h2>
+          
+          <router-link :to="`/NewReport`" 
+                       class="flex-shrink-0 rounded-full p-2 shadow-md hover:transform hover:translate-y-[-2px]"
+                       style="background-color: rgb(255, 244, 234);">
+               <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="#7eacb5">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5h.01" />
+              </svg>
+            
+          </router-link>
+        </div>
 
-    <!-- Condizione -->
-    <div>
-      <h3 class="text-xl font-semibold mb-3" style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 500;">Condizione:</h3>
-      <div class="flex items-center">
-        <span class="inline-block px-4 py-2 rounded-full text-sm font-medium" 
-              :class="statusClasses[listing.status]">
-          {{ statusLabels[listing.status] }}
-        </span>
+        <div class="flex flex-col gap-10 overflow-y-auto"> 
+          <router-link
+            :to="`/UserProfile2/${listing.userId}`"
+            class="text-red-300 hover:underline font-bold"
+          >
+            {{ 'User: ' + listing.username }}
+          </router-link>
+          <div>
+            <h3 class="text-xl font-semibold mb-3" style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 500;">Descrizione:</h3>
+            <p class="whitespace-pre-line" style="font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 250;">{{ listing.description }}</p>
+          </div>
+
+          <div>
+            <h3 class="text-xl font-semibold mb-3" style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 500;">Condizione:</h3>
+            <div class="flex items-center">
+              <span class="inline-block px-4 py-2 rounded-full text-sm font-medium" 
+                    :class="statusClasses[normalizedStatus]">
+                {{ statusLabels[normalizedStatus] }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 flex justify-between gap-6 pt-6">
+          <button 
+            @click="contactSeller"
+            class="flex-1 py-3 px-6 rounded-lg font-bold transition"
+              style="background-color: rgb(255, 244, 234); color: #7eacb5; font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 1000;"
+          >
+            CONTATTA
+          </button>
+
+          <button 
+            @click="startExchange"
+            class="flex-1 py-3 px-6 rounded-lg font-bold transition"
+            style="background-color: rgb(201, 104, 104); color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 700;"
+          >
+            SCAMBIA
+          </button>
+        </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Parte inferiore: Bottoni in basso -->
-      <div class="mt-8 flex justify-between gap-6 pt-6">
-        <button 
-          @click="contactSeller"
-          class="flex-1 py-3 px-6 rounded-lg font-bold transition"
-            style="background-color: rgb(255, 244, 234); color: #7eacb5; font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 1000;"
-        >
-          CONTATTA
-        </button>
-
-        <button 
-          @click="startExchange"
-          class="flex-1 py-3 px-6 rounded-lg font-bold transition"
-          style="background-color: rgb(201, 104, 104); color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 700;"
-        >
-          SCAMBIA
-        </button>
-      </div>
-    </div>
-
     </div>
   </div>
 </template>

@@ -2,9 +2,10 @@
   <div class="search-bar-container">
     <div class="search-bar">
       <input
-        type="text"
+        
         class="search-input"
         placeholder="Cerca..."
+        style="color: #7eacb5; font-family: 'Poppins', sans-serif;"
         @focus="hidePlaceholder"
         @blur="showPlaceholder"
       />

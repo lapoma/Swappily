@@ -18,9 +18,9 @@
             >
           </div>
           <button
-            @click="addImage"
+            
             class="mt-4 px-4 py-2 rounded-lg"
-            style="background-color: rgb(255, 244, 234); color: #7eacb5; font-family: 'Poppins', sans-serif;"
+            style="background-color: #7eacb5; color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;"
           >
             Cambia immagine
           </button>

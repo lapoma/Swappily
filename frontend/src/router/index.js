@@ -85,6 +85,11 @@ const router = createRouter({
           component: () => import('../views/ExchangePage.vue')
         },
         {
+          path: '/SearchPage',
+          name: 'SearchPage',
+          component: () => import('../views/SearchPage.vue')
+        },
+        {
           path: '/Settings',
           name: 'Settings',
           component: () => import('../views/Settings.vue')
