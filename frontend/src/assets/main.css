@@ -1,0 +1,40 @@
+@import './base.css';
+@import "tailwindcss";
+
+
+#app {
+max-width: none; 
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a,
+.green {
+  text-decoration: none;
+  color: rgb(255, 244, 234);
+  transition: 0.4s;
+  padding: 3px;
+}
+
+
+
+@media (min-width: 1024px) {
+  body {
+    display: block;
+    place-items: center;
+  }
+
+  #app {
+    display: grid;
+    padding: 0 2rem; 
+    grid-template-columns: none;
+  }
+@layer components {
+  body {
+    padding-top: 80px; 
+  }
+}
+}
