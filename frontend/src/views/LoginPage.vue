@@ -125,10 +125,13 @@ export default {
         }
 
         try {
+          console.log("Attempting login with:", this.username, this.password);
             const response = await axios.post(API_URL + `/authentications`, {
                 username: this.username,
                 password: this.password
             });
+
+            console.log("Login response:", response.data);
 
             // Usa i dati dalla risposta direttamente
             const { token, id: userId, username, usertype } = response.data;

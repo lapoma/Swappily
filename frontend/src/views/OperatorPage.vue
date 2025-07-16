@@ -127,12 +127,18 @@ const LISTINGS_URL = API_URL + '/listings'
     async function removeUser(userId) {
       console.log(`Richiesta di rimozione utente: ${userId}`);
       try {
-        const deletedUser = await axios.delete(`${USERS_URL}/${userId}`, {
+        const response = await axios.get(`${USERS_URL}/${userId}`);
+
+        await axios.delete(`${USERS_URL}/${response.userId}`, {
           headers: {
             token: `${localStorage.getItem('token')}`
           }
         });
-        console.log(deletedUser.data);
+        await axios.delete(API_URL + `/reports/${userId}`, {
+          headers: {
+            token: `${localStorage.getItem('token')}`
+          }
+        });
         alert(`Richiesta di rimozione utente '${userId}' inviata`);
         fetchSupportRequests(); // Aggiorna la lista delle richieste dopo la rimozione
       } catch (error) {
