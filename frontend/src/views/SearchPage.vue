@@ -28,7 +28,7 @@
 
         <div
           v-if="showFilters"
-          class="absolute right-0 mt-1 w-64 rounded-xl shadow-lg z-50 p-4"
+          class="absolute left-168 mt-1 w-60 rounded-xl shadow-lg z-50 p-4"
           style="border: 2px solid #FFF4EA; background-color: #7eacb5; top: 0;"
         >
           <div class="flex flex-col gap-2"> 

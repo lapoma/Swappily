@@ -78,7 +78,9 @@
             <textarea
               class="w-full p-3 border rounded-lg focus:outline-none"
               style="border-color: rgb(255, 244, 234); min-height: 100px; background-color: rgba(255, 244, 234, 0.2); color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;"
-              placeholder="Scrivi qualcosa su di te..."
+              placeholder=""
+              readonly
+              v-model="userNotes"
             ></textarea>
           </div>
         </div>
@@ -175,6 +177,11 @@
         </div>
       </div>
 
+      <ListingTable 
+        v-if="selectedFavorite"
+        :listing="selectedFavorite"
+        @close="selectedFavorite = null"
+      />
       <!-- Archivio -->
       <div v-if="activeTab === 'archive'" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
         <div v-if="archivedListings.length === 0" class="col-span-full text-center py-8">
@@ -202,9 +209,11 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from "axios"
 import ListingTable2 from '@/components/ListingTable2.vue'
+import ListingTable from '@/components/ListingTable.vue' 
+
 
 const route = useRoute()
-
+const userNotes = ref('') 
 const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
 const API_URL = HOST + '/api/v1'
 const USERS_URL = API_URL + '/users'
@@ -227,7 +236,7 @@ const n_following = ref()
 const n_follower = ref()
 
 const selectedListing = ref(null)
-
+const selectedFavorite = ref(null)
 // Tab attiva
 const tabs = [
   { id: 'showcase', label: 'Vetrina' },
@@ -268,11 +277,18 @@ function isAuthor() {
 function openReview(review) {
   console.log('Apri recensione:', review)
 }
-
-function openFavorite(favorite){
-
+function selectListing(listing) {
+  selectedListing.value = listing
+  selectedFavorite.value = null // Assicurati che solo uno sia visibile alla volta
 }
-
+function openFavorite(favorite){
+selectedFavorite.value = favorite
+  selectedListing.value = null
+}
+function deselectListing() {
+  selectedListing.value = null
+  selectedFavorite.value = null
+}
 
 function formatDate(dateString) {
   const options = { year: 'numeric', month: 'long', day: 'numeric' }
@@ -292,7 +308,7 @@ async function fetchUserData(userId){
             username.value = user.data.username;
             name.value = user.data.name;
             surname.value = user.data.surname;
-            description.value = user.data.description;
+            userNotes.value = user.data.description;
             profilePhoto.value = user.data.profile_url
             n_follower.value = user.data.n_followers;
             n_following.value = user.data.n_followed;
@@ -372,13 +388,9 @@ async function fetchFavorites(userId) {
   }
 }
 
-function selectListing(listing){
-  selectedListing.value = listing
-}
 
-function deselectListing() {
-      selectedListing.value = null;
-    }
+
+
 
 
 onMounted(async () => {

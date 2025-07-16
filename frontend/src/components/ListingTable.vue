@@ -55,7 +55,7 @@
           </svg>
         </button>
 
-        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+        <div class="absolute bottom-0 left-0 right-0 p-4">
           <div class="flex space-x-2 overflow-x-auto py-2">
             <button 
               v-for="(img, index) in listing.listing_url"

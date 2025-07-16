@@ -1,15 +1,6 @@
 <template>
   <div class="min-h-screen flex flex-col items-center p-4 relative" style="background-color: rgb(255, 244, 234)">
-    <!-- Header with back button -->
-    <!-- <div class="fixed top-4 left-4 right-4 z-50">
-      <div class="absolute left-4">
-        <button @click="goBack" class="p-2 rounded-full transition duration-300 hover:brightness-110" style="background-color: #7eacb5">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="rgb(255, 244, 234)">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-      </div> -->
-    <!-- </div> -->
+    
 
     <!-- Main container -->
     <div class="w-full max-w-2xl rounded-xl shadow-xl overflow-hidden mt-16 " style="background-color: #7eacb5">
@@ -87,7 +78,7 @@
           </button>
 
           <button
-            @click="confirmDeleteAccount"
+            @click="showDeleteModal = true"
             class="w-full flex justify-between items-center p-4 rounded-lg transition duration-300 hover:brightness-110"
             style="background-color: #c96868;"
           >
@@ -99,6 +90,60 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal per eliminazione account -->
+    <div 
+  v-if="showDeleteModal" 
+  class="fixed inset-0 p-4 bg-opacity-50 flex items-center justify-center z-50" 
+  style="backdrop-filter: blur(0px); background-color: rgba(0, 0, 0, 0.4);"
+>
+  <div 
+    class="bg-white rounded-xl p-6 max-w-md w-full mx-4 flex flex-col gap-4" 
+    style="background-color: #7eacb5"
+  >
+    <h3 class="text-xl flex items-center justify-center font-bold" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
+      Conferma eliminazione account
+    </h3>
+
+    <p class="flex text-center" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
+      Inserisci la tua password per confermare l'eliminazione definitiva del tuo account.
+    </p>
+
+    <input
+      v-model="password"
+      type="password"
+      placeholder="Password"
+      class="w-full p-3 rounded-lg focus:outline-none"
+      style="background-color: rgba(255, 244, 234, 0.8); color: #7eacb5; font-family: 'Poppins', sans-serif;"
+    >
+    
+    <div 
+      v-if="deleteError" 
+      class="p-2 flex items-center justify-center rounded text-center" 
+      style="background-color: rgba(255, 100, 100, 0.3); color: rgb(255, 244, 234);"
+    >
+      {{ deleteError }}
+    </div>
+    
+    <div class="flex justify-center gap-4"> <button
+        @click="showDeleteModal = false"
+        class="px-4 py-2 rounded-lg transition duration-300"
+        style="background-color: rgba(255, 244, 234, 0.8); color: #7eacb5; font-family: 'Poppins', sans-serif;"
+      >
+        Annulla
+      </button>
+      <button
+        @click="confirmDeleteAccount"
+        :disabled="isDeleting"
+        class="px-4 py-2 rounded-lg flex items-center justify-centerrounded-lg transition duration-300 hover:brightness-110"
+        style="background-color: #c96868; color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;"
+      >
+        <span v-if="!isDeleting">Conferma</span>
+        <span v-else>Eliminazione in corso...</span>
+      </button>
+    </div>
+  </div>
+</div>
   </div>
 </template>
 
@@ -118,6 +163,10 @@ const store = useStore();
 
 
 const blockedUsers = ref([]);
+const showDeleteModal = ref(false);
+const password = ref('');
+const deleteError = ref('');
+const isDeleting = ref(false);
 
 // Mock data - replace with actual API call
 blockedUsers.value = [
@@ -135,21 +184,53 @@ const handleLogout = () => {
   router.push('/LoginPage');
 };
 
-async function confirmDeleteAccount(){
-  if (confirm('Sei sicuro di voler eliminare il tuo account? Questa azione è irreversibile.')) {
-    const response = await axios.delete(API_URL+`/users/${localStorage.getItem("userId")}`, {
+async function confirmDeleteAccount() {
+  if (!password.value) {
+    deleteError.value = 'Inserisci la tua password';
+    return;
+  }
+
+  isDeleting.value = true;
+  deleteError.value = '';
+
+  try {
+    // 1. Verifica SOLO NEL FRONTEND che la password sia corretta
+    const username = localStorage.getItem('username');
+    await axios.post(API_URL + '/authentications', {
+      username,
+      password: password.value
+    });
+
+    // 2. Se la password è corretta, procedi con l'eliminazione
+    const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('token');
+
+    const response = await axios.delete(API_URL + `/users/${userId}`, {
       headers: {
-        token: `${localStorage.getItem('token')}`
+        token
       }
     });
 
-    console.log(response.data)
+    // Se arriva qui, l'eliminazione è avvenuta con successo
+    showDeleteModal.value = false;
+    alert('Account eliminato con successo');
+    handleLogout();
 
-    alert('Richiesta di eliminazione account inviata (azione simulata)');
-    // If successful, you might want to log out the user and redirect to login
-    handleLogout(); // Log out after simulated deletion
+  } catch (error) {
+    console.error('Errore:', error);
+    if (error.response?.status === 401) {
+      deleteError.value = 'Password errata';
+    } else {
+      deleteError.value = 'Errore durante l\'eliminazione. Riprova più tardi.';
+      console.error('Dettagli errore:', error.response?.data);
+    }
+  } finally {
+    isDeleting.value = false;
   }
-};
+}
+
+
+
 
 async function  fetchBlockedUsers(){
   const userId = localStorage.getItem("userId")
