@@ -148,7 +148,7 @@ export default {
             if (usertype === 'operator') {
                 await this.$router.push("/OperatorPage");
             } else {
-                await this.$router.push(`/UserProfile1/${userId}`);
+                await this.$router.push(`/`);
             }
 
         } catch (error) {

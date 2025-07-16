@@ -78,7 +78,7 @@
         
         <div class="flex items-center justify-between mb-4"> 
           <h2 class="text-3xl font-bold flex-grow" style="font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: bold;">{{ listing.title }}</h2>
-          
+          <div class="flex items-center space-x-4 mb-5 mt-5 gap-5">
           <router-link :to="`/NewReport`" 
                        class="flex-shrink-0 rounded-full p-2 shadow-md hover:transform hover:translate-y-[-2px]"
                        style="background-color: rgb(255, 244, 234);">
@@ -87,6 +87,12 @@
               </svg>
             
           </router-link>
+          <button @click="shareProfile" class="p-2 rounded-full hover:cursor-pointer" style="background-color: rgb(255, 244, 234)">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="#7eacb5">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+          </svg>
+        </button>
+        </div>
         </div>
 
         <div class="flex flex-col gap-10 overflow-y-auto"> 
