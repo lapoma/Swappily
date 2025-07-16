@@ -22,7 +22,7 @@ describe('Exchange API', () => {
         token = 'valid.token';
         jwt.verify.mockImplementation((tokenValue, secret, callback) => {
             if (tokenValue === 'valid.token') {
-                callback(null, { userId: 'user1' });
+                callback(null, { id: 'user1' });
             } else {
                 callback(new Error('Invalid token'));
             }

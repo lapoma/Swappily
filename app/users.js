@@ -25,7 +25,7 @@ function checkIfEmailInString(email) {
 }
 
 // GET /me
-router.get('/me', tokenChecker, async (req, res) => {
+router.get('/me',tokenChecker, async (req, res) => {
     try {
       const user = await User.findById(req.loggedUser.id);
       if (!user) return res.status(404).json({ error: 'User not found' });

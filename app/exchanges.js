@@ -43,9 +43,6 @@ router.post('/listing/:listingId', authenticateJWT, async (req, res) => {
 
         }
 
-        console.log(offeredListingDoc.data);
-        console.log(req.userId);
-
         if (offeredListingDoc.userId.toString() !== req.userId) {
             return res.status(403).json({ error: 'Non sei il proprietario del listing offerto' });
         }

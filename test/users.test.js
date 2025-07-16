@@ -129,7 +129,7 @@ describe('GET /api/v1/users/me', () => {
 
   // Test: no token provided
   test('should return 401 with no token', async () => {
-    const res = await request(app).get('/api/v1/users/me');
+    const res = (await request(app).get('/api/v1/users/me'));
     expect(res.statusCode).toBe(401);
   });
 
