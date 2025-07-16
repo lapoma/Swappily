@@ -209,7 +209,7 @@ describe('GET /api/v1/users/:id', () => {
 
     expect(res.body).toEqual({
       self: `/api/v1/users/${existingUser._id}`,
-      userId: existingUser.userId,
+      _id: existingUser._id,
       username: existingUser.username,
       email: existingUser.email,
       name: existingUser.name,
@@ -260,7 +260,7 @@ describe('User Favorites Management', () => {
   let listingFindByIdMock;
 
   // Funzione per creare un mock utente realistico
-  const createUserMock = (favorites = []) => {
+  const createUserMock = (favorite = []) => {
     const saveMock = jest.fn().mockImplementation(function() {
       return Promise.resolve(this);
     });
@@ -268,7 +268,7 @@ describe('User Favorites Management', () => {
     const populateMock = jest.fn().mockImplementation(function() {
       return Promise.resolve({
         ...this,
-        favorites: this.favorites.map(id => ({
+        favorite: this.favorite.map(id => ({
           _id: id,
           title: 'Test Listing',
           price: 100,
@@ -280,7 +280,7 @@ describe('User Favorites Management', () => {
     return {
       _id: testUserId,
       username: 'testuser',
-      favorites,
+      favorite,
       save: saveMock,
       populate: populateMock
     };
@@ -326,7 +326,7 @@ describe('User Favorites Management', () => {
       
       // Simula il salvataggio che aggiorna i favoriti
       userMock.save.mockImplementationOnce(function() {
-        this.favorites.push(testListingId);
+        this.favorite.push(testListingId);
         return Promise.resolve(this);
       });
 
@@ -387,7 +387,7 @@ describe('User Favorites Management', () => {
     test('should return populated favorites list', async () => {
       const populatedUser = {
         _id: testUserId,
-        favorites: [testListing]
+        favorite: [testListing]
       };
       
       userFindByIdMock.mockReturnValueOnce(mockQuery(populatedUser));
@@ -402,7 +402,7 @@ describe('User Favorites Management', () => {
     test('should return empty array if no favorites', async () => {
       const populatedUser = {
         _id: testUserId,
-        favorites: []
+        favorite: []
       };
       
       userFindByIdMock.mockReturnValueOnce(mockQuery(populatedUser));
@@ -654,7 +654,6 @@ describe('POST /api/v1/users', () => {
     findSpy.mockResolvedValueOnce([]);
 
     const res = await request(app).post('/api/v1/users').send({
-      userId: '6',
       name: 'John',
       surname: 'Doe',
       username: 'johnerror',

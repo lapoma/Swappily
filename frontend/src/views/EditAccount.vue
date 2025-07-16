@@ -22,7 +22,7 @@
         </div>
 
         <div>
-          <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">Username</label>
+          <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">Cambia Username</label>
           <input
             v-model="username"
             type="text"
@@ -33,7 +33,7 @@
         </div>
 
         <div>
-          <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">Email</label>
+          <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">Cambia Email</label>
           <input
             v-model="email"
             type="email"
@@ -44,7 +44,7 @@
         </div>
 
         <div>
-          <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">Password attuale</label>
+          <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">Cambia Password attuale</label>
           <input
             v-model="currentPassword"
             type="password"
@@ -98,7 +98,6 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import { profile } from 'console';
 
 const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080';
 const API_URL = HOST + '/api/v1';

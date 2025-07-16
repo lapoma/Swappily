@@ -327,28 +327,21 @@ async function toggleFollow() {
             }
 }
 
-async function checkFollow(){
-      if(!localStorage.getItem("token")) {
-                this.isFollowing = false
-      }
-      const userId = localStorage.getItem('userId');
+async function checkFollow() {
+  if (!localStorage.getItem("token")) {
+    isFollowing.value = false;
+    return;
+  }
 
-      try{
-            const userGet = await axios.get(API_URL+`/users/${userId}`);
+  const userId = localStorage.getItem('userId');
 
-            const isFollowing = userGet.data.followed.includes(route.params.userId);
-
-                console.log(isFollowing)
-
-                if(isFollowing){
-                  isFollowing = true;
-                } else {
-                  isFollowing = false;
-                }
-            }catch(error){
-                console.error('Errore con il caricamento: ', error);
-            }
-    }
+  try {
+    const userGet = await axios.get(API_URL + `/users/${userId}`);
+    isFollowing.value = userGet.data.followed.includes(route.params.userId);
+  } catch (error) {
+    console.error('Errore con il caricamento dei follow: ', error);
+  }
+}
 
   async function checkBlocked(){
       if(!localStorage.getItem("token")) {
