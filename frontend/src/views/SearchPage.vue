@@ -105,29 +105,25 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'; // Importa watch
+import { ref, computed, watch } from 'vue'; 
 import axios from 'axios';
-import ListingTable from '@/components/ListingTable.vue'; // Importa ListingTable
+import ListingTable from '@/components/ListingTable.vue'; 
 
 const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
 const API_URL = HOST + '/api/v1'
 const LISTINGS_URL = API_URL + '/listings'
 
-// Search state
 const searchQuery = ref('');
 const searchPerformed = ref(false);
 const isLoading = ref(false);
 const showFilters = ref(false);
 
-// Filters
 const selectedStatus = ref(null);
 const onlyFavorites = ref(false);
-// const onlyFollowing = ref(false); // Rimosso in quanto non utilizzato nel template per ora
 
-const disableStatus = computed(() => onlyFavorites.value); // Dipende solo da onlyFavorites
-const disableFavorites = computed(() => selectedStatus.value); // Dipende solo da selectedStatus
+const disableStatus = computed(() => onlyFavorites.value); 
+const disableFavorites = computed(() => selectedStatus.value); 
 
-// State for selected listing (new)
 const selectedListing = ref(null);
 
 const searchResults = ref([]);
@@ -161,7 +157,7 @@ const performSearch = async () => {
   searchPerformed.value = true;
   isLoading.value = true;
   searchResults.value = [];
-  selectedListing.value = null; // Resetta il dettaglio del listing quando si esegue una nuova ricerca
+  selectedListing.value = null; 
 
   try {
     let endpoint = LISTINGS_URL;
@@ -182,16 +178,16 @@ const performSearch = async () => {
       if (!userId) {
           console.warn("User ID not found for favorites filter.");
           isLoading.value = false;
-          return; // Non procedere se l'ID utente non è disponibile
+          return; 
       }
       endpoint = `${API_URL}/users/${userId}/favorites`;
 
-      params = {}; // Reset params per endpoint dei preferiti
+      params = {}; 
       if (query) {
-         params.title = query; // Aggiungi il filtro per titolo se l'API lo supporta
+         params.title = query; 
       }
       if (selectedStatus.value) {
-         params.status = statusMap[selectedStatus.value]; // Aggiungi il filtro per stato se l'API lo supporta
+         params.status = statusMap[selectedStatus.value]; 
       }
     }
     
@@ -206,12 +202,10 @@ const performSearch = async () => {
   }
 };
 
-// Funzione per selezionare un listing e mostrarne il dettaglio
 const selectListing = (listing) => {
   selectedListing.value = listing;
 };
 
-// Funzione per deselezionare un listing e tornare ai risultati di ricerca
 const deselectListing = () => {
   selectedListing.value = null;
 };
@@ -221,19 +215,18 @@ function getFirstImage(listing) {
       } else if (typeof listing.listing_url === 'string') {
         return listing.listing_url;
       }
-      return ''; // Immagine di fallback
+      return ''; 
     };
 
-// Watchers per resetare i filtri esclusivi
 watch(onlyFavorites, (newValue) => {
   if (newValue) {
-    selectedStatus.value = null; // Se solo preferiti è attivo, deseleziona lo stato
+    selectedStatus.value = null; 
   }
 });
 
 watch(selectedStatus, (newValue) => {
   if (newValue) {
-    onlyFavorites.value = false; // Se uno stato è selezionato, deseleziona solo preferiti
+    onlyFavorites.value = false; 
   }
 });
 

@@ -19,11 +19,7 @@ a,
   padding: 3px;
 }
 
-/* @media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 30%, 45%, 0.2);
-  }
-} */
+
 
 @media (min-width: 1024px) {
   body {
@@ -38,7 +34,7 @@ a,
   }
 @layer components {
   body {
-    padding-top: 80px; /* Compensa l'altezza della navbar fixed */
+    padding-top: 80px; 
   }
 }
 }

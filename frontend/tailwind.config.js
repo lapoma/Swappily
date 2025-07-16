@@ -7,7 +7,6 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Aggiungi QUI i tuoi colori personalizzati
         background_2: "#fbf8f7",  
         button_2: "#5ae110",
         button_1: '#2563eb',       

@@ -4,7 +4,7 @@
       <!-- Form di registrazione -->
       <form @submit.prevent="handleRegister" class="p-8 rounded-xl shadow-xl flex flex-col gap-3" 
       style="background-color: #7eacb5">
-        <!-- Titolo dentro la finestra -->
+        <!-- Titolo  -->
         <h1 class="text-3xl font-bold mb-8 text-center" 
         style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: 700;">
           Registrazione
@@ -190,20 +190,17 @@ export default {
         surname: this.surname,
         usertype: this.userType,
         description: "Utente swappily",
-        //phone: this.phone || ""
         n_followed: 0,
         n_followers: 0,
         n_exchanges: 0,
       }
       console.log(authData)
 
-        // this.$router.push('/');
         try {
         let response;
         response = await axios.post(API_URL+`/users`, authData);
         
         console.log("RESPONSE:", response.data);
-        // Se la richiesta ha successo, resetta gli errori e continua
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('userId', response.data._id || response.data.id);
         localStorage.setItem('username', response.data.username);
@@ -223,8 +220,6 @@ export default {
       } catch (error) {
         console.error("Errore nella registrazione:", error.response?.data || error.message);
 
-        // Gestione 
-        // e: aggiorna il messaggio da mostrare
         this.error =
           error.response?.data?.message || "Errore durante la registrazione. Riprova.";
       }
@@ -233,12 +228,10 @@ export default {
     var decimal = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,50}$/;
     return decimal.test(str);
     },
-    // Username check
     checkUsername(username) {
         if (!username || username.length < 3 || username.length > 20) return false;
          return true;
     },
-    // Email check
     checkIfEmailInString(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);

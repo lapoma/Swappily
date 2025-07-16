@@ -1,6 +1,6 @@
 <template>
   <div class="w-full min-h-screen bg-light_bg px-4 py-2">
-    <!-- Barra superiore con SearchBar e hamburger settings -->
+    <!-- Barra superiore con SearchBar -->
     <div class="flex justify-center mb-8">
       <div class="flex items-center gap-0 w-full max-w-3xl">
         <RouterLink to="/SearchPage" class="flex-1 focus:outline-none hover:outline-none hover:ring-0">
@@ -42,7 +42,6 @@
 import axios from 'axios';
 import SearchBar from '@/components/SearchBar.vue'
 import ListingTable from '@/components/ListingTable.vue'
-//import { fetchListings } from '@/services/listings';
 
 const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
 const API_URL = HOST + '/api/v1'
@@ -57,24 +56,7 @@ export default {
   data() {
     return {
       selectedListing: null,
-      // listings: [
-      //   { 
-      //     id: 1,
-      //     images: ["url1", "url2"], // Array di immagini
-      //     title: "Titolo",
-      //     description: "Descrizione",
-      //     condition: "as_new" // o 'good', 'ok', 'not_good'
-      //   },
-      //   { 
-      //     id: 2,
-      //     imageUrl: "https://www.campodicanapa.it/wp-content/uploads/2021/03/32449_2.jpg", // URL dell'immagine
-      //     images: ["https://www.campodicanapa.it/wp-content/uploads/2021/03/32449_2.jpg", "https://www.bricofer.it/media/catalog/product/cache/b3640ebe2da949b4692b50d3b9ef91ce/8/0/8055719465055.jpg"], // Array di immagini
-      //     title: "Ventilatori",
-      //     description: "2 ventilatori in ottime condizioni, uno con telecomando",
-      //     condition: "not_good"
-      //   },
-        
-      // ]
+      
       listings: []
     };
   },
@@ -94,7 +76,7 @@ export default {
       } else if (typeof listing.listing_url === 'string') {
         return listing.listing_url;
       }
-      return ''; // Immagine di fallback
+      return ''; 
     },
     async fetchListings() {
       try {
@@ -112,7 +94,6 @@ export default {
     }
   },
   async mounted() {
-    // Carica le listings quando il componente è montato
     this.fetchListings();
     console.log("Listings fetched:", this.listings);
   }
@@ -132,14 +113,7 @@ export default {
   background-color: #7eacb5;
 }
 
-/* .hover\:bg-primary\/20:hover {
-  background-color: rgba(126, 172, 181, 0.2);
-} */
 
-/* Effetto hover per le immagini */
-/* .relative:hover img {
-  transform: scale(1.05);
-} */
 .router-link-no-hover-outline:hover,
 .router-link-no-hover-outline:focus,
 .router-link-no-hover-outline:active {

@@ -35,7 +35,8 @@
             <textarea
               v-model="user.description"
               type="textarea"
-              class="w-full p-5 border rounded-lg focus:outline-none"              style="background-color: rgba(255, 244, 234, 0.8); color: #7eacb5; font-family: 'Poppins', sans-serif;"
+              class="w-full p-5 border rounded-lg focus:outline-none" 
+               style="background-color: rgba(255, 244, 234, 0.8); color: #7eacb5; font-family: 'Poppins', sans-serif;"
               placeholder="Scrivi qualcosa su di te..."
             ></textarea>
           </div>
@@ -176,7 +177,7 @@ async function addImage() {
       name: userGet.data.name,
       surname: userGet.data.surname,
       email: userGet.data.email,
-      profile_url: user.value.profile_url,  // ✅ usa il ref corretto
+      profile_url: user.value.profile_url, 
     }, {
       headers: {
         Authorization: ` ${token}`

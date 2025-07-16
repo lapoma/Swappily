@@ -176,27 +176,26 @@ export default {
 </script>
 
 <style scoped>
-/* Transizioni per i bottoni */
 button {
   transition: all 0.2s ease;
 }
 
-/* Stile per i placeholder e il testo digitato all'interno degli input */
+
 input::placeholder,
 textarea::placeholder,
 select::placeholder {
-  color: rgba(255, 244, 234, 0.6); /* Placeholder più trasparente */
+  color: rgba(255, 244, 234, 0.6); 
 }
 
 input,
 textarea,
 select {
-  color: rgba(255, 244, 234, 0.8); /* Testo digitato leggermente più trasparente */
+  color: rgba(255, 244, 234, 0.8); 
 }
 
-/* Assicurati che le opzioni selezionate nel select abbiano il colore corretto */
+
 select option {
-  background-color: #7eacb5; /* Sfondo dell'opzione */
-  color: rgb(255, 244, 234); /* Testo dell'opzione */
+  background-color: #7eacb5; 
+  color: rgb(255, 244, 234); 
 }
-</style>d
+</style>

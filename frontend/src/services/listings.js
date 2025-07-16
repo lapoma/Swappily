@@ -7,20 +7,6 @@ const LISTINGS_URL = API_URL + '/listings'
 
 let listings = reactive([])
 
-// async function fetchListings(){
-//     return listings = await axios.get(LISTINGS_URL)
-// }
-
-// export const fetchListings = async () => {
-//     try {
-//         const response = await axios.get(LISTINGS_URL)
-//         return response.data;
-//     } catch (error) {
-//         console.error("Errore durante il recupero degli annunci", error);
-//         throw error; 
-//     }
-// };
-
 
 async function createListing(title, description,status,listing_url){
     if(localStorage.getItem('user')){

@@ -1,7 +1,7 @@
 <template>
   <div class="notification-page">
    <div>
-    <Navbar /> <!-- Importato automaticamente -->
+    <Navbar />
     <router-view />
   </div>
     <!-- Area notifiche -->
@@ -32,7 +32,6 @@ export default {
   height: 100vh;
 }
 
-/* Stili identici a MessagePage ma con nomi modificati */
 .notifications-container {
   flex: 0 1 auto;
   margin-top: 60px;

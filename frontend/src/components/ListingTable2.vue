@@ -1,6 +1,5 @@
 
 <template>
-  <!-- Overlay con nuovo colore di sfondo -->
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background-color: rgba(0, 0, 0, 0.4); backdrop-filter: blur(0px);">
 
     <!-- Container principale -->
@@ -175,7 +174,7 @@ export default {
 
     const normalized = raw
       .toLowerCase()
-      .replace(/\s+/g, '_'); // es: "As new" → "as_new"
+      .replace(/\s+/g, '_'); 
     return normalized;
   },
   methods: {
@@ -306,7 +305,6 @@ export default {
     }
   },
   mounted() {
-    // Font Poppins
   const link = document.createElement('link')
   link.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap'
   link.rel = 'stylesheet'
@@ -321,12 +319,10 @@ export default {
 </script>
 
 <style scoped>
-/* Transizione per il cambio immagine */
 img {
   transition: opacity 0.3s ease;
 }
 
-/* Stile per i pulsanti */
 button {
   transition: all 0.2s ease;
 }

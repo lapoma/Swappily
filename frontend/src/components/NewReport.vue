@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen flex flex-col items-center p-7" style="background-color: rgb(255, 244, 234)">
-    <!-- Main container with proper spacing from navbar -->
     <div class="w-full max-w-2xl rounded-xl shadow-xl overflow-hidden mt-12" style="background-color: #7eacb5">
       <div class="p-7">
         <h1 class="text-xl font-bold text-center mb-6" 
@@ -8,14 +7,11 @@
           Nuova Segnalazione
         </h1>
 
-        <!-- Error message -->
         <div v-if="error" class="mb-4 p-3 rounded-lg text-center" style="background-color: rgba(255, 100, 100, 0.2); color: rgb(255, 244, 234);">
           {{ error }}
         </div>
 
-        <!-- Form fields with gap spacing -->
-        <div class="space-y-5"> <!-- Using space-y-5 for vertical spacing -->
-          <!-- Username to report -->
+        <div class="space-y-5"> 
           <div>
             <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
               Username da segnalare (opzionale)
@@ -29,7 +25,6 @@
             >
           </div>
 
-          <!-- Listing to report -->
           <div>
             <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
               Listing da segnalare (opzionale)
@@ -43,7 +38,6 @@
             >
           </div>
 
-          <!-- Report description -->
           <div>
             <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
               Descrizione della segnalazione <span class="text-red-300">*</span>
@@ -57,7 +51,6 @@
             ></textarea>
           </div>
 
-          <!-- Submit button with hover effect -->
           <button
             @click="submitReport"
             :disabled="!description || isSubmitting"

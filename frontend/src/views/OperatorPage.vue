@@ -89,7 +89,6 @@ const API_URL = HOST + '/api/v1'
 const USERS_URL = API_URL + '/users'
 const LISTINGS_URL = API_URL + '/listings'
 
-    // Aggiunge il font Poppins al documento
     const link = document.createElement('link');
     link.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap';
     link.rel = 'stylesheet';
@@ -100,7 +99,6 @@ const LISTINGS_URL = API_URL + '/listings'
 
     
     
-    // Funzione per mockare il fetching delle richieste
     const fetchSupportRequests = async () => {
       const response = await axios.get(API_URL+`/reports`)
       console.log(response)
@@ -108,7 +106,7 @@ const LISTINGS_URL = API_URL + '/listings'
     };
 
     onMounted(() => {
-      fetchSupportRequests(); // Carica le richieste al montaggio del componente
+      fetchSupportRequests(); 
     });
 
     function handleLogout(){
@@ -120,7 +118,6 @@ const LISTINGS_URL = API_URL + '/listings'
     const confirmDeleteAccount = () => {
       if (confirm('Sei sicuro di voler eliminare il tuo account? Questa azione è irreversibile.')) {
         alert('Richiesta di eliminazione account inviata (azione simulata)');
-        // TODO: Implementa la vera logica di eliminazione account
       }
     };
 
@@ -140,7 +137,7 @@ const LISTINGS_URL = API_URL + '/listings'
           }
         });
         alert(`Richiesta di rimozione utente '${userId}' inviata`);
-        fetchSupportRequests(); // Aggiorna la lista delle richieste dopo la rimozione
+        fetchSupportRequests(); 
       } catch (error) {
         console.error(error);
         alert('Errore nella rimozione dell\'utente.');
@@ -157,7 +154,7 @@ const LISTINGS_URL = API_URL + '/listings'
         });
         console.log(deleteListing.data);
         alert(`Richiesta di rimozione listing '${listingId}' inviata`);
-        fetchSupportRequests(); // Aggiorna la lista delle richieste dopo la rimozione
+        fetchSupportRequests(); 
       } catch (error) {
         console.error(error);
         alert('Errore nella rimozione del listing.');
@@ -167,6 +164,3 @@ const LISTINGS_URL = API_URL + '/listings'
    
 </script>
 
-<style scoped>
-/* Stili aggiuntivi se necessari */
-</style>

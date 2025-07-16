@@ -15,9 +15,7 @@
         stroke="rgb(255, 244, 234)">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
       </svg>
-      <!-- <h3 class="text-sm font-medium text-center" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
-        Aggiungi nuovo listing
-      </h3> -->
+      
     </div>
   </router-link>
 
@@ -59,7 +57,6 @@ const LISTINGS_URL = API_URL + '/listings'
 const router = useRouter();
 const route = useRoute();
 
-// Mock data - lista dei propri listing
 const myListings = ref([]);
 
 const selectedIndex = ref(null);

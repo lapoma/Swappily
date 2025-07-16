@@ -308,12 +308,12 @@ export default {
 </script>
 
 <style scoped>
-/* Transizione per il cambio immagine */
+
 img {
   transition: opacity 0.3s ease;
 }
 
-/* Stile per i pulsanti */
+
 button {
   transition: all 0.2s ease;
 }

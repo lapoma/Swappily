@@ -91,7 +91,6 @@ async function  fetchUserData(userId){
             console.error("User ID not found");
             return;
         }else{
-            //const response = await axios.get(USERS_URL+`/${userId}`);
             username.value = user.username;
             name.value = user.name;
             surname.value = user.surname;

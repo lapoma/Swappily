@@ -1,16 +1,5 @@
 <template>
   <div class="min-h-screen flex flex-col items-center p-4 relative pt-10" style="background-color: rgb(255, 244, 234)">
-    <!-- <div class="fixed top-4 left-4 right-4 z-50">
-      <div class="absolute left-4">
-        <router-link to="/settings">
-          <button class="p-2 rounded-full transition duration-300 hover:brightness-110" style="background-color: #7eacb5">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="rgb(255, 244, 234)">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-        </router-link>
-      </div>
-    </div> -->
 
     <div class="w-full max-w-2xl rounded-xl shadow-xl overflow-hidden mt-16" style="background-color: #7eacb5">
       <div class="p-6 flex flex-col gap-3"> <div v-if="error" class="p-3 rounded-lg text-center" style="background-color: rgba(255, 100, 100, 0.2); color: rgb(255, 244, 234);">
@@ -135,7 +124,6 @@ const updateAccount = async () => {
       return;
     }
     
-    // Aggiungi questo controllo
     if (newPassword.value === currentPassword.value) {
       error.value = 'La nuova password non può essere uguale a quella attuale';
       return;

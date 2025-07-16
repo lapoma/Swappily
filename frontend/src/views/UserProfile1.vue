@@ -12,10 +12,10 @@
           </button>
         </router-link>
       </div>
-      
-      <!-- Tasti a destra (Edit Profile e Settings) -->
+
+      <!-- Tasti a destra -->
       <div class="absolute right-4 flex flex-col gap-2">
-        <!-- Tasto Settings (3 puntini verticali) -->
+        <!-- Tasto Settings  -->
         <router-link to="/Settings">
           <button class="p-2 rounded-full hover:cursor-pointer" style="background-color: #7eacb5">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="rgb(255, 244, 234)">
@@ -218,13 +218,12 @@ const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
 const API_URL = HOST + '/api/v1'
 const USERS_URL = API_URL + '/users'
 
-// Aggiunge il font Poppins al documento
 const link = document.createElement('link')
 link.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap'
 link.rel = 'stylesheet'
 document.head.appendChild(link)
 
-// Dati utente
+
 const username = ref('Username')
 const name = ref('Nome')
 const surname = ref('Cognome')
@@ -237,39 +236,22 @@ const n_follower = ref()
 
 const selectedListing = ref(null)
 const selectedFavorite = ref(null)
-// Tab attiva
 const tabs = [
   { id: 'showcase', label: 'Vetrina' },
   { id: 'reviews', label: 'Recensioni' },
   { id: 'favorites', label: 'Preferiti' },
-  { id: 'archive', label: 'Archivio' } // Aggiunto Archivio
+  { id: 'archive', label: 'Archivio' } 
 ]
 const activeTab = ref('showcase')
 
-// Dati mock (sostituire con chiamate API)
 const listings = ref([])
-//   { _id: '1', title: 'Prodotto 1', description: 'Descrizione prodotto 1', listing_url: ['https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg'] },
-//   { _id: '2', title: 'Prodotto 2', description: 'Descrizione prodotto 2', listing_url: ['https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'] },
-//   { _id: '3', title: 'Prodotto 3', description: 'Descrizione prodotto 3', listing_url: ['https://www.artelegnoshop.it/wp-content/uploads/2020/10/CL32.11-ciotola1-in-legno-di-ulivo.jpg'] },
-//   { _id: '4', title: 'Prodotto 4', description: 'Descrizione prodotto 4', listing_url: ['https://via.placeholder.com/300'] }
 
 
-const reviews = ref([
-//   { _id: '1', author: 'Utente 1', rating: 4, comment: 'Ottimo scambio! Persona molto affidabile e prodotto come descritto.', date: '2023-05-15' },
-//   { _id: '2', author: 'Utente 2', rating: 5, comment: 'Consigliatissimo. Tutto perfetto e tempi di consegna rapidi.', date: '2023-06-22' },
-//   { _id: '3', author: 'Utente 3', rating: 3, comment: 'Buon scambio, ma potrebbe migliorare la comunicazione', date: '2023-07-10' },
-//   { _id: '4', author: 'Utente 4', rating: 2, comment: 'Non sono soddisfatto dello scambio, prodotto diverso dalle aspettative', date: '2023-08-05' }
-])
+const reviews = ref([])
 
-const favorites = ref([
-//   { _id: '1', title: 'Sedia design', description: 'Sedia in legno con tessuto elegante', listing_url: ['https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg'] },
-//   { _id: '2', title: 'Tavolo moderno', description: 'Tavolo in legno massello con finitura lucida', listing_url: ['https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'] }
-])
-const archivedListings = ref([
-//   { _id: 'a1', title: 'Vecchia sedia', listing_url: ['https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg'] },
-//   { _id: 'a2', title: 'Tavolo antico', listing_url: ['https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'] }
-]);
-// Verifica se l'utente è il proprietario del profilo
+const favorites = ref([])
+const archivedListings = ref([]);
+
 function isAuthor() {
   return localStorage.getItem('userId') === route.params.id
 }
@@ -279,7 +261,7 @@ function openReview(review) {
 }
 function selectListing(listing) {
   selectedListing.value = listing
-  selectedFavorite.value = null // Assicurati che solo uno sia visibile alla volta
+  selectedFavorite.value = null 
 }
 function openFavorite(favorite){
 selectedFavorite.value = favorite
@@ -304,7 +286,6 @@ async function fetchUserData(userId){
             console.error("User ID not found");
             return;
         }else{
-            //const response = await axios.get(USERS_URL+`/${userId}`);
             username.value = user.data.username;
             name.value = user.data.name;
             surname.value = user.data.surname;
@@ -344,12 +325,10 @@ async function fetchUserReviews(userId) {
     console.log(id)
     const response = await axios.get(API_URL + `/reviews/${userId}`)
     if (response.data) {
-      // Per ogni recensione, recupera l'username dell'autore
       const reviewsWithAuthors = await Promise.all(
         response.data.map(async (review) => {
           let reviewerUsername = ''
           try {
-            // Supponendo che review.reviewer contenga l'id dell'autore
             const userRes = await axios.get(USERS_URL + `/${review.reviewer}`)
             reviewerUsername = userRes.data.username
           } catch (e) {
@@ -396,7 +375,7 @@ async function fetchFavorites(userId) {
 onMounted(async () => {
   console.log(route.params.userId)
   userId.value = route.params.userId;
-  fetchUserData(userId.value) // Chiamata per ottenere i dati dell'utente
+  fetchUserData(userId.value) 
   fetchUserListings(userId.value)
   fetchFavorites(userId.value)
   fetchUserReviews(userId.value)
@@ -404,12 +383,10 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* Transizioni per i tab */
 button {
   transition: all 0.2s ease;
 }
 
-/* Stile per le card */
 .rounded-lg {
   transition: transform 0.2s ease;
 }

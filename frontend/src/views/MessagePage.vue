@@ -1,7 +1,7 @@
 <template>
   <div class="messages-page">
     <div>
-    <Navbar /> <!-- Importato automaticamente -->
+    <Navbar /> 
     <router-view />
   </div>
 
@@ -35,10 +35,9 @@ export default {
 }
 
 
-/* Stili Area Messaggi */
 .messages-container {
-  flex: 0 1 auto; /* Permette di occupare lo spazio rimanente */
-  margin-top: 60px; /* Altezza navbar */
+  flex: 0 1 auto; 
+  margin-top: 60px; 
   padding: 0px;
   background-color: rgb(255, 244, 234);
   overflow-y: auto;

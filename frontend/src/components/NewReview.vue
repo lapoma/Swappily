@@ -1,33 +1,27 @@
 <template>
   <div class="min-h-screen flex flex-col items-center p-4 relative" style="background-color: rgb(255, 244, 234)">
-    <!-- Header with back button -->
     <div class="fixed top-4 left-4 right-4 z-50">
       
     </div>
 
-    <!-- Main container -->
     <div class="w-full max-w-2xl rounded-xl shadow-xl overflow-hidden mt-16" style="background-color: #7eacb5">
       <div class="p-6">
         <h1 class="text-2xl font-bold text-center mb-2" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
           Scrivi una Recensione
         </h1>
         
-        <!-- User being reviewed -->
         <p class="text-center mb-6" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
-          Per: {{ reviewedUser.name  }} <!-- Mock data -->
+          Per: {{ reviewedUser.name  }} 
         </p>
 
-        <!-- Error message -->
         <div v-if="error" class="mb-4 p-3 rounded-lg text-center" style="background-color: rgba(255, 100, 100, 0.2); color: rgb(255, 244, 234);">
           {{ error }}
         </div>
 
-        <!-- Success message -->
         <div v-if="success" class="mb-4 p-3 rounded-lg text-center" style="background-color: rgba(100, 255, 100, 0.2); color: rgb(255, 244, 234);">
           {{ success }}
         </div>
 
-        <!-- Review form -->
         <div class="mb-6">
           <label class="block mb-2" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
             Recensione
@@ -40,7 +34,6 @@
           ></textarea>
         </div>
 
-        <!-- Submit button -->
         <button
           @click="submitReview"
           :disabled="isSubmitting || !comment.trim()"
@@ -68,10 +61,8 @@ const USERS_URL = API_URL + '/users';
 const router = useRouter();
 const route = useRoute();
 
-// Mock data 
 const reviewedUser = ref({
-  // name: 'Mario Rossi',
-  // id: route.params.userId
+  
 });
 
 const comment = ref('');
@@ -83,7 +74,7 @@ const goBack = () => {
   router.go(-1);
 };
 
-// 
+
 
 onMounted(async () => {
   try {

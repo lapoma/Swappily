@@ -1,7 +1,5 @@
-// src/authState.js
 import { ref } from 'vue';
 
-// Stato reattivo condiviso
 export const isLoggedIn = ref(!!localStorage.getItem('token'));
 
 export function login(token, userId, username, usertype) {

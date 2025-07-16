@@ -32,13 +32,11 @@ export default createStore({
     },
     actions: {
         login({ commit }, { token, userId, username, usertype }) {
-            // Salva nel localStorage
             localStorage.setItem("token", token);
             localStorage.setItem("userId", userId);
             localStorage.setItem("username", username);
             localStorage.setItem("usertype", usertype);
             
-            // Commit alla mutation
             commit("SET_AUTH_USER", {
                 token,
                 userId,
@@ -47,13 +45,11 @@ export default createStore({
             });
         },
         logout({ commit }) {
-            // Rimuovi dal localStorage
             localStorage.removeItem("token");
             localStorage.removeItem("userId");
             localStorage.removeItem("username");
             localStorage.removeItem("usertype");
             
-            // Commit alla mutation
             commit("CLEAR_AUTH");
         }
     },

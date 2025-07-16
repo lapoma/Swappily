@@ -168,10 +168,8 @@ const password = ref('');
 const deleteError = ref('');
 const isDeleting = ref(false);
 
-// Mock data - replace with actual API call
 blockedUsers.value = [
-//   { id: 1, username: 'user123' },
-//   { id: 2, username: 'spammer456' }
+
 ];
 
 const goBack = () => {
@@ -194,7 +192,6 @@ async function confirmDeleteAccount() {
   deleteError.value = '';
 
   try {
-    // 1. Verifica SOLO NEL FRONTEND che la password sia corretta
     const username = localStorage.getItem('username');
     if (!username) {
       deleteError.value = 'Utente non trovato. Effettua nuovamente il login.';
@@ -218,7 +215,6 @@ async function confirmDeleteAccount() {
       return;
     }
 
-    // 2. Se la password è corretta, procedi con l'eliminazione
     const userId = localStorage.getItem('userId');
     const token = localStorage.getItem('token');
     if (!userId || !token) {
@@ -244,7 +240,6 @@ async function confirmDeleteAccount() {
       return;
     }
 
-    // Se arriva qui, l'eliminazione è avvenuta con successo
     showDeleteModal.value = false;
     alert('Account eliminato con successo');
     handleLogout();

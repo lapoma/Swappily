@@ -48,9 +48,7 @@
 </template>
 
 <script setup>
-// export default {
-//   name: 'Navbar'
-// }
+
 import { computed, onMounted,ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
@@ -60,13 +58,6 @@ const router = useRouter();
 const store = useStore();
 const userId = ref()
 
-// Controlla se l'utente è loggato
-// const isLoggedIn = computed(() => {
-//   // Se usi Vuex:
-//   return store.state.isLoggedIn;
-//   // Oppure, se usi solo localStorage:
-//   // return !!localStorage.getItem('token');
-// });
 
 function userProfilePath() {
   const userId = localStorage.getItem('userId');

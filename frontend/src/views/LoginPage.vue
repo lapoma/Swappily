@@ -97,9 +97,8 @@
 
 <script>
 import axios from "axios";
-import router from "../router"; // Assicurati che questo sia corretto
+import router from "../router"; 
 import { RouterLink } from "vue-router";
-//import {userStore} from "vuex"; // Commentato come nel tuo codice originale
 
 const HOST = import.meta.env.VITE_API_HOST || `http://localhost:8080`;
 const API_URL = HOST + `/api/v1`;
@@ -133,10 +132,8 @@ export default {
 
             console.log("Login response:", response.data);
 
-            // Usa i dati dalla risposta direttamente
             const { token, id: userId, username, usertype } = response.data;
 
-            // Dispatch dell'azione di login
             await this.$store.dispatch("login", {
                 token,
                 userId,
@@ -144,7 +141,6 @@ export default {
                 usertype
             });
 
-            // Reindirizzamento basato sul tipo utente
             if (usertype === 'operator') {
                 await this.$router.push("/OperatorPage");
             } else {
@@ -157,7 +153,6 @@ export default {
                         "Credenziali non valide. Riprova.";
         }
     },
-    // NUOVA FUNZIONE: Gestisce il click su "Reimposta password"
     async handleForgotPassword() {
       
       alert('Email per reimpostare la password inviata. Controlla la tua casella di posta.');
@@ -166,6 +161,3 @@ export default {
 };
 </script>
 
-<style scoped>
-/* I tuoi stili scoped rimangono invariati */
-</style>

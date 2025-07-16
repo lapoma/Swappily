@@ -161,43 +161,33 @@ const USERS_URL = API_URL + '/users'
 
 const route = useRoute()
 
-// Aggiunge il font Poppins al documento
 const link = document.createElement('link')
 link.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap'
 link.rel = 'stylesheet'
 document.head.appendChild(link)
 
-// Dati utente (questi potrebbero provenire da un'API per il profilo dell'altro utente)
 const username = ref('')
 const profilePhoto = ref('https://gadgetforentertainment.com/cdn/shop/collections/bloom1.png?v=1738755382&width=1500')
-const userNotes = ref('') // Note dell'altro utente
-const isFollowing = ref(false) // Stato per il tasto "Segui"
+const userNotes = ref('') 
+const isFollowing = ref(false) 
 const isBlocked = ref(false)
 const selectedListing = ref(null)
 
-// Tab attiva
 const tabs = [
   { id: 'showcase', label: 'Vetrina' },
   { id: 'reviews', label: 'Recensioni' },
 ]
 const activeTab = ref('showcase')
 
-// Dati mock (questi dovrebbero essere caricati dinamicamente per l'altro utente)
-//se le vuoi togliere metti ref([]) non togliere tutto 
+
 const listings = ref([
-  // { _id: '1', images: ['https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg'] },
-  // { _id: '2', images: ['https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'] },
-  // { _id: '3', images: ['https://www.artelegnoshop.it/wp-content/uploads/2020/10/CL32.11-ciotola1-in-legno-di-ulivo.jpg'] }
+  
 ])
 
-//se le vuoi togliere metti ref([]) non togliere tutto 
 const reviews = ref([
-  // { _id: '1', author: 'Tu', comment: 'Ottimo scambio con questo utente! Veloce e affidabile.' },
-  // { _id: '2', author: 'Un Altro Utente', comment: 'Prodotto come descritto, transazione liscia.' },
-  // { _id: '3', author: 'Terzo Utente', comment: 'Disponibile e preciso, lo consiglio.' }
+  
 ])
 
-// Funzioni per i nuovi pulsanti
 async function blockUser() {
   if(!localStorage.getItem("token")) {
                 alert('You should log in first');
@@ -447,12 +437,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Transizioni per i tab */
 button {
   transition: all 0.2s ease;
 }
 
-/* Stile per le card */
 .rounded-lg {
   transition: transform 0.2s ease;
 }
