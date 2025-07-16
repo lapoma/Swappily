@@ -2,21 +2,21 @@
   <div class="min-h-screen flex flex-col items-center" style="background-color: rgb(255, 244, 234)">
     <nav class="w-full bg-[#7eacb5] shadow-md py-4 fixed top-0 z-50 h-20">
       <div class="max-w-235 mx-auto px-6 flex justify-between items-center h-full gap-16">
-        <div class="flex items-center ml-2"> 
+        <div class="flex items-center ml-5"> 
           <img src="@/assets/Logo.png" alt="Logo" class="h-[90px] w-[110px] object-contain -ml-10 mt-1" /> 
         </div>
 
-        <div class="flex items-center gap-15">
+        <div class="flex justify-between gap-35">
           <button
             @click="handleLogout"
-            class="px-6 py-2 rounded-lg transition duration-300 text-cream-white text-lg font-semibold  hover:bg-opacity-20 hover:scale-110"
+            class="px-6 py-2 rounded-lg transition duration-300 text-cream-white text-lg font-semibold  hover:bg-opacity-20 hover:scale-102"
             style="font-family: 'Poppins', sans-serif; color: #fff4ea;"
           >
             Logout
           </button>
           <button
             @click="confirmDeleteAccount"
-            class="px-6 py-2 rounded-lg transition duration-300 text-red-light text-lg font-semibold  hover:bg-opacity-20 hover:scale-110"
+            class="px-6 py-2 rounded-lg transition duration-300 text-red-light text-lg font-semibold  hover:bg-opacity-20 hover:scale-102"
             style="font-family: 'Poppins', sans-serif; color: #fff4ea;"
           >
             Elimina Account

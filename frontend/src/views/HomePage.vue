@@ -3,17 +3,11 @@
     <!-- Barra superiore con SearchBar e hamburger settings -->
     <div class="flex justify-center mb-8">
       <div class="flex items-center gap-0 w-full max-w-3xl">
-        <div class="flex-1">
+        <RouterLink to="/SearchPage" class="flex-1 focus:outline-none hover:outline-none hover:ring-0">
+          <div class="flex-1">
           <SearchBar />
         </div>
-        <button
-          class="p-3 rounded-md hover:bg-primary/20 transition flex flex-col justify-center items-center gap-1.5 border border-primary shadow-sm"
-          @click="goToSettings"
-        >
-          <span class="block w-5 h-0.5 bg-primary"></span>
-          <span class="block w-5 h-0.5 bg-primary"></span>
-          <span class="block w-5 h-0.5 bg-primary"></span>
-        </button>
+        </RouterLink>
       </div>
     </div>
 
@@ -24,12 +18,12 @@
           v-for="(listing, index) in listings"
           :key="index"
           @click="selectListing(listing)"
-          class="relative overflow-hidden rounded-lg shadow-md hover:shadow-lg transition duration-300 aspect-square cursor-pointer"
+          class="relative overflow-hidden rounded-lg shadow-md hover:shadow-lg transition duration-300 cursor-pointer"
         >
           <img 
             :src="listing.listing_url" 
             :alt="'Listing ' + (index + 1)"
-            class="w-full h-full object-cover hover:scale-105 transition duration-300"
+            class="w-full h-full object-cover hover:scale-101 transition duration-300"
           >
         </div>
       </div>
@@ -130,12 +124,26 @@ export default {
   background-color: #7eacb5;
 }
 
-.hover\:bg-primary\/20:hover {
+/* .hover\:bg-primary\/20:hover {
   background-color: rgba(126, 172, 181, 0.2);
-}
+} */
 
 /* Effetto hover per le immagini */
-.relative:hover img {
+/* .relative:hover img {
   transform: scale(1.05);
+} */
+.router-link-no-hover-outline:hover,
+.router-link-no-hover-outline:focus,
+.router-link-no-hover-outline:active {
+  outline: none !important;
+  box-shadow: none !important;
+  a:focus,
+a:active,
+a:hover {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  background-color: transparent !important;
+}
 }
 </style>
