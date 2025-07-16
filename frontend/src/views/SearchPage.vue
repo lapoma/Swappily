@@ -85,7 +85,7 @@
           style="border: 2px solid #7eacb5; background-color: #7eacb5;"
         >
           <img 
-            :src="item.image" 
+            :src="item.listing_url" 
             class="w-full h-48 object-cover hover:scale-105 transition duration-300"
             alt="Listing image"
           >

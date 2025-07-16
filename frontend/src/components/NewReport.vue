@@ -84,8 +84,8 @@ const REPORTS_URL = API_URL + '/reports';
 const router = useRouter();
 const route = useRoute();
 
-const reportedUsername = ref('');
-const reportedListing = ref('');
+const reportedUsername = ref("");
+const reportedListing = ref("");
 const description = ref('');
 const isSubmitting = ref(false);
 const error = ref('');
@@ -99,7 +99,7 @@ const submitReport = async () => {
     error.value = 'La descrizione è obbligatoria';
     return;
   }
-  if(reportedListing && reportedUsername){
+  if (reportedListing.value !== "" && reportedUsername.value !== "") {
     error.value = "Impossibile segnalare un utente e un annuncio."
     return;
   }
@@ -108,26 +108,51 @@ const submitReport = async () => {
 
   try {
     const token = localStorage.getItem('token');
+
     const userId = localStorage.getItem('userId');
-    
+    const user = await axios.get(`${API_URL}/users/${userId}`);
+    const reporterUrl = user.data.self
+    let reporteeUrl = null;
+    let listingUrl = null;
+
+    if(reportedUsername.value !== "") {
+      const reporteeUsername = reportedUsername.value;
+      const reporteeResponse = await axios.get(API_URL + `/users?username=${reporteeUsername}`);
+      if (Array.isArray(reporteeResponse.data) && reporteeResponse.data.length > 0) {
+        reporteeUrl = reporteeResponse.data[0].self;
+        console.log(reporteeUrl);
+      } else {
+        error.value = "Utente da segnalare non trovato.";
+        isSubmitting.value = false;
+        return;
+      }
+    }
+
+    if(reportedListing.value !== "") {
+      const listingId = reportedListing.value;
+      const listing = await axios.get(API_URL+ `/listings/${listingId}`);
+      listingUrl = listing.data.self || null;
+    }
+  
     await axios.post(
       REPORTS_URL,
       {
-        reporterId: userId,
-        reportedUsername: reportedUsername.value || null,
-        reportedListingId: reportedListing.value || null,
-        description: description.value
+        reporter: reporterUrl,
+        reportee: reporteeUrl || null,
+        listing: listingUrl || null,
+        text: description.value
       },
       {
         headers: {
-          Authorization: ` ${token}`
+          Authorization: `${token}`
         }
       }
     );
-
+      alert('Segnalazione inviata con successo!');
     router.push('/settings');
     
   } catch (err) {
+    console.log(err);
     console.error('Error submitting report:', err);
     error.value = err.response?.data?.message || 'Errore durante l\'invio della segnalazione';
   } finally {

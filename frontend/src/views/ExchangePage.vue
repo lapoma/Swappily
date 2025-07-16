@@ -26,7 +26,7 @@
       'border': selectedIndex === index ? '3px solid #c96868' : '3px solid transparent',
       'background-color': '#7eacb5'
     }">
-    <img :src="listing.image" class="w-full aspect-square object-cover" :alt="listing.title" />
+    <img :src="listing.listing_url" class="w-full aspect-square object-cover" :alt="listing.title" />
     <div class="p-2">
       <h3 class="text-sm font-medium truncate" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
         {{ listing.title }}

@@ -42,28 +42,28 @@
           style="border: 3px solid #7eacb5;"
         >
           <h3 class="text-xl font-bold" style="color: #7eacb5; font-family: 'Poppins', sans-serif; font-weight: 500;">
-            Username: {{ request.username }}
+            Username: {{ request.reporter }}
           </h3>
           <p style="color: #333; font-family: 'Poppins', sans-serif;">
-            Descrizione problema: {{ request.description }}
+            Descrizione problema: {{ request.text }}
           </p>
           <p style="color: #333; font-family: 'Poppins', sans-serif;">
-            Utente segnalato: {{ request.reportedUser || 'N/A' }}
+            Utente segnalato: {{ request.reportee || 'N/A' }}
           </p>
           <p style="color: #333; font-family: 'Poppins', sans-serif;">
-            Listing segnalato: {{ request.reportedListing || 'N/A' }}
+            Listing segnalato: {{ request.listing || 'N/A' }}
           </p>
 
           <div class="flex justify-end gap-4 mt-2">
             <button
-              @click="removeUser(request.reportedUser)"
+              @click="removeUser(request.reportee)"
               class="px-10 py-7 rounded-lg font-bold transition duration-300 hover:opacity-90"
               style="background-color: rgb(201, 104, 104); color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-size: 20px;"
             >
               Rimuovi Utente
             </button>
             <button
-              @click="removeListing(request.reportedListing)"
+              @click="removeListing(request.listing)"
               class="px-10 py-7 rounded-lg font-bold transition duration-300 hover:opacity-90"
               style="background-color: rgb(201, 104, 104); color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-size: 20px;"
             >
@@ -82,10 +82,12 @@ import { logout } from '@/authState';
 import { ref, onMounted } from 'vue';
 import axios from "axios"
 import { useRouter } from 'vue-router';
+import { deleteListing } from '@/services/listings';
 
 const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
 const API_URL = HOST + '/api/v1'
 const USERS_URL = API_URL + '/users'
+const LISTINGS_URL = API_URL + '/listings'
 
     // Aggiunge il font Poppins al documento
     const link = document.createElement('link');
@@ -102,37 +104,7 @@ const USERS_URL = API_URL + '/users'
     const fetchSupportRequests = async () => {
       const response = await axios.get(API_URL+`/reports`)
       console.log(response)
-
-
-      // // Simula una chiamata API con un ritardo
-      // await new Promise(resolve => setTimeout(resolve, 500)); // Simula un caricamento di 0.5 secondi
-
-      // // Dati mock delle richieste di supporto
-      // const mockData = [
-      //   {
-      //     id: 'req1',
-      //     username: 'mario_rossi',
-      //     description: "L'utente ha pubblicato contenuti inappropriati e non rispetta le regole della community.",
-      //     reportedUser: 'luca_bianchi',
-      //     reportedListing: '12345'
-      //   },
-      //   {
-      //     id: 'req2',
-      //     username: 'anna_verdi',
-      //     description: "Il listing contiene informazioni false sul prodotto.",
-      //     reportedUser: 'paolo_neri',
-      //     reportedListing: '67890'
-      //   },
-      //   {
-      //     id: 'req3',
-      //     username: 'giulia_bianchi',
-      //     description: "L'utente non ha rispettato i termini dello scambio.",
-      //     reportedUser: 'marco_rossi',
-      //     reportedListing: '54321'
-      //   }
-      // ];
-
-      // supportRequests.value = mockData;
+      supportRequests.value = response.data;
     };
 
     onMounted(() => {
@@ -152,17 +124,41 @@ const USERS_URL = API_URL + '/users'
       }
     };
 
-    const removeUser = (username) => {
-      alert(`Richiesta di rimozione utente '${username}' inviata (azione simulata)`);
-      // TODO: Implementa la logica reale per rimuovere l'utente tramite API
-      // Potresti anche voler aggiornare l'elenco delle richieste dopo la rimozione
-    };
+    async function removeUser(userId) {
+      console.log(`Richiesta di rimozione utente: ${userId}`);
+      try {
+        const deletedUser = await axios.delete(`${USERS_URL}/${userId}`, {
+          headers: {
+            token: `${localStorage.getItem('token')}`
+          }
+        });
+        console.log(deletedUser.data);
+        alert(`Richiesta di rimozione utente '${userId}' inviata`);
+        fetchSupportRequests(); // Aggiorna la lista delle richieste dopo la rimozione
+      } catch (error) {
+        console.error(error);
+        alert('Errore nella rimozione dell\'utente.');
+      }
 
-    const removeListing = (listingId) => {
-      alert(`Richiesta di rimozione listing '${listingId}' inviata (azione simulata)`);
-      // TODO: Implementa la logica reale per rimuovere il listing tramite API
-      // Potresti anche voler aggiornare l'elenco delle richieste dopo la rimozione
     };
+    async function removeListing(listingId) {
+      console.log(`Richiesta di rimozione listing: ${listingId}`);
+      try {
+        const deselectListing = await axios.delete(`${LISTINGS_URL}/${listingId}`, {
+          headers: {
+            token: `${localStorage.getItem('token')}`
+          }
+        });
+        console.log(deleteListing.data);
+        alert(`Richiesta di rimozione listing '${listingId}' inviata`);
+        fetchSupportRequests(); // Aggiorna la lista delle richieste dopo la rimozione
+      } catch (error) {
+        console.error(error);
+        alert('Errore nella rimozione del listing.');
+      }
+
+    };
+   
 </script>
 
 <style scoped>
