@@ -5,6 +5,7 @@ const User = require('./models/user');
 const mongoose = require('mongoose');
 const tokenChecker = require('./authentication/tokenChecker');
 
+// POST listing
 router.post('',tokenChecker, async (req, res) => {
 
     const { title, username, userId, description, status, available, listing_url } = req.body;
@@ -39,7 +40,7 @@ router.post('',tokenChecker, async (req, res) => {
             userId, 
             description,
             status,
-            available: typeof available === 'boolean' ? available : true, // Default true se non fornito
+            available: typeof available === 'boolean' ? available : true,
             listing_url: listing_url || []
         });
 
@@ -65,6 +66,7 @@ router.post('',tokenChecker, async (req, res) => {
 
 })
 
+// GET listing da titolo e status
 router.get('', async (req, res) => {
     //https://mongoosejs.com/docs/api/model.html#Model.find()
     try{
@@ -121,6 +123,7 @@ router.get('', async (req, res) => {
     }
 })
 
+// GET listing
 router.get('/:id', async (req,res) =>{
     try{
         //https://expressjs.com/en/5x/api.html#req.params
@@ -148,6 +151,7 @@ router.get('/:id', async (req,res) =>{
     //https://expressjs.com/en/guide/routing.html#route-parameters
 })
 
+// DELETE listing
 router.delete('/:id',tokenChecker, async(req,res) =>{
     try{
         //https://expressjs.com/en/5x/api.html#req.params
@@ -170,6 +174,7 @@ router.delete('/:id',tokenChecker, async(req,res) =>{
     }
 })
 
+// PUT aggiorna listing
 router.put('/:id',tokenChecker, async(req,res) => {
     try{
         let listingId = req.params.id;
@@ -256,16 +261,15 @@ function checkStatus(status){
     return false;
 }
 
+// GET listing di uno user
 router.get('/user/:userId', async (req, res) => {
     try {
         const userId = req.params.userId;
         
-        // Verifica che l'userId sia un ObjectId valido
         if(!userId || !mongoose.Types.ObjectId.isValid(userId)) {
             return res.status(400).json({ error: '"userId" must be a valid ObjectId' });
         }
 
-        // Trova tutte i listing associati a questo userId
         const listings = await Listing.find({ userId: userId });
         
         if (listings.length === 0) {

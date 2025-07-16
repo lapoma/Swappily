@@ -11,7 +11,7 @@
         </h1>
         
         <p class="text-center mb-6" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
-          Per: {{ reviewedUser.name  }} 
+          Per: {{ reviewedUser.username  }} 
         </p>
 
         <div v-if="error" class="mb-4 p-3 rounded-lg text-center" style="background-color: rgba(255, 100, 100, 0.2); color: rgb(255, 244, 234);">
@@ -61,9 +61,8 @@ const USERS_URL = API_URL + '/users';
 const router = useRouter();
 const route = useRoute();
 
-const reviewedUser = ref({
-  
-});
+
+const reviewedUser = ref({});
 
 const comment = ref('');
 const isSubmitting = ref(false);
@@ -80,6 +79,7 @@ onMounted(async () => {
   try {
     const response = await axios.get(`${USERS_URL}/${route.params.userId}`);
     reviewedUser.value = response.data;
+    console.log('Reviewed User:', reviewedUser.value);
   } catch (err) {
     console.error('Error fetching user data:', err);
   }
