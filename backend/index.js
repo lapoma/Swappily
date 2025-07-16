@@ -3,7 +3,7 @@ const mongoose = require('mongoose'); // Libreria per MongoDB
 const app = require('./app/app.js');
 
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT;
 
 app.locals.db = mongoose.connect( process.env.DB_URL )
 .then ( () => {
@@ -15,3 +15,4 @@ app.locals.db = mongoose.connect( process.env.DB_URL )
     });
     
 });
+
