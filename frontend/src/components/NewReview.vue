@@ -2,13 +2,7 @@
   <div class="min-h-screen flex flex-col items-center p-4 relative" style="background-color: rgb(255, 244, 234)">
     <!-- Header with back button -->
     <div class="fixed top-4 left-4 right-4 z-50">
-      <div class="absolute left-4">
-        <button @click="goBack" class="p-2 rounded-full" style="background-color: #7eacb5">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="rgb(255, 244, 234)">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-      </div>
+      
     </div>
 
     <!-- Main container -->
@@ -20,7 +14,7 @@
         
         <!-- User being reviewed -->
         <p class="text-center mb-6" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
-          Per: {{ reviewedUser.name || 'Mario Rossi' }} <!-- Mock data -->
+          Per: {{ reviewedUser.name  }} <!-- Mock data -->
         </p>
 
         <!-- Error message -->

@@ -162,7 +162,7 @@ export default {
       if(!this.url) {
         this.error = "Aggiungi un URL valido"
         return
-      } else if(this.n_photos === 10 || this.n_photos < 1) {
+      } else if(this.n_photos === 10 ) {
         this.error = "Puoi aggiungere un massimo di 10 foto e un minimo di 1"
       } else {
         this.listing_url.push(this.url)

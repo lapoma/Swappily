@@ -3,7 +3,6 @@
     <div class="w-full max-w-2xl rounded-xl shadow-xl overflow-hidden mt-8" style="background-color: #7eacb5">
       <div class="p-6">
         <div class="flex items-center justify-between">
-
           <h1 class="text-xl font-bold text-center flex-grow" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
             Modifica Annuncio
           </h1>
@@ -19,7 +18,8 @@
         </div>
 
         <div class="flex flex-col gap-4"> 
-          <div class="mb-2"> <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
+          <div class="mb-2">
+            <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
               Titolo
             </label>
             <input
@@ -31,7 +31,8 @@
             >
           </div>
 
-          <div class="mb-2"> <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
+          <div class="mb-2">
+            <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
               Descrizione
             </label>
             <textarea
@@ -42,7 +43,8 @@
             ></textarea>
           </div>
 
-          <div class="mb-4"> <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
+          <div class="mb-4">
+            <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
               Stato dell'articolo
             </label>
             <select
