@@ -21,9 +21,11 @@ A seguire la documentazione del progetto:
 
 [D1] [D2] [D3] [D4]
 
-## Installazione e setup
+# Installazione e setup
 
 ### Pre requisiti
+
+## Local Deployment 
 
 ### Configurazione del Backend
 
