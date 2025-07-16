@@ -1,6 +1,8 @@
 # Swappily
 ## Introduction
-"Swappily" si tratta di una piattaforma realizzata con la premessa di voler creare un luogo di scambio tra utenti per incentivare il riutilizzo e diminuire lo spreco. Questo progetto è stato realizzato da **Benedetta Bicego**, *M*arta Lapo** e **Soufian Akil** per il corso di *Ingegneria del Software* dell'Università degli Studi di Trento. 
+"Swappily" si tratta di una piattaforma realizzata con la premessa di voler creare un luogo di scambio tra utenti per incentivare il riutilizzo e diminuire lo spreco. 
+
+Questo progetto è stato realizzato da **Benedetta Bicego**, **Marta Lapo** e **Soufian Akil** per il corso di *Ingegneria del Software* dell'Università degli Studi di Trento. 
 
 **Link to project:** 
 
@@ -27,7 +29,7 @@ A seguire la documentazione del progetto:
 
 ## Build & Deployment
 
-### Local Deployment
+#### Local Deployment
 
 ### Configurazione del Backend
 
