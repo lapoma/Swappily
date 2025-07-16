@@ -25,13 +25,14 @@ A seguire la documentazione del progetto:
 
 ### Pre requisiti
 
-## Local Deployment 
+## Build & Deployment
+
+### Local Deployment
 
 ### Configurazione del Backend
 
 ### Configurazione del Frontend
 
-### Build & Deployment
 
 ### Testing
 Nella cartela `/app` eseguire:
