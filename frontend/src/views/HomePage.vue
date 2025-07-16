@@ -21,7 +21,7 @@
           class="relative overflow-hidden rounded-lg shadow-md hover:shadow-lg transition duration-300 cursor-pointer"
         >
           <img 
-            :src="listing.listing_url" 
+            :src="getFirstImage(listing)" 
             :alt="'Listing ' + (index + 1)"
             class="w-full h-full object-cover hover:scale-101 transition duration-300"
           >
@@ -87,6 +87,14 @@ export default {
     },
     deselectListing() {
       this.selectedListing = null;
+    },
+    getFirstImage(listing) {
+      if (Array.isArray(listing.listing_url) && listing.listing_url.length > 0) {
+        return listing.listing_url[0];
+      } else if (typeof listing.listing_url === 'string') {
+        return listing.listing_url;
+      }
+      return ''; // Immagine di fallback
     },
     async fetchListings() {
       try {

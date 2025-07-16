@@ -65,10 +65,11 @@
             class="w-full p-3 border rounded-lg focus:outline-none"
             style="border-color: rgb(255, 244, 234); background-color: rgba(255, 244, 234, 0.2); color: rgba(255, 244, 234, 0.8);"
           >
-            <option value="" disabled selected>Seleziona uno stato</option> <option value="As new">Come nuovo</option>
+            <option value="" disabled selected>Seleziona uno stato</option> 
+            <option value="As new">Come nuovo</option>
             <option value="Good">Buono</option>
             <option value="Ok">Discreto</option>
-            <option value="Not good">Non buono</option>
+            <option value="Not Good">Non buono</option>
           </select>
         </div>
 

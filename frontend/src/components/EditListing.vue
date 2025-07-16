@@ -52,10 +52,10 @@
               class="w-full p-3 rounded-lg focus:outline-none appearance-none"
               style="background-color: rgba(255, 244, 234, 0.8); color: #7eacb5; font-family: 'Poppins', sans-serif;"
             >
-              <option value="as_new">Come nuovo</option>
-              <option value="good">Buono</option>
-              <option value="ok">Discreto</option>
-              <option value="not_good">Non buono</option>
+              <option value="As new">Come nuovo</option>
+              <option value="Good">Buono</option>
+              <option value="Ok">Discreto</option>
+              <option value="Not Good">Non buono</option>
             </select>
           </div>
 
@@ -77,7 +77,8 @@
 <script setup>
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';  
 
 const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
 const API_URL = HOST + '/api/v1'
@@ -90,6 +91,7 @@ const status = ref('');
 const error = ref('');
 const success = ref('');
 const isSubmitting = ref(false);
+const router = useRouter();
 const route = useRoute();
 
 async function updateListing(){
@@ -133,9 +135,9 @@ async function updateListing(){
 
     alert("Annuncio aggiornato con successo!");
     error.value = "";
-    route.push(`/UserProfile1/${userId}`);
+    router.push(`/UserProfile1/${userId}`);
   } catch (err) {
-    error.value = "Errore durante l'aggiornamento del profilo.";
+    error.value = "Errore durante l'aggiornamento del listing.";
     console.error(err);
   }
 }

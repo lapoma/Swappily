@@ -181,7 +181,7 @@ const goBack = () => {
 const handleLogout = () => {
   store.dispatch("logout")
 
-  router.push('/LoginPage');
+  router.push('/');
 };
 
 async function confirmDeleteAccount() {
