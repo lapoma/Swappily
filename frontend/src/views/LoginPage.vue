@@ -142,6 +142,8 @@ export default {
         localStorage.setItem("usertype", user.data.usertype);
 
         //this.$store.dispatch("login",{username: this.username, usertype: this.usertype});
+        console.log(user.data.usertype);
+        alert("Login effettuato con successo!");
         if (user.data.usertype === "user") {
           const id = localStorage.getItem("userId");
           this.$router.push(`/UserProfile1/${id}`);

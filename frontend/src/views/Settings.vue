@@ -137,7 +137,11 @@ const handleLogout = () => {
 
 async function confirmDeleteAccount(){
   if (confirm('Sei sicuro di voler eliminare il tuo account? Questa azione è irreversibile.')) {
-    const response = await axios.delete(API_URL+`/users/${userId}`)
+    const response = await axios.delete(API_URL+`/users/${localStorage.getItem("userId")}`, {
+      headers: {
+        token: `${localStorage.getItem('token')}`
+      }
+    });
 
     console.log(response.data)
 

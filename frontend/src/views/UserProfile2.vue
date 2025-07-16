@@ -294,7 +294,8 @@ async function toggleFollow() {
                       name: userGet.data.name,
                       surname: userGet.data.surname,
                       email: userGet.data.email,
-                      followed: userGet.data.followed.filter(id => id !== route.params.userId)
+                      followed: userGet.data.followed.filter(id => id !== route.params.userId),
+                      n_followed: userGet.data.n_followed-1
                     }, {
                         headers: {
                             Authorization: ` ${token}`

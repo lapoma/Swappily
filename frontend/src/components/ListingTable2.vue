@@ -263,7 +263,7 @@ export default {
       this.currentImageIndex = (this.currentImageIndex + 1) % this.listing.listing_url.length
     },
     goToEditListing() {
-      this.$router.push('/EditListing');
+      this.$router.push(`/EditListing/${this.listing.id}`);
     },
 
     async DeleteListing(listId) {

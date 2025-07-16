@@ -73,7 +73,77 @@
 </template>
 
 <script setup>
+import axios from 'axios';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 
+const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
+const API_URL = HOST + '/api/v1'
+const USERS_URL = API_URL + '/users'
+const LISTINGS_URL = API_URL + '/listings'
+
+const title = ref('');
+const description = ref('');
+const status = ref('');
+const error = ref('');
+const success = ref('');
+const isSubmitting = ref(false);
+const route = useRoute();
+
+async function updateListing(){
+  const userId = localStorage.getItem('userId');
+  const token = localStorage.getItem('token');
+  const listingId = route.params.id;
+
+  const listingOld = await axios.get(LISTINGS_URL + `/${listingId}`);
+  if(title.value !== ""){
+    if(!checkTitle(title.value)){
+      error.value = "Il titolo deve essere tra 3 e 50 caratteri.";
+      return;
+    }
+    listingOld.data.title = title.value;
+  }
+
+  if(description.value !== ""){
+    if(!checkDescription(description.value)){
+      error.value = "La descrizione deve essere tra 3 e 2000 caratteri.";
+      return;
+    }
+    listingOld.data.description = description.value;
+  }
+
+  if(status.value !== ""){
+    listingOld.data.status = status.value;
+  }
+
+  try {
+    const response = await axios.put(LISTINGS_URL+`/${listingId}`, {
+      title: listingOld.data.title,
+      description: listingOld.data.description,
+      status: listingOld.data.status,
+      userId: userId,
+      listing_url: listingOld.data.listing_url
+    }, {
+      headers: {
+        token: `${token}`
+      }
+    });
+
+    alert("Annuncio aggiornato con successo!");
+    error.value = "";
+    route.push(`/UserProfile1/${userId}`);
+  } catch (err) {
+    error.value = "Errore durante l'aggiornamento del profilo.";
+    console.error(err);
+  }
+}
+
+function checkTitle(title) {
+      return title.length >= 3 && title.length <= 50
+    }
+function checkDescription(description) {
+      return description.length >= 3 && description.length <= 2000
+    }
 </script>
 
 <style>

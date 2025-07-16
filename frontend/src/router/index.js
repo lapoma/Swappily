@@ -100,7 +100,7 @@ const router = createRouter({
           component: () => import('../components/NewListing.vue')
         },
         {
-          path: '/EditListing',
+          path: '/EditListing/:id',
           name: 'EditListing',
           component: () => import('../components/EditListing.vue')
         },
