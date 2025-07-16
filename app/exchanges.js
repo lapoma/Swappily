@@ -16,7 +16,7 @@ const authenticateJWT = (req, res, next) => {
         if (err) {
             return res.status(401).json({ error: 'Token non valido' });
         }
-        req.userId = user.userId;
+        req.userId = user.id;
         next();
     });
 };
@@ -37,17 +37,16 @@ router.post('/listing/:listingId', authenticateJWT, async (req, res) => {
             User.findById(receiver)
         ]);
 
-        console.log("requestedListing: "+requestedListing);
-        console.log("offeredListing: "+ offeredListingDoc);
-        console.log("receiver: "+ receiverUser);
-
         if (!requestedListing || !offeredListingDoc || !receiverUser) {
             console.log("Mancano campi");
             return res.status(404).json({ error: 'Listing o utente non trovato' });
 
         }
 
-        if (offeredListingDoc.userId !== req.userId) {
+        console.log(offeredListingDoc.data);
+        console.log(req.userId);
+
+        if (offeredListingDoc.userId.toString() !== req.userId) {
             return res.status(403).json({ error: 'Non sei il proprietario del listing offerto' });
         }
 
@@ -56,7 +55,7 @@ router.post('/listing/:listingId', authenticateJWT, async (req, res) => {
             receiver: receiver,
             offeredListing: offeredListing,
             requestedListing: listingId,
-            status: 'pending',
+            status: 'Pending',
             date: new Date()
         });
 

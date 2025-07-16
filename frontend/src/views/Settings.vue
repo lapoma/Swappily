@@ -196,20 +196,53 @@ async function confirmDeleteAccount() {
   try {
     // 1. Verifica SOLO NEL FRONTEND che la password sia corretta
     const username = localStorage.getItem('username');
-    await axios.post(API_URL + '/authentications', {
-      username,
-      password: password.value
-    });
+    if (!username) {
+      deleteError.value = 'Utente non trovato. Effettua nuovamente il login.';
+      isDeleting.value = false;
+      return;
+    }
+    let auth;
+    try {
+      auth = await axios.post(API_URL + '/authentications', {
+        username,
+        password: password.value
+      });
+    } catch (error) {
+      console.error('Errore durante l\'autenticazione:', error);
+      if (error.response && error.response.status === 401) {
+        deleteError.value = 'Password errata';
+      } else {
+        deleteError.value = 'Errore durante l\'autenticazione. Riprova più tardi.';
+      }
+      isDeleting.value = false;
+      return;
+    }
 
     // 2. Se la password è corretta, procedi con l'eliminazione
     const userId = localStorage.getItem('userId');
     const token = localStorage.getItem('token');
+    if (!userId || !token) {
+      deleteError.value = 'Impossibile trovare le informazioni utente. Effettua nuovamente il login.';
+      isDeleting.value = false;
+      return;
+    }
 
-    const response = await axios.delete(API_URL + `/users/${userId}`, {
-      headers: {
-        token: `${token}`
+    try {
+      await axios.delete(API_URL + `/users/${userId}`, {
+        headers: {
+          token: `${token}`
+        }
+      });
+    } catch (error) {
+      console.error('Errore durante l\'eliminazione:', error);
+      if (error.response && error.response.status === 401) {
+        deleteError.value = 'Non autorizzato. Effettua nuovamente il login.';
+      } else {
+        deleteError.value = 'Errore durante l\'eliminazione. Riprova più tardi.';
       }
-    });
+      isDeleting.value = false;
+      return;
+    }
 
     // Se arriva qui, l'eliminazione è avvenuta con successo
     showDeleteModal.value = false;
@@ -218,12 +251,7 @@ async function confirmDeleteAccount() {
 
   } catch (error) {
     console.error('Errore:', error);
-    if (error.response?.status === 401) {
-      deleteError.value = 'Password errata';
-    } else {
-      deleteError.value = 'Errore durante l\'eliminazione. Riprova più tardi.';
-      console.error('Dettagli errore:', error.response?.data);
-    }
+    deleteError.value = 'Errore sconosciuto. Riprova più tardi.';
   } finally {
     isDeleting.value = false;
   }
