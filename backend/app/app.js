@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+import cors from "cors";
+
 
 const authentication = require('./authentication/authentication.js');
 const users = require('./users.js');
