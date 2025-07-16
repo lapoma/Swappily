@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res) => {
-  res.send('Backend online ✅');
+  res.send('Backend online');
 });
 
 // Routes
