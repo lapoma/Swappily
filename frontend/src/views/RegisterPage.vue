@@ -202,18 +202,23 @@ export default {
         let response;
         response = await axios.post(API_URL+`/users`, authData);
         
-        console.log("RESPONSE: "+ response);
+        console.log("RESPONSE:", response.data);
         // Se la richiesta ha successo, resetta gli errori e continua
         localStorage.setItem('token', response.data.token);
-        localStorage.setItem('userId', response.data._id);
-        localStorage.setItem('username',response.data.username);
-        localStorage.setItem('usertype', response.data.userType);
+        localStorage.setItem('userId', response.data._id || response.data.id);
+        localStorage.setItem('username', response.data.username);
+        localStorage.setItem('usertype', response.data.usertype || response.data.usertype);
                 
         console.log(JSON.parse(localStorage.getItem('user')));
 
-        this.$store.dispatch("login",{username: this.username, userType: this.userType});
+        this.$store.dispatch("login",{
+          username: this.username,
+          usertype: this.userType,
+          userId: response.data._id || response.data.id,
+          token: response.data.token
+      });
 
-        this.$router.push(`/`);
+        this.$router.push(`/LoginPage`);
         
       } catch (error) {
         console.error("Errore nella registrazione:", error.response?.data || error.message);

@@ -115,7 +115,6 @@ router.get('/:id', async (req, res) => {
 // POST new user
 router.post('', async (req, res) => {
     const { 
-        userId,
         username,
         email,
         name,
@@ -164,7 +163,6 @@ router.post('', async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({
-            userId,
             username,
             email,
             name,
@@ -188,7 +186,7 @@ router.post('', async (req, res) => {
         res.location(`/api/v1/users/${savedUser._id}`);
         res.status(201).json({
             self: `/api/v1/users/${savedUser._id}`,
-            userId: savedUser.userId,
+            userId: savedUser._id,
             username: savedUser.username,
             email: savedUser.email,
             name: savedUser.name,
