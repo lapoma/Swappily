@@ -124,7 +124,7 @@
   </button>
 
   <button
-    @click="DeleteListing"
+    @click="DeleteListing(listing.id)"
     class="flex-1 py-3 px-6 rounded-lg font-bold transition"
     style="background-color: rgb(201, 104, 104); color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 700;"
   >
@@ -138,13 +138,14 @@
 </template>
 
 <script>
-import { deleteListing } from "@/services/listings"
 import axios from "axios"
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const HOST = import.meta.env.VITE_API_HOST || `http://localhost:8080`
 const API_URL = HOST+`/api/v1`
+const LISTINGS_URL = API_URL + `/listings`;
+
 
 export default {
   name: 'ListingTable',
@@ -264,11 +265,38 @@ export default {
     goToEditListing() {
       this.$router.push('/EditListing');
     },
-    DeleteListing() {
 
-        alert('eliminazione in corso');
-      
-    },
+    async DeleteListing(listId) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Token mancante. Effettua il login.");
+    return;
+  }
+
+  const confirmed = confirm("Vuoi davvero eliminare questo annuncio?");
+  if (!confirmed) return;
+
+  try {
+    await axios.delete(`${LISTINGS_URL}/${listId}`, {
+      headers: {
+        token: `${token}`
+      }
+    });
+
+    alert("Annuncio eliminato con successo.");
+    this.$emit("close");
+    
+  } catch (error) {
+    console.error("Errore durante l'eliminazione:", error);
+    if (error.response && error.response.status === 401) {
+      alert("Non autorizzato. Effettua di nuovo il login.");
+    } else {
+      alert("Errore durante l'eliminazione dell'annuncio.");
+    }
+  }
+},
+
+
     async checkFavorite(){
       if(!this.isLoggedIn) {
                 this.isFavorite = false

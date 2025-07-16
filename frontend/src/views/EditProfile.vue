@@ -5,7 +5,7 @@
         <div class="flex flex-col items-center gap-4 mb-4">
           <div class="relative -mt-16">
             <img
-              :src="user.profile_url"
+              :src="user.profile_url || 'https://via.placeholder.com/150'"
               class="w-32 h-32 rounded-full border-4 shadow-lg object-cover"
               style="border-color: rgb(255, 244, 234);"
               alt=""
@@ -18,9 +18,9 @@
             >
           </div>
           <button
-            
-            class="mt-4 px-4 py-2 rounded-lg"
-            style="background-color: #7eacb5; color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;"
+            @click="addImage"
+            class="mt-4 px-4 py-2 rounded-lg hover: cursor-pointer"
+            style="background-color: rgb(255, 244, 234); color: #7eacb5; font-family: 'Poppins', sans-serif;"
           >
             Cambia immagine
           </button>
@@ -56,7 +56,7 @@
 
 <script setup>
 import axios from 'axios';
-import { onMounted, ref, reactive } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8080'
@@ -65,7 +65,7 @@ const USERS_URL = API_URL + '/users'
 
 const router = useRouter();
 
-const user = reactive({
+const user = ref({
     username: '',
     userId: '',
     name: '',
@@ -85,37 +85,35 @@ function handleImageUpload(event) {
   if (file) {
     const reader = new FileReader();
     reader.onload = (e) => {
-      user.profile_url = e.target.result;
+      user.value.profile_url = e.target.result;
     };
     reader.readAsDataURL(file);
   }
 }
 
 async function fetchUserData() {
-    try{
-        const userId = localStorage.getItem('userId');
-        const user = await axios.get(USERS_URL+`/${userId}`);
-        if(!user){
-            console.error("User ID not found");
-            return;
-        }else{
-            const response = await axios.get(USERS_URL+`/${userId}`);
-
-            console.log(response)
-
-            user.username = response.data.username;
-            user.name = response.data.name;
-            user.surname = response.data.surname;
-            user.email = response.data.email;
-            user.profile_url = response.data.profile_url;
-
-            console.log(user)
-        }
-    }catch(error){
-        console.error("Error fetching user data:", error);
-        return;
+  try {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      console.error("User ID not found");
+      return;
     }
+
+    const response = await axios.get(USERS_URL + `/${userId}`);
+
+    user.value.username = response.data.username;
+    user.value.name = response.data.name;
+    user.value.surname = response.data.surname;
+    user.value.email = response.data.email;
+    user.value.profile_url = response.data.profile_url;
+    user.value.description = response.data.description;
+
+  } catch (err) {
+    console.error("Error fetching user data:", err);
+    error.value = "Errore nel caricamento dati utente";
+  }
 }
+
 
 async function updateProfile() {
     try {
@@ -139,16 +137,13 @@ async function handleEdit() {
     const token = localStorage.getItem("token")
     const userId = localStorage.getItem("userId")
     const userGet = await axios.get(API_URL+`/users/${userId}`);
-
-console.log
-
     try{
       const response = await axios.put(API_URL+`/users/${userId}`, {
         username: userGet.data.username,
         name: userGet.data.name,
         surname: userGet.data.surname,
         email: userGet.data.email,
-        description: user.description
+        description: user.value.description,
       }, {
         headers: {
         Authorization: ` ${token}`
@@ -156,7 +151,6 @@ console.log
     })
         console.log(response)  
         alert("Utente aggiornato con successo")
-        router.push(`/UserProfile1/${userId}`)
     }catch(error){
         alert("Impossibile aggiornare l'utente")
         this.error=("Impossibile aggiornare l'utente")
@@ -165,32 +159,40 @@ console.log
 }
 
 async function addImage() {
-    if (!user.profile_url) {
-        alert("Nessuna immagine inserita");
-        error.value = "Nessuna immagine inserita";
-    } else {
-        try {
-            const token = localStorage.getItem("token");
-            const userId = localStorage.getItem("userId");
-            const userGet = await axios.get(API_URL + `/users/${userId}`);
-            const response = await axios.put(API_URL + `/users/${userId}`, {
-                username: userGet.data.username,
-                name: userGet.data.name,
-                surname: userGet.data.surname,
-                email: userGet.data.email,
-                profile_url: user.profile_url
-            }, {
-                headers: {
-                    Authorization: `${token}`
-                }
-            });
-            console.log(response);
-        } catch (err) {
-            alert("Impossibile aggiornare l'utente");
-            error.value = "Impossibile aggiornare l'utente";
-        }
-    }
+  if (!user.value.profile_url) {
+    alert("Nessuna immagine inserita");
+    error.value = "Nessuna immagine inserita";
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+
+    const userGet = await axios.get(API_URL + `/users/${userId}`);
+
+    const response = await axios.put(API_URL + `/users/${userId}`, {
+      username: userGet.data.username,
+      name: userGet.data.name,
+      surname: userGet.data.surname,
+      email: userGet.data.email,
+      profile_url: user.value.profile_url,  // ✅ usa il ref corretto
+    }, {
+      headers: {
+        Authorization: ` ${token}`
+      }
+    });
+
+    console.log("Immagine aggiornata:", response);
+    alert("Immagine profilo aggiornata con successo!");
+
+  } catch (err) {
+    alert("Impossibile aggiornare l'immagine profilo");
+    error.value = "Impossibile aggiornare l'immagine profilo";
+    console.error(err);
+  }
 }
+
 
 onMounted(() => {
     const userId = localStorage.getItem('userId');

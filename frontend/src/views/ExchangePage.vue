@@ -6,7 +6,7 @@
         Seleziona uno dei tuoi oggetti da scambiare
       </h2>
 
-     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 w-full max-w-5xl">
 
   <router-link to="/NewListing" class="rounded-lg overflow-hidden shadow-md cursor-pointer transition-all duration-200"
     style="background-color: #7eacb5">
