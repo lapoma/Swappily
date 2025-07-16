@@ -207,7 +207,7 @@ async function confirmDeleteAccount() {
 
     const response = await axios.delete(API_URL + `/users/${userId}`, {
       headers: {
-        token
+        token: `${token}`
       }
     });
 

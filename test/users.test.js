@@ -823,7 +823,7 @@ describe('DELETE /api/v1/users/:id', () => {
         return Promise.resolve({
           _id: payload.id,
           username: payload.username,
-          remove: jest.fn().mockResolvedValue(true),
+          deleteOne: jest.fn().mockResolvedValue(true),
         });
       }
       return Promise.resolve(null);
@@ -864,7 +864,7 @@ describe('DELETE /api/v1/users/:id', () => {
     findByIdSpy.mockResolvedValueOnce({
       _id: payload.id,
       username: payload.username,
-      remove: jest.fn().mockResolvedValue(true),
+      deleteOne: jest.fn().mockResolvedValue(true),
     });
 
     const res = await request(app)
