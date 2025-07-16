@@ -2,33 +2,63 @@ import {createStore} from "vuex";
 
 export default createStore({
     state: {
-    isLoggedIn: !!localStorage.getItem("token"),
-    username: localStorage.getItem("username") || "",
-    userId: localStorage.getItem('userId'),
-    usertype: localStorage.getItem("usertype") || "user",
-  },
-  mutations: {
-    setLoginState(state, { isLoggedIn, username, userId, usertype }) {
-      state.isLoggedIn = isLoggedIn;
-      state.username = username;
-      state.userId = userId;
-      state.usertype = usertype;
+        isLoggedIn: !!localStorage.getItem("token"),
+        authUser: {
+            username: localStorage.getItem("username") || "",
+            userId: localStorage.getItem('userId') || null,
+            usertype: localStorage.getItem("usertype") || "user",
+            token: localStorage.getItem("token") || null
+        }
     },
-  },
-  actions: {
-    login({ commit }, user) {
-      localStorage.setItem("username", user.username);
-      localStorage.setItem('userId', user.userId);
-      localStorage.setItem("usertype", user.usertype);
-      commit("setLoginState", { isLoggedIn: true, username: user.username,userID: user.userId, role: user.usertype });
+    mutations: {
+        SET_AUTH_USER(state, userData) {
+            state.isLoggedIn = true;
+            state.authUser = {
+                username: userData.username,
+                userId: userData.userId,
+                usertype: userData.usertype,
+                token: userData.token
+            };
+        },
+        CLEAR_AUTH(state) {
+            state.isLoggedIn = false;
+            state.authUser = {
+                username: "",
+                userId: null,
+                usertype: "user",
+                token: null
+            };
+        }
     },
-    logout({ commit }) {
-      // Rimuovi il nome utente dal localStorage e aggiorna lo stato
-      localStorage.removeItem("username");
-      localStorage.removeItem('userId');
-      localStorage.removeItem("usertype");
-      localStorage.removeItem("token");
-      commit("setLoginState", { isLoggedIn: false, username: "",userId: '', usertype: "user" });
+    actions: {
+        login({ commit }, { token, userId, username, usertype }) {
+            // Salva nel localStorage
+            localStorage.setItem("token", token);
+            localStorage.setItem("userId", userId);
+            localStorage.setItem("username", username);
+            localStorage.setItem("usertype", usertype);
+            
+            // Commit alla mutation
+            commit("SET_AUTH_USER", {
+                token,
+                userId,
+                username,
+                usertype
+            });
+        },
+        logout({ commit }) {
+            // Rimuovi dal localStorage
+            localStorage.removeItem("token");
+            localStorage.removeItem("userId");
+            localStorage.removeItem("username");
+            localStorage.removeItem("usertype");
+            
+            // Commit alla mutation
+            commit("CLEAR_AUTH");
+        }
     },
-  },
-})
+    getters: {
+        currentUser: state => state.authUser,
+        isAuthenticated: state => state.isLoggedIn
+    }
+});

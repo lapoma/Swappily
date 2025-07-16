@@ -117,43 +117,42 @@ export default {
     pushPath(path) {
       this.$router.push(path);
     },
-    async handleLogin() {
-      this.error = "";
-      if (!this.username || !this.password) {
-        this.error = "Incomplete fields";
-        return;
-      }
-
-      const authData = {
-        username: this.username,
-        password: this.password,
-      };
-
-      try {
-        let response;
-        response = await axios.post(API_URL + `/authentications`, authData);
-        const user = await axios.get(API_URL + `/users/${response.data.id}`);
-
-        console.log(response);
-
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("userId", user.data._id);
-        localStorage.setItem("username", user.data.username);
-        localStorage.setItem("usertype", user.data.usertype);
-
-        //this.$store.dispatch("login",{username: this.username, usertype: this.usertype});
-        console.log(user.data.usertype);
-        alert("Login effettuato con successo!");
-        if (user.data.usertype === "user") {
-          const id = localStorage.getItem("userId");
-          this.$router.push(`/UserProfile1/${id}`);
-        } else {
-          this.$router.push("/OperatorPage");
+ async handleLogin() {
+        this.error = "";
+        if (!this.username || !this.password) {
+            this.error = "Inserisci username e password";
+            return;
         }
-      } catch (error) {
-        console.log(error);
-        this.error = error.response?.data?.message || "Errore nel Login. Riprova.";
-      }
+
+        try {
+            const response = await axios.post(API_URL + `/authentications`, {
+                username: this.username,
+                password: this.password
+            });
+
+            // Usa i dati dalla risposta direttamente
+            const { token, id: userId, username, usertype } = response.data;
+
+            // Dispatch dell'azione di login
+            await this.$store.dispatch("login", {
+                token,
+                userId,
+                username,
+                usertype
+            });
+
+            // Reindirizzamento basato sul tipo utente
+            if (usertype === 'operator') {
+                await this.$router.push("/OperatorPage");
+            } else {
+                await this.$router.push(`/UserProfile1/${userId}`);
+            }
+
+        } catch (error) {
+            console.error("Login error:", error);
+            this.error = error.response?.data?.message || 
+                        "Credenziali non valide. Riprova.";
+        }
     },
     // NUOVA FUNZIONE: Gestisce il click su "Reimposta password"
     async handleForgotPassword() {
