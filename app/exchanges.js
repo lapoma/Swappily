@@ -6,17 +6,17 @@ const Listing = require('./models/listing');
 const jwt = require('jsonwebtoken');
 
 const authenticateJWT = (req, res, next) => {
-    const authHeader = req.headers['x-access-token'] || req.query.token;
-    
+    const authHeader = req.headers['token'] || req.query.token;
+
     if (!authHeader) {
         return res.status(403).json({ error: 'Token mancante' });
     }
 
-    jwt.verify(authHeader, process.env.JWT_SECRET, (err, user) => {
+    jwt.verify(authHeader, process.env.SUPER_SECRET, (err, user) => {
         if (err) {
             return res.status(401).json({ error: 'Token non valido' });
         }
-        req.userId = user.userId;
+        req.userId = user.id;
         next();
     });
 };
@@ -38,7 +38,9 @@ router.post('/listing/:listingId', authenticateJWT, async (req, res) => {
         ]);
 
         if (!requestedListing || !offeredListingDoc || !receiverUser) {
+            console.log("Mancano campi");
             return res.status(404).json({ error: 'Listing o utente non trovato' });
+
         }
 
         if (offeredListingDoc.userId.toString() !== req.userId) {
@@ -50,7 +52,7 @@ router.post('/listing/:listingId', authenticateJWT, async (req, res) => {
             receiver: receiver,
             offeredListing: offeredListing,
             requestedListing: listingId,
-            status: 'pending',
+            status: 'Pending',
             date: new Date()
         });
 

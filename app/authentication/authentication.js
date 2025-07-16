@@ -1,14 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');       
-const jwt = require('jsonwebtoken');         // Per creare i token
-const bcrypt = require('bcrypt');            // Per confrontare password criptate
+const jwt = require('jsonwebtoken');         
+const bcrypt = require('bcrypt');            
 
-// ---------------------------------------------------------
-// Rotta per autenticare e generare un nuovo token
-// ---------------------------------------------------------
+
 router.post('', async function (req, res) {
-    // 1. Controllo input
     if (!req.body.username || !req.body.password) {
         return res.status(400).json({
             success: false,
@@ -18,7 +15,6 @@ router.post('', async function (req, res) {
 
     let user;
 
-    // 2. Trova l'utente nel database tramite username
     try {
         user = await User.findOne({ username: req.body.username }).exec();
     } catch (err) {
@@ -29,7 +25,6 @@ router.post('', async function (req, res) {
         });
     }
 
-    // 3. Utente non trovato
     if (!user) {
         return res.status(404).json({
             success: false,
@@ -37,7 +32,6 @@ router.post('', async function (req, res) {
         });
     }
 
-    // 4. Verifica della password con bcrypt
     const passwordMatch = await bcrypt.compare(req.body.password, user.password);
     if (!passwordMatch) {
         return res.status(401).json({
@@ -50,26 +44,25 @@ router.post('', async function (req, res) {
         return res.status(401).json({ success: false, message: 'Authentication failed: Invalid credentials' });
     }
 
-
-    // 5. Tutto ok → crea token
     var payload = {
         id: user._id,
-        username: user.username
+        username: user.username,
+        uertype: user.usertype
     };
 
     var options = {
-        expiresIn: 86400 // 24 ore
+        expiresIn: 86400 
     };
 
     const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
 
-    // 6. Risposta al client
     res.json({
         success: true,
         message: 'Ecco il tuo token!',
         token: token,
         id: user._id,
         username: user.username,
+        usertype: user.usertype,
         self: "api/v1/" + user._id
     });
 });

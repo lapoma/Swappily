@@ -25,7 +25,7 @@ function checkIfEmailInString(email) {
 }
 
 // GET /me
-router.get('/me', tokenChecker, async (req, res) => {
+router.get('/me',tokenChecker, async (req, res) => {
     try {
       const user = await User.findById(req.loggedUser.id);
       if (!user) return res.status(404).json({ error: 'User not found' });
@@ -41,7 +41,7 @@ router.get('/me', tokenChecker, async (req, res) => {
     }
 });
 
-// GET utenti (all or by username)
+// GET utenti 
 router.get('', async (req, res) => {
   try {
     let users;
@@ -56,7 +56,7 @@ router.get('', async (req, res) => {
 
     users = users.map(user => ({
         self: '/api/v1/users/' + user._id,
-        userId: user.userId,
+        _id: user._id,
         username: user.username,
         email: user.email,
         name: user.name,
@@ -81,7 +81,7 @@ router.get('', async (req, res) => {
   }
 });
 
-// GET user by ID
+// GET user per ID
 router.get('/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -89,7 +89,7 @@ router.get('/:id', async (req, res) => {
 
     res.status(200).json({
         self: '/api/v1/users/' + user._id,
-        userId: user.userId,
+        _id: user._id,
         username: user.username,
         email: user.email,
         name: user.name,
@@ -112,10 +112,9 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST new user
+// POST nuovo user
 router.post('', async (req, res) => {
     const { 
-        userId,
         username,
         email,
         name,
@@ -164,7 +163,6 @@ router.post('', async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({
-            userId,
             username,
             email,
             name,
@@ -188,7 +186,7 @@ router.post('', async (req, res) => {
         res.location(`/api/v1/users/${savedUser._id}`);
         res.status(201).json({
             self: `/api/v1/users/${savedUser._id}`,
-            userId: savedUser.userId,
+            userId: savedUser._id,
             username: savedUser.username,
             email: savedUser.email,
             name: savedUser.name,
@@ -266,7 +264,7 @@ router.put('/:id', async (req, res) => {
   
         res.location(`/api/v1/users/${updatedUser._id}`).status(200).json({
             self: `/api/v1/users/${updatedUser._id}`,
-            userId: updatedUser.userId,
+            userId: updatedUser._id,
             username: updatedUser.username,
             email: updatedUser.email,
             name: updatedUser.name,
@@ -294,7 +292,7 @@ router.delete('/:id', tokenChecker, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ error: 'User not found' });
-        await user.remove();
+        await user.deleteOne();
         res.status(200).json(user);
     } catch (error) {
         console.error('Error deleting user:', error);
@@ -310,49 +308,46 @@ router.post('/:userId/favorites/:listingId', async (req, res) => {
     
         const listing = await Listing.findById(req.params.listingId);
         if (!listing) return res.status(404).json({ error: 'Listing not found' });
-    
-        // Controlla se il listing è già nei preferiti
-        if (!user.favorites.includes(req.params.listingId)) {
-            user.favorites.push(req.params.listingId);
+  
+        if (!user.favorite.includes(req.params.listingId)) {
+            user.favorite.push(req.params.listingId);
             await user.save();
         }
-    
-        // Restituisci la lista aggiornata dei preferiti
-        res.status(200).json(user.favorites);
+
+        res.status(200).json(user.favorite);
     } catch (error) {
         console.error('Error adding favorite:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-  //rimuovi dai preferiti
+  // Rimuovi dai preferiti
   router.delete('/:userId/favorites/:listingId', async (req, res) => {
     try {
         const user = await User.findById(req.params.userId);
         if (!user) return res.status(404).json({ error: 'User not found' });
     
-        // Filtra l'ID da rimuovere
-        user.favorites = user.favorites.filter(
+        user.favorite = user.favorite.filter(
             fav => fav.toString() !== req.params.listingId
         );
         
         await user.save();
-        res.status(200).json(user.favorites);
+        res.status(200).json(user.favorite);
     } catch (error) {
         console.error('Error removing favorite:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-  //ottieni preferiti
+  // Ottieni preferiti
   router.get('/:userId/favorites', async (req, res) => {
     try {
         const user = await User.findById(req.params.userId)
-            .populate('favorites', 'title price images');
+            .populate('favorite', 'title description listing_url');
     
         if (!user) return res.status(404).json({ error: 'User not found' });
     
-        res.status(200).json(user.favorites || []);
+        res.status(200).json(user.favorite || []);
     } catch (error) {
         console.error('Error getting favorites:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -370,16 +365,16 @@ router.post('/:userId/block/:blockedUserId', async (req, res) => {
       return res.status(400).json({ error: 'Non puoi bloccare te stesso' });
     }
     
-    if (user.blockedUsers.includes(req.params.blockedUserId)) {
+    if (user.blocklist.includes(req.params.blockedUserId)) {
       return res.status(400).json({ error: 'Utente già bloccato' });
     }
     
-    user.blockedUsers.push(req.params.blockedUserId);
+    user.blocklist.push(req.params.blockedUserId);
     await user.save();
     
     res.status(200).json({ 
       message: 'Utente bloccato con successo',
-      blockedUsers: user.blockedUsers 
+      blocklist: user.blocklist
     });
   } catch (error) {
     console.error('Errore nel bloccare utente:', error);
@@ -393,18 +388,18 @@ router.delete('/:userId/block/:blockedUserId', async (req, res) => {
     const user = await User.findById(req.params.userId);
     if (!user) return res.status(404).json({ error: 'Utente non trovato' });
     
-    if (!user.blockedUsers.includes(req.params.blockedUserId)) {
+    if (!user.blocklist.includes(req.params.blockedUserId)) {
       return res.status(400).json({ error: 'Utente non bloccato' });
     }
 
-    user.blockedUsers = user.blockedUsers.filter(
+    user.blocklist = user.blocklist.filter(
       id => id.toString() !== req.params.blockedUserId
     );
     
     await user.save();
     res.status(200).json({ 
       message: 'Utente sbloccato con successo',
-      blockedUsers: user.blockedUsers 
+      blocklist: user.blocklist 
     });
   } catch (error) {
     console.error('Errore nello sbloccare utente:', error);
@@ -416,11 +411,11 @@ router.delete('/:userId/block/:blockedUserId', async (req, res) => {
 router.get('/:userId/blocked', async (req, res) => {
   try {
     const user = await User.findById(req.params.userId)
-      .populate('blockedUsers', 'username name surname');
+      .populate('blocklist', 'username name surname');
     
     if (!user) return res.status(404).json({ error: 'Utente non trovato' });
     
-    res.status(200).json(user.blockedUsers || []);
+    res.status(200).json(user.blocklist || []);
   } catch (error) {
     console.error('Errore nel recuperare utenti bloccati:', error);
     res.status(500).json({ error: 'Errore del server' });

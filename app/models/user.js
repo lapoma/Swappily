@@ -2,9 +2,6 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 module.exports = mongoose.model('User', new Schema({
-    userId: {
-        type: String
-    },
     name: {
         type: String,
         required: true
@@ -37,7 +34,8 @@ module.exports = mongoose.model('User', new Schema({
     },
     phone: {
         type: String,
-        unique: true
+        unique: true,
+        default: ""
     },
     favorite: { 
         type: [mongoose.Schema.Types.ObjectId], 
@@ -73,11 +71,12 @@ module.exports = mongoose.model('User', new Schema({
     },
     description: {
         type: String,
-        minlength: 3,
+        minlength: 0,
         maxlength: 2000,
         default: ""
     },
     profile_url: {
-        type: String
+        type: String,
+        default: ""
     }
 }));

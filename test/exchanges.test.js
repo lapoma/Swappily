@@ -22,7 +22,7 @@ describe('Exchange API', () => {
         token = 'valid.token';
         jwt.verify.mockImplementation((tokenValue, secret, callback) => {
             if (tokenValue === 'valid.token') {
-                callback(null, { userId: 'user1' });
+                callback(null, { id: 'user1' });
             } else {
                 callback(new Error('Invalid token'));
             }
@@ -43,12 +43,12 @@ describe('Exchange API', () => {
 
             User.findById.mockResolvedValue({ _id: 'user2' });
 
-            const mockSave = jest.fn().mockResolvedValue({ _id: 'exchange1', status: 'pending', date: new Date() });
-            Exchange.mockImplementation(() => ({ save: mockSave, _id: 'exchange1', sender: 'user1', receiver: 'user2', offeredListing: 'listing2', requestedListing: 'listing1', status: 'pending', date: new Date() }));
+            const mockSave = jest.fn().mockResolvedValue({ _id: 'exchange1', status: 'Pending', date: new Date() });
+            Exchange.mockImplementation(() => ({ save: mockSave, _id: 'exchange1', sender: 'user1', receiver: 'user2', offeredListing: 'listing2', requestedListing: 'listing1', status: 'Pending', date: new Date() }));
 
             const res = await request(app)
                 .post('/api/v1/exchanges/listing/listing1')
-                .set('x-access-token', token)
+                .set('token', token)
                 .send({ offeredListing: 'listing2', receiver: 'user2' });
 
             expect(res.statusCode).toBe(201);
@@ -63,7 +63,7 @@ describe('Exchange API', () => {
 
             const res = await request(app)
                 .post('/api/v1/exchanges/listing/listing1')
-                .set('x-access-token', token)
+                .set('token', token)
                 .send({ offeredListing: 'listing2', receiver: 'user2' });
 
             expect(res.statusCode).toBe(403);
@@ -71,7 +71,7 @@ describe('Exchange API', () => {
         it('should return 400 if required fields are missing', async () => {
         const res = await request(app)
             .post('/api/v1/exchanges/listing/listing1')
-            .set('x-access-token', token)
+            .set('token', token)
             .send({});
         
         expect(res.statusCode).toBe(400);
@@ -84,7 +84,7 @@ describe('Exchange API', () => {
 
     const res = await request(app)
         .post('/api/v1/exchanges/listing/listing1')
-        .set('x-access-token', 'invalid.token')
+        .set('token', 'invalid.token')
         .send({ offeredListing: 'listing2', receiver: 'user2' });
 
     expect(res.statusCode).toBe(401);
@@ -96,7 +96,7 @@ describe('Exchange API', () => {
 
         const res = await request(app)
             .post('/api/v1/exchanges/listing/invalid_listing')
-            .set('x-access-token', token)
+            .set('token', token)
             .send({ offeredListing: 'listing2', receiver: 'user2' });
 
         expect(res.statusCode).toBe(404);
@@ -110,7 +110,7 @@ describe('Exchange API', () => {
 
         const res = await request(app)
             .post('/api/v1/exchanges/listing/listing1')
-            .set('x-access-token', token)
+            .set('token', token)
             .send({ offeredListing: 'invalid_listing', receiver: 'user2' });
 
         expect(res.statusCode).toBe(404);
@@ -122,7 +122,7 @@ describe('Exchange API', () => {
 
         const res = await request(app)
             .post('/api/v1/exchanges/listing/listing1')
-            .set('x-access-token', token)
+            .set('token', token)
             .send({ offeredListing: 'listing2', receiver: 'invalid_user' });
 
         expect(res.statusCode).toBe(404);
@@ -144,14 +144,14 @@ describe('Exchange API', () => {
 
     const res = await request(app)
         .post('/api/v1/exchanges/listing/listing1')
-        .set('x-access-token', token)
+        .set('token', token)
         .send({ offeredListing: 'listing2', receiver: 'user2' });
 
     expect(res.statusCode).toBe(500);
 });
 });
 
-// 
+
 
     describe('GET /:exchangeId', () => {
       
@@ -167,7 +167,7 @@ describe('Exchange API', () => {
                                 receiver: { _id: 'user2', username: 'user2' },
                                 offeredListing: { _id: 'listing1', title: 'Item 1' },
                                 requestedListing: { _id: 'listing2', title: 'Item 2' },
-                                status: 'pending',
+                                status: 'Pending',
                                 date: new Date()
                             })
                         })
@@ -208,10 +208,10 @@ describe('Exchange API', () => {
   expect(res.statusCode).toBe(200);
   expect(res.body[0].status).toBe('accepted');
 });
-it('should return exchanges with status "pending"', async () => {
+it('should return exchanges with status "Pending"', async () => {
   const mockExchange = {
-    _id: 'exPending',
-    status: 'pending',
+    _id: 'expending',
+    status: 'Pending',
     sender: { _id: 'user1', username: 'User One' },
     receiver: { _id: 'user2', username: 'User Two' },
     offeredListing: { _id: 'listing3', title: 'Listing 3' },
@@ -220,7 +220,7 @@ it('should return exchanges with status "pending"', async () => {
   };
 
   Exchange.find.mockImplementation((query) => {
-    expect(query.status).toBe('pending');
+    expect(query.status).toBe('Pending');
     return {
       populate: jest.fn().mockReturnValue({
         populate: jest.fn().mockReturnValue({
@@ -232,10 +232,10 @@ it('should return exchanges with status "pending"', async () => {
     };
   });
 
-  const res = await request(app).get('/api/v1/exchanges?status=pending');
+  const res = await request(app).get('/api/v1/exchanges?status=Pending');
 
   expect(res.statusCode).toBe(200);
-  expect(res.body[0].status).toBe('pending');
+  expect(res.body[0].status).toBe('Pending');
 });
 it('should return exchanges with status "rejected"', async () => {
   const mockExchange = {
@@ -280,7 +280,7 @@ it('should return exchanges with status "rejected"', async () => {
                                     receiver: { _id: 'user2', username: 'user2' },
                                     offeredListing: { _id: 'listing1', title: 'Item 1' },
                                     requestedListing: { _id: 'listing2', title: 'Item 2' },
-                                    status: 'pending',
+                                    status: 'Pending',
                                     date: new Date()
                                 }
                             ])
@@ -354,12 +354,12 @@ it('should return 500 on database error', async () => {
     });
     
 
-    describe('PUT /:exchangeId', () => {
+    describe('PUT/:exchangeId', () => {
         it('should update exchange status', async () => {
             const exchange = {
                 _id: 'ex1',
                 receiver: 'user1',
-                status: 'pending',
+                status: 'Pending',
                 save: jest.fn().mockResolvedValue(true)
             };
 
@@ -367,7 +367,7 @@ it('should return 500 on database error', async () => {
 
             const res = await request(app)
                 .put('/api/v1/exchanges/ex1')
-                .set('x-access-token', token)
+                .set('token', token)
                 .send({ status: 'accepted' });
 
             expect(res.statusCode).toBe(200);
@@ -378,7 +378,7 @@ it('should return 500 on database error', async () => {
         const exchange = {
             _id: 'ex1',
             receiver: 'user1',
-            status: 'pending',
+            status: 'Pending',
             save: jest.fn()
         };
 
@@ -386,7 +386,7 @@ it('should return 500 on database error', async () => {
 
         const res = await request(app)
             .put('/api/v1/exchanges/ex1')
-            .set('x-access-token', token)
+            .set('token', token)
             .send({ status: 'invalid_status' });
 
         expect(res.statusCode).toBe(400);
@@ -396,7 +396,7 @@ it('should return 500 on database error', async () => {
         const exchange = {
             _id: 'ex1',
             receiver: 'user2', 
-            status: 'pending',
+            status: 'Pending',
             save: jest.fn()
         };
 
@@ -404,7 +404,7 @@ it('should return 500 on database error', async () => {
 
         const res = await request(app)
             .put('/api/v1/exchanges/ex1')
-            .set('x-access-token', token)
+            .set('token', token)
             .send({ status: 'accepted' });
 
         expect(res.statusCode).toBe(403);
@@ -415,7 +415,7 @@ it('should return 500 on database error', async () => {
 
         const res = await request(app)
             .put('/api/v1/exchanges/invalid_exchange')
-            .set('x-access-token', token)
+            .set('token', token)
             .send({ status: 'accepted' });
 
         expect(res.statusCode).toBe(404);
@@ -425,7 +425,7 @@ it('should return 500 on database error', async () => {
         const exchange = {
             _id: 'ex1',
             receiver: 'user1',
-            status: 'pending',
+            status: 'Pending',
             save: jest.fn().mockRejectedValue(new Error('DB error'))
         };
 
@@ -433,7 +433,7 @@ it('should return 500 on database error', async () => {
 
         const res = await request(app)
             .put('/api/v1/exchanges/ex1')
-            .set('x-access-token', token)
+            .set('token', token)
             .send({ status: 'accepted' });
 
         expect(res.statusCode).toBe(500);
@@ -452,7 +452,7 @@ it('should return 500 on database error', async () => {
 
             const res = await request(app)
                 .delete('/api/v1/exchanges/ex1')
-                .set('x-access-token', token);
+                .set('token', token);
 
             expect(res.statusCode).toBe(204);
         });
@@ -466,7 +466,7 @@ it('should return 500 on database error', async () => {
 
             const res = await request(app)
                 .delete('/api/v1/exchanges/ex1')
-                .set('x-access-token', token);
+                .set('token', token);
 
             expect(res.statusCode).toBe(403);
         });
@@ -474,14 +474,14 @@ it('should return 500 on database error', async () => {
         Exchange.findById.mockResolvedValue({
             _id: 'ex1',
             sender: 'user2',
-            receiver: 'user1' // Matches token user
+            receiver: 'user1' 
         });
 
         Exchange.findByIdAndDelete.mockResolvedValue(true);
 
         const res = await request(app)
             .delete('/api/v1/exchanges/ex1')
-            .set('x-access-token', token);
+            .set('token', token);
 
         expect(res.statusCode).toBe(204);
     });
@@ -491,7 +491,7 @@ it('should return 500 on database error', async () => {
 
         const res = await request(app)
             .delete('/api/v1/exchanges/invalid_exchange')
-            .set('x-access-token', token);
+            .set('token', token);
 
         expect(res.statusCode).toBe(404);
     });
@@ -506,7 +506,7 @@ it('should return 500 on database error', async () => {
 
         const res = await request(app)
             .delete('/api/v1/exchanges/ex1')
-            .set('x-access-token', token);
+            .set('token', token);
 
         expect(res.statusCode).toBe(500);
     });
@@ -523,7 +523,7 @@ it('should return 500 on database error', async () => {
 
     const res = await request(app)
         .delete('/api/v1/exchanges/ex1')
-        .set('x-access-token', 'invalid.token');
+        .set('token', 'invalid.token');
 
     expect(res.statusCode).toBe(401);
     expect(res.body.error).toBeDefined();

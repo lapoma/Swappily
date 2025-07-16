@@ -1,12 +1,10 @@
 const jwt = require('jsonwebtoken');
 
 function tokenChecker(req, res, next) {
-  // Leggi prima dall'header 'token', poi da query.token
   const token = req.headers['token'] || req.query.token;
   console.log('[tokenChecker] token:', token);
 
   if (!token) {
-    console.log('[tokenChecker] no token provided');
     return res.status(401).json({ message: 'No token provided.' });
   }
 
@@ -17,10 +15,9 @@ function tokenChecker(req, res, next) {
             message: 'Failed to authenticate token.'
         });
     }
-    // Attach the decoded user id to the request object
     req.loggedUser = decoded;
     next();
-});
-}
+  });
+};
 
 module.exports = tokenChecker;

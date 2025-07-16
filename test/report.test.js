@@ -16,9 +16,7 @@ describe('Report API', () => {
 
   afterEach(() => jest.clearAllMocks());
 
-  // --- POST TESTS ---
-
-  // 1. Crea un report verso uno user
+  // POST report
   it('POST report to user - 201 Created', async () => {
     User.findById.mockImplementation(id => Promise.resolve({ _id: id }));
     Listing.findById.mockResolvedValue(null);
@@ -39,7 +37,7 @@ describe('Report API', () => {
     expect(res.body.listing).toBeNull();
   });
 
-  // 2. Crea un report verso un listing
+  // Creazione report per un listing
   it('POST report to listing - 201 Created', async () => {
     User.findById.mockImplementation(id => Promise.resolve({ _id: id }));
     Listing.findById.mockResolvedValue({ _id: 'listing1' });
@@ -60,7 +58,7 @@ describe('Report API', () => {
     expect(res.body.listing).toBe('listing1');
   });
 
-  // 3. Crea un report generico (richiesta di supporto)
+  // Creazione report generico 
   it('POST support request (no reportee or listing) - 201 Created', async () => {
     User.findById.mockResolvedValue({ _id: 'user1' });
     Report.prototype.save = jest.fn().mockResolvedValue({
@@ -71,7 +69,7 @@ describe('Report API', () => {
 
     const res = await request(app)
       .post('/api/v1/reports')
-      .send({ ...base }); // Nessun reportee o listing
+      .send({ ...base }); 
 
     expect(res.status).toBe(201);
     expect(res.body).toHaveProperty('id', 'reportSupport');
@@ -79,7 +77,7 @@ describe('Report API', () => {
     expect(res.body.listing).toBeNull();
   });
 
-  // 4. Errore se vengono forniti sia reportee che listing (caso vietato)
+  // Errore se vengono forniti sia reportee che listing 
   it('POST both reportee and listing - 400 Bad Request', async () => {
     const res = await request(app)
       .post('/api/v1/reports')
@@ -89,7 +87,7 @@ describe('Report API', () => {
     expect(res.body.error).toMatch(/cannot report both/i);
   });
 
-  // 5. Errore se manca il testo
+  // Manca il testo
   it('POST with missing text - 400 Bad Request', async () => {
     const res = await request(app)
       .post('/api/v1/reports')
@@ -98,7 +96,7 @@ describe('Report API', () => {
     expect(res.status).toBe(400);
   });
 
-  // 6. Errore se il testo è troppo lungo
+  // Testo troppo lungo
   it('POST with too long text - 400 Bad Request', async () => {
     const longText = 'a'.repeat(2001);
 
@@ -109,7 +107,7 @@ describe('Report API', () => {
     expect(res.status).toBe(400);
   });
 
-  // 7. Errore se il reporter non esiste
+  // Il reporter non esiste
   it('POST - 404 Reporter not found', async () => {
     User.findById.mockResolvedValueOnce(null);
 
@@ -121,7 +119,7 @@ describe('Report API', () => {
     expect(res.body.error).toMatch(/reporter/i);
   });
 
-  // 8. Errore se il reportee non esiste
+  // Il reportee non esiste
   it('POST - 404 Reportee not found', async () => {
     User.findById.mockImplementation(id =>
       Promise.resolve(id === 'user1' ? { _id: id } : null)
@@ -135,7 +133,7 @@ describe('Report API', () => {
     expect(res.body.error).toMatch(/reportee/i);
   });
 
-  // 9. Errore se il listing non esiste
+  // Listing non esiste
   it('POST - 404 Listing not found', async () => {
     User.findById.mockResolvedValue({ _id: 'user1' });
     Listing.findById.mockResolvedValue(null);
@@ -148,7 +146,7 @@ describe('Report API', () => {
     expect(res.body.error).toMatch(/listing/i);
   });
 
-  // 10. Errore generico del database
+  // Server error
   it('POST - 500 Internal Server Error', async () => {
     User.findById.mockResolvedValue({ _id: 'user1' });
     Listing.findById.mockResolvedValue({ _id: 'listing1' });
@@ -161,9 +159,7 @@ describe('Report API', () => {
     expect(res.status).toBe(500);
   });
 
-  // --- GET TESTS ---
-
-  // 11. Recupera report indirizzati a un user
+  // GET report indirizzati a uno user
   it('GET reports for user - 200 OK', async () => {
     User.findById.mockResolvedValue({ _id: 'user2' });
     Report.find.mockResolvedValue([
@@ -183,7 +179,7 @@ describe('Report API', () => {
     expect(res.body[0].text).toBe('Offensive');
   });
 
-  // 12. Nessun report trovato
+  // Nessun report trovato
   it('GET - 404 No reports found', async () => {
     User.findById.mockResolvedValue({ _id: 'user2' });
     Report.find.mockResolvedValue([]);
@@ -192,7 +188,7 @@ describe('Report API', () => {
     expect(res.status).toBe(404);
   });
 
-  // 13. Utente non trovato nella GET
+  // Utente non trovato 
   it('GET - 404 User not found', async () => {
     User.findById.mockResolvedValue(null);
 
@@ -200,7 +196,7 @@ describe('Report API', () => {
     expect(res.status).toBe(404);
   });
 
-  // 14. Errore del database nella GET
+  // Server error
   it('GET - 500 DB error', async () => {
     User.findById.mockResolvedValue({ _id: 'user2' });
     Report.find.mockRejectedValue(new Error('DB error'));
@@ -209,9 +205,7 @@ describe('Report API', () => {
     expect(res.status).toBe(500);
   });
 
-  // --- DELETE TESTS ---
-
-  // 15. Eliminazione di un report esistente
+  // DELETE report
   it('DELETE report - 204 No Content', async () => {
     Report.findByIdAndDelete.mockResolvedValue({ _id: 'report1' });
 
@@ -219,14 +213,14 @@ describe('Report API', () => {
     expect(res.status).toBe(204);
   });
 
-  // 16. Report non trovato durante eliminazione
+  // Report non trovato durante eliminazione
   it('DELETE report not found - 404 Not Found', async () => {
     Report.findByIdAndDelete.mockResolvedValue(null);
 
     const res = await request(app).delete('/api/v1/reports/unknown');
     expect(res.status).toBe(404);
   });
-  // 17. Errore del database durante DELETE
+  // Server error
 it('DELETE - 500 Internal Server Error', async () => {
   Report.findByIdAndDelete = jest.fn().mockRejectedValue(new Error('DB error'));
 

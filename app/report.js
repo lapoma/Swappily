@@ -4,7 +4,7 @@ const Report = require('./models/report');
 const User = require('./models/user');
 const Listing = require('./models/listing');
 
-//estrae ID dall'URL
+// Estrae ID dall'URL
 function extractIdFromUrl(url) {
   const parts = url.split('/');
   return parts[parts.length - 1];
@@ -35,7 +35,6 @@ router.post('/', async (req, res) => {
       text: text.trim()
     };
 
-    // Caso 1: segnalazione contro un utente
     if (hasReportee) {
       const reporteeId = extractIdFromUrl(reportee);
       const reporteeExists = await User.findById(reporteeId);
@@ -43,7 +42,7 @@ router.post('/', async (req, res) => {
       reportData.reporteeId = reporteeId;
     }
 
-    // Caso 2: segnalazione contro un listing
+    // Segnalazione di un listing
     if (hasListing) {
       const listingId = extractIdFromUrl(listing);
       const listingExists = await Listing.findById(listingId);
@@ -51,9 +50,8 @@ router.post('/', async (req, res) => {
       reportData.listingId = listingId;
     }
 
-    // Caso 3: segnalazione generica
+    // Segnalazione generica
     if (!hasReportee && !hasListing) {
-      // Nessun ulteriore controllo necessario
     }
 
     const report = new Report(reportData);
@@ -68,13 +66,31 @@ router.post('/', async (req, res) => {
     });
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
+router.get('', async(req,res)=>{
+  try {
+    const reports = await Report.find();
+    const formatted = reports.map(r => ({
+      id: r._id,
+      reporter: r.reporterId,
+      reportee: r.reporteeId ?? null,
+      listing: r.listingId ?? null,
+      text: r.text
+    }));
+    res.status(200).json(formatted);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+})
+
 // GET /api/v1/reports/:id
 router.get('/:id', async (req, res) => {
   try {
+
     const userId = req.params.id;
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ error: 'User not found' });
@@ -99,6 +115,7 @@ router.get('/:id', async (req, res) => {
 // DELETE /api/v1/reports/:id
 router.delete('/:id', async (req, res) => {
   try {
+    console.log(req.params.id)
     const report = await Report.findByIdAndDelete(req.params.id);
     if (!report) return res.status(404).json({ error: 'Report not found' });
     res.status(204).send();

@@ -7,26 +7,21 @@ const User = require('./models/user');
 router.post('', async (req, res) => {
   const { reviewer, reviewed, text } = req.body;
 
-  // Controllo campi obbligatori
   if (!reviewer || !reviewed || !text) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  // Validazione del testo
   if (typeof text !== 'string' || text.trim() === '') {
     return res.status(400).json({ error: '"text" must be a non-empty string' });
   }
 
-  // Blocca l’autorecensione
   if (reviewer === reviewed) {
     return res.status(400).json({ error: 'You cannot review yourself' });
   }
-  // Verifica lunghezza testo
         if (req.body.text.length > 2000) {
             return res.status(400).json({ error: 'Text too long (max 2000 chars)' });
         }
 
-  // Creazione dell’istanza Review
   const review = new Review({
     reviewer,
     reviewed,
@@ -97,4 +92,3 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
-
