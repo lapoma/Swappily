@@ -50,11 +50,11 @@ router.post('', async function (req, res) {
         return res.status(401).json({ success: false, message: 'Authentication failed: Invalid credentials' });
     }
 
-
     // 5. Tutto ok → crea token
     var payload = {
         id: user._id,
-        username: user.username
+        username: user.username,
+        uertype: user.usertype
     };
 
     var options = {
@@ -70,6 +70,7 @@ router.post('', async function (req, res) {
         token: token,
         id: user._id,
         username: user.username,
+        usertype: user.usertype,
         self: "api/v1/" + user._id
     });
 });
