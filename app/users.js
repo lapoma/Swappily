@@ -294,7 +294,7 @@ router.delete('/:id', tokenChecker, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ error: 'User not found' });
-        await user.deleteOne();
+        await user.remove();
         res.status(200).json(user);
     } catch (error) {
         console.error('Error deleting user:', error);
@@ -370,16 +370,16 @@ router.post('/:userId/block/:blockedUserId', async (req, res) => {
       return res.status(400).json({ error: 'Non puoi bloccare te stesso' });
     }
     
-    if (user.blockedUsers.includes(req.params.blockedUserId)) {
+    if (user.blocklist.includes(req.params.blockedUserId)) {
       return res.status(400).json({ error: 'Utente già bloccato' });
     }
     
-    user.blockedUsers.push(req.params.blockedUserId);
+    user.blocklist.push(req.params.blockedUserId);
     await user.save();
     
     res.status(200).json({ 
       message: 'Utente bloccato con successo',
-      blockedUsers: user.blockedUsers 
+      blocklist: user.blocklist
     });
   } catch (error) {
     console.error('Errore nel bloccare utente:', error);
@@ -393,18 +393,18 @@ router.delete('/:userId/block/:blockedUserId', async (req, res) => {
     const user = await User.findById(req.params.userId);
     if (!user) return res.status(404).json({ error: 'Utente non trovato' });
     
-    if (!user.blockedUsers.includes(req.params.blockedUserId)) {
+    if (!user.blocklist.includes(req.params.blockedUserId)) {
       return res.status(400).json({ error: 'Utente non bloccato' });
     }
 
-    user.blockedUsers = user.blockedUsers.filter(
+    user.blocklist = user.blocklist.filter(
       id => id.toString() !== req.params.blockedUserId
     );
     
     await user.save();
     res.status(200).json({ 
       message: 'Utente sbloccato con successo',
-      blockedUsers: user.blockedUsers 
+      blocklist: user.blocklist 
     });
   } catch (error) {
     console.error('Errore nello sbloccare utente:', error);

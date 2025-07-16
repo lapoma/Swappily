@@ -60,47 +60,7 @@ const router = useRouter();
 const route = useRoute();
 
 // Mock data - lista dei propri listing
-const myListings = ref([
-  // { 
-  //   id: 1,
-  //   title: 'Sedia vintage 1', 
-  //   image: 'https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg',
-  //   description: 'Sedia in legno con tessuto originale anni 60' 
-  // },
-  // { 
-  //   id: 2,
-  //   title: 'Lampada industriale 1', 
-  //   image: 'https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg',
-  //   description: 'Lampada stile industriale in metallo' 
-  // },
-  // { 
-  //   id: 3,
-  //   title: 'Vaso in ceramica 1', 
-  //   image: 'https://www.artelegnoshop.it/wp-content/uploads/2020/10/CL32.11-ciotola1-in-legno-di-ulivo.jpg',
-  //   description: 'Vaso artigianale dipinto a mano' 
-  // },
-
-  // { 
-  //   id: 5,
-  //   title: 'Sedia vintage 2', 
-  //   image: 'https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg',
-  //   description: 'Sedia in legno con tessuto originale anni 60' 
-  // },
-  // { 
-  //   id: 6,
-  //   title: 'Lampada industriale', 
-  //   image: 'https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg',
-  //   description: 'Lampada stile industriale in metallo' 
-  // },
-  // { 
-  //   id: 7,
-  //   title: 'Vaso in ceramica', 
-  //   image: 'https://www.artelegnoshop.it/wp-content/uploads/2020/10/CL32.11-ciotola1-in-legno-di-ulivo.jpg',
-  //   description: 'Vaso artigianale dipinto a mano' 
-  // },
- 
-  
-]);
+const myListings = ref([]);
 
 const selectedIndex = ref(null);
 

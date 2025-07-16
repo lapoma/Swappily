@@ -897,7 +897,7 @@ describe('Blocked Users Management', () => {
     test('should return 200 andblock a user successfully', async () => {
       const userMock = {
         _id: testUserId,
-        blockedUsers: [],
+        blocklist: [],
         save: jest.fn().mockResolvedValue(true)
       };
       
@@ -908,7 +908,7 @@ describe('Blocked Users Management', () => {
       
       expect(res.statusCode).toBe(200);
       expect(res.body.message).toBe('Utente bloccato con successo');
-      expect(userMock.blockedUsers).toContain(blockedUserId);
+      expect(userMock.blocklist).toContain(blockedUserId);
       expect(userMock.save).toHaveBeenCalled();
     });
     
@@ -916,7 +916,7 @@ describe('Blocked Users Management', () => {
       // Mock user lookup
       const userMock = {
         _id: testUserId,
-        blockedUsers: [],
+        blocklist: [],
         save: jest.fn()
       };
       userFindByIdMock.mockResolvedValueOnce(userMock); // Add this mock
@@ -931,7 +931,7 @@ describe('Blocked Users Management', () => {
     test('should return 400 when user already blocked', async () => {
       const userMock = {
         _id: testUserId,
-        blockedUsers: [blockedUserId],
+        blocklist: [blockedUserId],
         save: jest.fn()
       };
       
@@ -954,7 +954,7 @@ describe('Blocked Users Management', () => {
     // Update the test
     test('should return 200 and the list of blocked users', async () => {
       const populatedResult = {
-        blockedUsers: [{ 
+        blocklist: [{ 
           _id: blockedUserId, 
           username: 'blockedUser',
           name: 'Blocked',
@@ -976,7 +976,7 @@ describe('Blocked Users Management', () => {
     test('should return 200 and unblock a user successfully', async () => {
       const userMock = {
         _id: testUserId,
-        blockedUsers: [blockedUserId],
+        blocklist: [blockedUserId],
         save: jest.fn().mockResolvedValue(true)
       };
       
@@ -987,14 +987,14 @@ describe('Blocked Users Management', () => {
       
       expect(res.statusCode).toBe(200);
       expect(res.body.message).toBe('Utente sbloccato con successo');
-      expect(userMock.blockedUsers).not.toContain(blockedUserId);
+      expect(userMock.blocklist).not.toContain(blockedUserId);
       expect(userMock.save).toHaveBeenCalled();
     });
     
     test('should return 400 when user not blocked', async () => {
       const userMock = {
         _id: testUserId,
-        blockedUsers: [],
+        blocklist: [],
         save: jest.fn()
       };
       

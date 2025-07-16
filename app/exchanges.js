@@ -4,12 +4,10 @@ const Exchange = require('./models/exchange');
 const User = require('./models/user');
 const Listing = require('./models/listing');
 const jwt = require('jsonwebtoken');
-const tokenChecker = require('./tokenChecker');
 
 const authenticateJWT = (req, res, next) => {
     const authHeader = req.headers['token'] || req.query.token;
 
-    
     if (!authHeader) {
         return res.status(403).json({ error: 'Token mancante' });
     }
@@ -18,14 +16,13 @@ const authenticateJWT = (req, res, next) => {
         if (err) {
             return res.status(401).json({ error: 'Token non valido' });
         }
-        req.userId = user.id;
+        req.userId = user.userId;
         next();
     });
 };
 
-
 // POST /exchange/listing/{listingId}
-router.post('/listing/:listingId', async (req, res) => {
+router.post('/listing/:listingId', authenticateJWT, async (req, res) => {
     try {
         const { listingId } = req.params;
         const { offeredListing, receiver } = req.body;
@@ -40,11 +37,17 @@ router.post('/listing/:listingId', async (req, res) => {
             User.findById(receiver)
         ]);
 
+        console.log("requestedListing: "+requestedListing);
+        console.log("offeredListing: "+ offeredListingDoc);
+        console.log("receiver: "+ receiverUser);
+
         if (!requestedListing || !offeredListingDoc || !receiverUser) {
+            console.log("Mancano campi");
             return res.status(404).json({ error: 'Listing o utente non trovato' });
+
         }
 
-        if (offeredListingDoc.userId.toString() !== req.userId) {
+        if (offeredListingDoc.userId !== req.userId) {
             return res.status(403).json({ error: 'Non sei il proprietario del listing offerto' });
         }
 
