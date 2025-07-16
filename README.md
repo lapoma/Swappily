@@ -19,13 +19,9 @@ Il progetto è stato realizzato con attraverso lo stack **MEVN** (**MongoDB**, *
 ## Deliverables
 A seguire la documentazione del progetto:
 
-[D1]
-[D2]
-[D3]
-[D4]
+[D1] [D2] [D3] [D4]
 
 ## Installazione e setup
-*(optional)*
 
 ### Pre requisiti
 
@@ -45,10 +41,8 @@ npm test
 ## Authors:
 Un progetto di:
 
-[Benedetta Bicego](https://github.com/bennybicego) 
-
-[Marta Lapo](https://github.com/lapoma)
-
-[Soufian Akil](https://github.com/souph) 
+- [Benedetta Bicego](https://github.com/bennybicego) 
+- [Marta Lapo](https://github.com/lapoma)
+- [Soufian Akil](https://github.com/souph) 
 
 
