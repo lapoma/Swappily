@@ -261,18 +261,16 @@ async function blockUser() {
 function reportUser() {
  
 }
-//questa funziona fr
 function shareProfile() {
   console.log('Condividi profilo')
   if (navigator.share) {
     navigator.share({
       title: `Profilo di ${username.value}`,
-      text: `Guarda il profilo di ${username.value} su SwapEase`,
+      text: `Guarda il profilo di ${username.value} su Swappily!`,
       url: window.location.href
     }).catch(err => console.log('Errore nella condivisione:', err))
   } else {
-    // Fallback per browser che non supportano l'API Web Share
-    console.log('Web Share API non supportata')
+   
   }
 }
 

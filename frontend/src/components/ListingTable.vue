@@ -185,6 +185,18 @@ export default {
     }  
   },
   methods: {
+     shareProfile() {
+  console.log('Condividi profilo')
+  if (navigator.share) {
+    navigator.share({
+      title: `Listing su Swappily`,
+      text: `Guarda questo listing!`,
+      url: window.location.href
+    }).catch(err => console.log('Errore nella condivisione:', err))
+  } else {
+    
+  }
+},
     async toggleFavorite(){
             if(!this.isLoggedIn) {
                 alert('You should log in first');
