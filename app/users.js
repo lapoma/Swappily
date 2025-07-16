@@ -416,11 +416,11 @@ router.delete('/:userId/block/:blockedUserId', async (req, res) => {
 router.get('/:userId/blocked', async (req, res) => {
   try {
     const user = await User.findById(req.params.userId)
-      .populate('blockedUsers', 'username name surname');
+      .populate('blocklist', 'username name surname');
     
     if (!user) return res.status(404).json({ error: 'Utente non trovato' });
     
-    res.status(200).json(user.blockedUsers || []);
+    res.status(200).json(user.blocklist || []);
   } catch (error) {
     console.error('Errore nel recuperare utenti bloccati:', error);
     res.status(500).json({ error: 'Errore del server' });

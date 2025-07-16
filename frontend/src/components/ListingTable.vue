@@ -247,7 +247,14 @@ export default {
       this.$router.push('/MessagePage')
     },
     startExchange() {
-      // alert(`Avvia scambio per: ${this.listing.title}`)
+      if (!this.isLoggedIn) {
+        alert('You should log in first');
+        return;
+      }else if(this.listing.userId === localStorage.getItem("userId")) {
+        alert('You cannot exchange your own listing');
+        return;
+      }
+
       this.$router.push(`/ExchangePage/${this.listing.id}`)
     },
     prevImage() {

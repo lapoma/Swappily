@@ -110,33 +110,41 @@ const selectListing = (index) => {
 
 async function proposeExchange() {
   if (selectedIndex.value !== null) {
-    const selectedListing = myListings.value[selectedIndex.value];
-    const token = localStorage.getItem("token")
+    try {
+      const selectedListing = myListings.value[selectedIndex.value];
+      const token = localStorage.getItem("token");
 
-    console.log(token)
-
-    const listing = await axios.get(API_URL+`/listings/${route.params.listingId}`)
-
-    
-    console.log(selectedListing.id)
-    console.log(listing.data.userId)
-    console.log(localStorage.getItem("userId"))
-
-    await axios.post(
-      API_URL + `/exchanges/listing/${route.params.listingId}`,
-      {
-        offeredListing: selectedListing.id,
-        receiver: listing.data.userId,
-        //sender: localStorage.getItem("userId")
-      },
-      {
-        headers: {
-          token: `${token}`
-        }
+      if (!token) {
+        console.error("Token not found in localStorage.");
+        return;
       }
-    );
-    // console.log('Proposta di scambio con:', selectedListing);
-    
+
+      const listingResponse = await axios.get(API_URL + `/listings/${route.params.listingId}`);
+      const listing = listingResponse.data;
+
+      if (!selectedListing?.id || !listing?.userId) {
+        console.error("Missing selected listing ID or receiver user ID.");
+        return;
+      }
+
+      await axios.post(
+        API_URL + `/exchanges/listing/${route.params.listingId}`,
+        {
+          offeredListing: selectedListing.id,
+          receiver: listing.userId
+        },
+        {
+          headers: {
+            token: `${token}`
+          }
+        }
+      );
+
+      alert('Scambio proposto con successo!');
+      router.push('/');
+    } catch (error) {
+      console.error("Error proposing exchange:", error);
+    }
   }
 };
 

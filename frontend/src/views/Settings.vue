@@ -150,6 +150,9 @@ async function confirmDeleteAccount(){
 async function  fetchBlockedUsers(){
   const userId = localStorage.getItem("userId")
   const response = await axios.get(API_URL+`/users/${userId}/blocked`)
+
+  console.log(response.data)
+
   blockedUsers.value = response.data
 };
 
