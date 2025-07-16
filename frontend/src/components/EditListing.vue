@@ -3,7 +3,6 @@
     <div class="w-full max-w-2xl rounded-xl shadow-xl overflow-hidden mt-8" style="background-color: #7eacb5">
       <div class="p-6">
         <div class="flex items-center justify-between">
-
           <h1 class="text-xl font-bold text-center flex-grow" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
             Modifica Annuncio
           </h1>
@@ -19,7 +18,8 @@
         </div>
 
         <div class="flex flex-col gap-4"> 
-          <div class="mb-2"> <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
+          <div class="mb-2">
+            <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
               Titolo
             </label>
             <input
@@ -31,7 +31,8 @@
             >
           </div>
 
-          <div class="mb-2"> <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
+          <div class="mb-2">
+            <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
               Descrizione
             </label>
             <textarea
@@ -42,7 +43,8 @@
             ></textarea>
           </div>
 
-          <div class="mb-4"> <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
+          <div class="mb-4">
+            <label class="block mb-1" style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif;">
               Stato dell'articolo
             </label>
             <select
@@ -72,8 +74,71 @@
   </div>
 </template>
 
-<script setup>
+<script>
+// import axios from 'axios'
 
+// export default {
+//   data() {
+//     return {
+//       title: '',
+//       description: '',
+//       status: 'as_new', // Impostato un valore di default
+//       isSubmitting: false, // Corretto: inizializzato a false
+//       error: null,
+//       success: null,
+//     };
+//   },
+//   mounted() {
+//     this.loadListing();
+//   },
+//   methods: {
+//     async loadListing() {
+//       try {
+//         const listingId = this.$route.params.id;
+//         const response = await axios.get(`${import.meta.env.VITE_API_HOST || 'http://localhost:8080'}/api/v1/listings/${listingId}`);
+//         const data = response.data;
+
+//         this.title = data.title;
+//         this.description = data.description;
+//         this.status = data.status || 'as_new'; // Fallback al valore di default
+//       } catch (err) {
+//         this.error = 'Errore durante il caricamento dell\'annuncio';
+//         console.error(err);
+//       }
+//     },
+
+//     async updateListing() {
+//       this.isSubmitting = true;
+//       this.error = null;
+//       this.success = null;
+
+//       const listingId = this.$route.params.id;
+//       const payload = {
+//         title: this.title,
+//         description: this.description,
+//         status: this.status
+//       };
+
+//       try {
+//         const response = await axios.put(
+//           `${import.meta.env.VITE_API_HOST || 'http://localhost:8080'}/api/v1/listings/${listingId}`,
+//           payload
+//         );
+        
+//         if (response.status === 200) {
+//           this.success = 'Annuncio aggiornato con successo!';
+//           // Ricarica i dati per verificare le modifiche
+//           setTimeout(() => this.loadListing(), 1000);
+//         }
+//       } catch (err) {
+//         this.error = err.response?.data?.message || 'Errore durante l\'aggiornamento dell\'annuncio.';
+//         console.error(err);
+//       } finally {
+//         this.isSubmitting = false;
+//       }
+//     }
+//   }
+// };
 </script>
 
 <style>

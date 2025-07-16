@@ -39,7 +39,7 @@
       <!-- Sezione superiore -->
       <div class="p-6 flex flex-col md:flex-row gap-24">
         <!-- Colonna sinistra (foto e username) -->
-        <div class="flex flex-col items-center md:items-start w-full md:w-1/3 ml-15">
+        <div class="flex flex-col items-center md:items-center w-full md:w-1/3 ml-15">
           <div class="relative md:-ml-4 -mt-16">
             <img
               :src="profilePhoto"
@@ -48,7 +48,7 @@
               alt=""
             />
           </div>
-          <h2 class="mt-4 text-2xl font-bold text-center md:text-left" 
+          <h2 class="mt-4 text-2xl font-bold text-center" 
               style="color: rgb(255, 244, 234); font-family: 'Poppins', sans-serif; font-weight: 700;">
             {{ username }}
           </h2>
@@ -257,8 +257,8 @@ const favorites = ref([
 //   { _id: '2', title: 'Tavolo moderno', description: 'Tavolo in legno massello con finitura lucida', listing_url: ['https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'] }
 ])
 const archivedListings = ref([
-  { _id: 'a1', title: 'Vecchia sedia', listing_url: ['https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg'] },
-  { _id: 'a2', title: 'Tavolo antico', listing_url: ['https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'] }
+//   { _id: 'a1', title: 'Vecchia sedia', listing_url: ['https://www.viadurini.it/data/prod/img/sedia-da-cucina-in-legno-e-tessuto-design-moderno-made-in-italy-marrine.jpg'] },
+//   { _id: 'a2', title: 'Tavolo antico', listing_url: ['https://www.ibeliv.fr/cdn/shop/files/2606-21-IBELIV-Rary-0013.jpg'] }
 ]);
 // Verifica se l'utente è il proprietario del profilo
 function isAuthor() {
