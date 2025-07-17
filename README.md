@@ -23,7 +23,10 @@ Il progetto è stato realizzato con attraverso lo stack **MEVN** (**MongoDB**, *
 ### Deliverables
 A seguire la documentazione del progetto:
 
-[D1] [D2] [D3] [D4]
+[D1](https://drive.google.com/file/d/1Q3YEugdY-PZSF8kXJ29M9crgWepWyiDE/view?usp=sharing) 
+[D2](https://drive.google.com/file/d/1pS8Zn9_A-u4I_pSHJBMbHh4Tai0fEqEd/view?usp=sharing)
+[D3](https://drive.google.com/file/d/18qfR6SyaA_It0hSCYPELnKwzUf1pr8LE/view?usp=sharing)
+[D4](https://drive.google.com/file/d/1o__G8GUnOEDZw75PtlV3RuoSC9Rndb4V/view?usp=sharing)
 
 # Installazione e setup
 
