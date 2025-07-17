@@ -4,7 +4,9 @@
 
 Questo progetto è stato realizzato da **Benedetta Bicego**, **Marta Lapo** e **Soufian Akil** per il corso di *Ingegneria del Software* dell'Università degli Studi di Trento. 
 
-**Link to project:** 
+**Backend:** https://swappily-s8jr.onrender.com/
+
+**Frontend:** https://swappily-frontend.onrender.com/
 
 
 ## How It's Made:
@@ -26,15 +28,33 @@ A seguire la documentazione del progetto:
 # Installazione e setup
 
 ### Pre requisiti
-
-## Build & Deployment
-
-#### Local Deployment
+Node.js e npm installati sul sistema.
 
 ### Configurazione del Backend
+```
+cd backend
+npm install
+```
 
 ### Configurazione del Frontend
+```
+cd frontend
+npm install
+```
 
+## Build & Deployment
+#### Local Deployment
+### Backend
+Nella cartella `/backend`, eseguire:
+```
+npm start
+```
+
+### Frontend
+Nella cartella `/frontend`, eseguire:
+```
+npm run dev
+```
 
 ### Testing
 Nella cartela `/app` eseguire:
