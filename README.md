@@ -11,7 +11,7 @@ Questo progetto è stato realizzato da **Benedetta Bicego**, **Marta Lapo** e **
 
 ## How It's Made:
 
-**Tech used:** 
+**Tech usata:** 
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB, Mongoose
 - **Autenticazione**: JSON Web Token (JWT)
